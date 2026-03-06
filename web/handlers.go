@@ -6,6 +6,22 @@ import (
 	"net/http"
 )
 
+func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+	http.ServeFile(w, r, "./pkg/ui/html/profile.html")
+}
+
+// func (app *application) profileHandler(w http.ResponseWriter, r *http.Request) {
+// 	switch r.Method {
+// 	case http.MethodGet:
+// 		app.getname(w, r)
+// 	}
+
+// }
+
 func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil) // переход из http в websocket
 	if err != nil {

@@ -46,16 +46,7 @@
                     this.socket.send(this.message) // вот тут отправляем данные на сервер
                     this.message = ""
                 },
-                async getName(){
-                    try{
-                        const res = await fetch("/test")
-                        if (!res.ok) throw new Error("ошибка загрузки имени")
-                        const data = await res.json()
-                        this.name = data.name
-                    }catch(err){
-                        console.log(err)
-                    }
-                }
+                
             }
         }
         Vue.createApp(App).mount('#VUE')

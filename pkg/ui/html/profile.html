@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" type="text/css" href="../static/style_profile.css" />
+</head>
+<body>
+    <div id="VUE">
+        <div class="header">
+            <p class="profile-name" >Профиль</p>
+            <button class="button">⚙️</button>
+        </div>
+        <div class="wrapper">
+            <div class="main">
+                <div class="profile-header">
+                    <img id="profile-photo" src="../static/photo.jpg " alt="Фото профиля"/>
+                    <p class="profile_name">{{name}}</p>
+                </div>
+                <div class="about">
+                    <p class="about-text" >О себе</p>
+                </div>
+            </div>
+            <div class="sidebar">
+                <p>Друзья</p>
+                <button class="button">+</button>
+                <ul>
+                    <li>
+                        <p>Максим Максимов</p>
+                        <p>сообщение...</p>
+                    </li>
+                    <li>
+                        <p>Максим Максимов</p>
+                        <p>сообщение...</p>
+                    </li>
+                    <li>
+                        <p>Максим Максимов</p>
+                        <p>сообщение...</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer"></div>
+    </div>
+</body>
+
+<script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+<script>
+    const App = {
+            data() {
+                return {
+                    name: ""
+                }
+            },
+            mounted(){
+                this.getName()
+            },
+            methods: {
+               async getName(){
+                    try{
+                        const res = await fetch("/test")
+                        if (!res.ok) throw new Error("ошибка загрузки имени")
+                        const data = await res.json()
+                        this.name = data.name
+                    }catch(err){
+                        console.log(err)
+                    }
+                }
+            }
+        }
+    Vue.createApp(App).mount('#VUE')
+</script>
+</html>
