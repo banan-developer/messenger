@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="VUE">
+        <h2>Simple Chat</h2>
+
+        <input id="msg" v-model="message">
+        <button @click="sendMessage">Send</button>
+        <button @click="getName">Нажми для получения имени!!</button>
+        <span>{{name}}</span>
+
+        <ul id="chat">
+            <li v-for="(msg, i) in messages" :key="i">
+                {{msg}}
+            </li>
+        </ul>
+    </div>
+</body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+ <script>
+        const App = {
+            data() {
+                return {
+                    socket: null,
+                    message : "",
+                    messages: [],
+                    name: ""
+                }
+            },
+            mounted(){
+                this.socket = new WebSocket("http://127.0.0.1:4040/ws") // запрос на сервер
+                this.socket.onmessage = (event) =>{
+                    this.messages.push(event.data) // получаем сообщение и кидаем его в наш массив
+                }
+
+            },
+            methods: {
+                // метод для отправки сообщения на сервер
+                sendMessage(){
+                    if (!this.message) return
+                    this.socket.send(this.message) // вот тут отправляем данные на сервер
+                    this.message = ""
+                },
+                async getName(){
+                    try{
+                        const res = await fetch("/test")
+                        if (!res.ok) throw new Error("ошибка загрузки имени")
+                        const data = await res.json()
+                        this.name = data.name
+                    }catch(err){
+                        console.log(err)
+                    }
+                }
+            }
+        }
+        Vue.createApp(App).mount('#VUE')
+    </script>
+</html>

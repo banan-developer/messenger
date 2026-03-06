@@ -1,0 +1,2 @@
+ERROR	2026/03/06 10:02:38 main.go:52: Ошибка подключенияError 1049 (42000): Unknown database 'messenger'
+ql" (forgotten import?)
