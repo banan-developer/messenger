@@ -15,7 +15,7 @@ body {
 
 #VUE {
     width: 100%;
-    max-width: 600px;
+    max-width: 800px;
     background: white;
     min-height: 100vh;
     position: relative;
@@ -119,7 +119,7 @@ body {
     background: none;
     border: none;
     font-size: 24px;
-    background-color: rgb(0, 179, 255);
+    background-color: #2d88ff;
     cursor: pointer;
     vertical-align: middle;
     float: right;
@@ -161,4 +161,470 @@ body {
     #VUE {
         border: none;
     }
+}
+/* Стили для диалога */
+#myDialog {
+    padding: 0;
+    border: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    width: 400px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid #e5e5e5;
+}
+
+/* Затемнение фона */
+#myDialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Контент диалога */
+#myDialog .dialog-content {
+    padding: 24px;
+}
+
+/* Заголовок настроек */
+#myDialog .dialog-content > p:first-child {
+    font-size: 24px;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 24px 0;
+}
+
+/* Форма */
+#myDialog form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#myDialog form p {
+    margin: 0;
+}
+
+#myDialog form p:last-child {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Лейблы */
+#myDialog label {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+/* Поля ввода */
+#myDialog input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: white;
+    font-size: 15px;
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+#myDialog input[type="text"]:focus {
+    outline: none;
+    border-color: #666;
+}
+
+/* Кнопки в диалоге */
+#myDialog .button {
+    background: none;
+    border: 1px solid #e5e5e5;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+#myDialog .button:hover {
+    background: #f5f5f5;
+    border-color: #d9d9d9;
+}
+
+/* Кнопка "Применить изменения" */
+#myDialog .button:last-child {
+    background: #007aff;
+    border-color: #007aff;
+    color: white;
+}
+
+#myDialog .button:last-child:hover {
+    background: #0051b3;
+    border-color: #0051b3;
+}
+
+/* Поле textarea */
+#myDialog textarea[name="editAboutPerson"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: white;
+    font-size: 15px;
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    font-family: inherit; /* Чтобы шрифт был как у остальных полей */
+    
+    /* Фиксируем размеры */
+    min-width: 100%; /* Чтобы не сужался по ширине */
+    max-width: 100%; /* Чтобы не выходил за пределы */
+    min-height: 100px; /* Минимальная высота */
+    max-height: 200px; /* Максимальная высота, если хочешь ограничить */
+    resize: vertical; /* Разрешаем менять размер только по вертикали */
+}
+
+#myDialog textarea[name="editAboutPerson"]:focus {
+    outline: none;
+    border-color: #666;
+}
+
+/* Стили для стены */
+.wall {
+    margin-top: 32px;
+    padding-top: 20px;
+}
+
+.wall h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+/* Контейнер для ввода новой записи */
+.input-container {
+    margin-bottom: 20px;
+}
+
+.input-container input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #f0f0f0;
+    border-radius: 16px;
+    font-size: 15px;
+    background: white;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.input-container input:focus {
+    outline: none;
+    border-color: #2d88ff;
+    box-shadow: 0 4px 12px rgba(45, 136, 255, 0.1);
+}
+
+.input-container input::placeholder {
+    color: #999;
+}
+
+/* Контейнер для кнопки добавления */
+.button-container {
+    margin-bottom: 32px;
+}
+
+.button-container button {
+    background: #2d88ff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+    float: right;
+}
+
+.button-container button:hover {
+    background: #1a5bbf;
+}
+
+/* Очистка float */
+.button-container::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* Список записей */
+.list-item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.list {
+    background: white;
+    border: 2px solid #f0f0f0;
+    border-radius: 20px;
+    padding: 20px;
+    transition: all 0.2s;
+}
+
+.list:hover {
+    border-color: #2d88ff;
+}
+
+.wall-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 8px 0;
+}
+
+.wall-text {
+    font-size: 15px;
+    line-height: 1.5;
+    color: #333;
+    display: block;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Контейнер для кнопок записи */
+.list-buttons {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 12px;
+    margin-top: 4px;
+}
+
+.button-delete {
+    background: none;
+    border: 2px solid #f0f0f0;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 12px;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.button-delete:hover {
+    border-color: #ff3b30;
+    background: #fff1f0;
+    color: #ff3b30;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .list {
+        padding: 16px;
+    }
+    
+    .button-container button {
+        width: 100%;
+        float: none;
+    }
+    
+    .input-container input {
+        padding: 14px;
+    }
+}
+
+.textarea-wall{
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: white;
+    font-size: 15px;
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    font-family: inherit; /* Чтобы шрифт был как у остальных полей */
+    
+    /* Фиксируем размеры */
+    min-width: 100%; /* Чтобы не сужался по ширине */
+    max-width: 100%; /* Чтобы не выходил за пределы */
+    min-height: 100px; /* Минимальная высота */
+    max-height: 200px; /* Максимальная высота, если хочешь ограничить */
+    resize: vertical; /* Разрешаем менять размер только по вертикали */
+    margin-top: 20px;
+}
+
+
+#myDialog2 {
+    padding: 0;
+    border: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    width: 400px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid #e5e5e5;
+}
+
+/* Затемнение фона */
+#myDialog2::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Контент диалога */
+#myDialog2 .dialog-content {
+    padding: 24px;
+}
+
+/* Заголовок настроек */
+#myDialog2 .dialog-content > p:first-child {
+    font-size: 24px;
+    font-weight: 600;
+    color: #000;
+    margin: 0 0 24px 0;
+}
+
+/* Форма */
+#myDialog2 form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#myDialog2 form p {
+    margin: 0;
+}
+
+#myDialog2 form p:last-child {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* Лейблы */
+#myDialog2 label {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+/* Поля ввода */
+#myDialog2 input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: white;
+    font-size: 15px;
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+#myDialog2 input[type="text"]:focus {
+    outline: none;
+    border-color: #666;
+}
+
+/* Кнопки в диалоге */
+#myDialog2 .button {
+    background: none;
+    border: 1px solid #e5e5e5;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+}
+
+#myDialog2 .button:hover {
+    background: #f5f5f5;
+    border-color: #d9d9d9;
+}
+
+/* Кнопка "Применить изменения" */
+#myDialog2 .button:last-child {
+    background: #007aff;
+    border-color: #007aff;
+    color: white;
+}
+
+#myDialog2 .button:last-child:hover {
+    background: #0051b3;
+    border-color: #0051b3;
+}
+
+/* Поле textarea */
+#myDialog2 textarea[name="editAboutPerson"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: white;
+    font-size: 15px;
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.2s;
+    font-family: inherit; /* Чтобы шрифт был как у остальных полей */
+    
+    /* Фиксируем размеры */
+    min-width: 100%; /* Чтобы не сужался по ширине */
+    max-width: 100%; /* Чтобы не выходил за пределы */
+    min-height: 100px; /* Минимальная высота */
+    max-height: 200px; /* Максимальная высота, если хочешь ограничить */
+    resize: vertical; /* Разрешаем менять размер только по вертикали */
+}
+
+#myDialog .dialog-content {
+    position: relative;
+}
+
+/* контейнер кнопки */
+#myDialog .dialog-content > p:nth-child(2) {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    margin: 0;
+}
+
+/* сама кнопка */
+#myDialog .dialog-content > p:nth-child(2) button {
+    background: none;
+    border: 1px solid #e5e5e5;
+    color: #666;
+    font-size: 18px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* эффект при наведении */
+#myDialog .dialog-content > p:nth-child(2) button:hover {
+    background: #fff1f0;
+    border-color: #ff3b30;
+    color: #ff3b30;
 }

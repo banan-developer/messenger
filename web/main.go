@@ -17,7 +17,16 @@ type application struct {
 }
 
 type person struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	About    string `json:"about"`
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
+type wall struct {
+	Id    int    `json:"idwall"`
+	Title string `json:"title"`
+	Text  string `json:"text"`
 }
 
 func main() {
@@ -57,13 +66,23 @@ func main() {
 	}
 
 	http.HandleFunc("/ws", app.wsHandler)
-	http.HandleFunc("/test", app.getname)
+	http.HandleFunc("/test", app.getPerson)
 	http.HandleFunc("/", app.HomeHandler)
+	http.HandleFunc("/updateProf", app.updateProfile)
+	http.HandleFunc("/getWall", app.GetWall)
+	http.HandleFunc("/pushWall", app.PushwWall)
+	http.HandleFunc("/deleteWall", app.deleteWall)
+	http.HandleFunc("/editWall", app.editWall)
+	http.HandleFunc("/updateEditingWall", app.updateEditingWall)
+
+	http.HandleFunc("/login", app.autoresHandler)
+	http.HandleFunc("/register", app.regHanlder)
+	http.HandleFunc("/exit", app.exitSession)
 
 	fileServer := http.FileServer(http.Dir("./pkg/ui/static"))
 	http.Handle("/static/", http.StripPrefix("/static", fileServer))
 
 	go hanldeMessage()
-	fmt.Println("Сервер запущен на http://127.0.0.1:4040")
+	fmt.Println("Сервер запущен на http://127.0.0.1:4040/login")
 	http.ListenAndServe(":4040", nil)
 }

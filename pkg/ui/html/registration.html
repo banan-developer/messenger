@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" type="text/css" href="../static/style_for_auth.css" />
+</head>
+<body>
+    <div id="div_reg">
+        <h2>Регистрация</h2>
+        <form method="POST" action="/register">
+            <p>
+                <label for="email">Почта</label>
+                <input type="email" name="email" placeholder="Введите email" autocomplete="on" required id="email" /> 
+            </p>
+
+            <p>
+                <label for="email">Пароль</label>
+                <input type="password" name="password" placeholder="Введите пароль" required id="password" />
+            </p>
+
+            <p>
+                <button type="submit" >Отправить</button>
+                <button type="reset">Отмена</button>
+            </p>
+
+            <p>
+                <span><a href="/">Вернуться обратно</a></span>
+            </p>
+
+    </div>
+
+     
+</body>
+</html>

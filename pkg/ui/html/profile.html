@@ -10,7 +10,7 @@
     <div id="VUE">
         <div class="header">
             <p class="profile-name" >Профиль</p>
-            <button class="button">⚙️</button>
+            <button class="button" @click="openEditPerson()">⚙️</button>
         </div>
         <div class="wrapper">
             <div class="main">
@@ -19,7 +19,33 @@
                     <p class="profile_name">{{name}}</p>
                 </div>
                 <div class="about">
-                    <p class="about-text" >О себе</p>
+                    <p class="about-text"> О себе: {{aboutPerson}}</p>
+                </div>
+
+                <div class="wall">
+                    <h3>Стена</h3>
+                    <div class="input-container">
+                        <input type="text", placeholder="Тема поста" v-model="inputValueTitle"/>
+                        <textarea class="textarea-wall" placeholder="Что у тебя сегодня нового?" v-model="inputValueText"></textarea>
+                    </div>
+
+                    <div class="button-container">
+                        <button @click="pushWalltoServer" >Добавить на стену</button>
+                        
+                    </div>
+
+                    <div>
+                        <ul class="list-item">
+                            <li class="list" v-for="(note, i) in wall" :key="note.id">
+                                <h3 class="wall-title">{{note.title}}</h3>
+                                <span class="wall-text">{{note.text}}</span>
+                                <div class="list-buttons">
+                                    <button class="button-delete" @click="deleteWall(note.idwall)">🗑️</button>
+                                    <button class="button-delete" @click="editWall(note.idwall)">✏️</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="sidebar">
@@ -38,10 +64,71 @@
                         <p>Максим Максимов</p>
                         <p>сообщение...</p>
                     </li>
+                    <li>
+                        <p>Максим Максимов</p>
+                        <p>сообщение...</p>
+                    </li>
+                    <li>
+                        <p>Максим Максимов</p>
+                        <p>сообщение...</p>
+                    </li>
                 </ul>
             </div>
         </div>
         <div class="footer"></div>
+        <!-- Окно редактирования профиля -->
+        <dialog id="myDialog">
+            <div class="dialog-content">
+                <p>Настройки профиля</p>
+                <p>
+                    <button type="button">🚪</button>
+                </p>
+                <form>
+                    <p>
+                        <label for="editName">Имя пользователя</label>
+                        <input type="text" name="editName" placeholder="Введи новое имя" v-model="valueEditName" @keypress.enter="PushEditedProfile"/>
+                    </p>
+                    <p>
+                        <label for="editAboutPerson">О себе</label>
+                        <textarea name="editAboutPerson" placeholder="Расскажи о себе" v-model="valueEditAboutPers"></textarea>
+                    </p>
+                    <p>
+                        <button class="button" type="button" @click="closeEditPerson">Отменить</button>
+                        <button class="button" type="button" @click="PushEditedProfile" >Применить изменения</button>
+                    </p>
+
+                </form>
+            </div>
+        </dialog>
+
+        <!-- Окно поиска друзей -->
+        <dialog>
+            <div class="searchFriends">
+                <P>Поиск друзей</P>
+                <form>
+                    <p>
+                        <input type="text" placeholder="Добавь своего знакомого в друзья"/>
+                    </p>
+                </form>
+            </div>
+        </dialog>
+
+        <!-- Окно редактирования записей на стене -->
+        <dialog id="myDialog2">
+            <div class="dialog-content">
+                <p>Редактирование заметки</p>
+                <form>
+                    <p>
+                        <input type="text" placeholder="⠀" v-model="valueEditTitle" @keypress.enter="updateEditingWall(editingID)"/>
+                        <textarea class="textarea-wall" placeholder="⠀" v-model="valueEditText" ></textarea>
+                    </p>
+                    <p>
+                        <button class="button" type="button" @click="closeEditWall">Отменить</button>
+                        <button class="button" type="button" @click="updateEditingWall(editingID)" >Сохранить</button>
+                    </p>
+                </form>
+            </div>
+        </dialog>
     </div>
 </body>
 
@@ -50,11 +137,28 @@
     const App = {
             data() {
                 return {
-                    name: ""
+                    name: "",
+                    aboutPerson: "",
+                    valueEditName: "",
+                    valueEditAboutPers: "",
+
+                    // стена
+                    wall: [
+                        {id: 1 ,title: "Первая запись на стене!", text: "Сегодня я впервые написал на своей стене, классный момент"},
+                        {id: 2, title: "абоба", text: "стенаааааааааааа"} 
+                    ],
+                    inputValueTitle: "",
+                    inputValueText: "",
+
+                    valueEditTitle: "",
+                    valueEditText: "",
+                    editingID: null,
+
                 }
             },
             mounted(){
                 this.getName()
+                this.getWall()
             },
             methods: {
                async getName(){
@@ -63,10 +167,132 @@
                         if (!res.ok) throw new Error("ошибка загрузки имени")
                         const data = await res.json()
                         this.name = data.name
+                        this.aboutPerson = data.about
                     }catch(err){
                         console.log(err)
                     }
+                },
+                openEditPerson(){
+                    this.valueEditName = this.name
+                    this.valueEditAboutPers = this.aboutPerson
+                    document.getElementById('myDialog').showModal()
+                },
+
+                closeEditPerson(){
+                    document.getElementById("myDialog").close()
+                },
+            
+                async PushEditedProfile(){
+                    if(this.valueEditName == ""){
+                        alert("Имя не может быть пустым!")
+                        return
+                    }
+                        
+                    try{
+                        const res = await fetch("/updateProf",{
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                name: this.valueEditName,
+                                about: this.valueEditAboutPers
+                            })
+                        })
+                         if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        const data = await res.json();
+                        console.log('Успешно обновлено:', data);
+
+                    }catch(err){
+                        console.log("Ошибка при отправки, измененных данных на сервер")
+                    }
+                    document.getElementById('myDialog').close()
+                    await this.getName()
+                },
+// ........................................................ СТЕНА .............................................................
+                // отправка данных стены на сервер
+                async pushWalltoServer(){
+                    try{
+                        const res = await fetch("/getWall", {
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({
+                                title: this.inputValueTitle,
+                                text: this.inputValueText
+                            })
+                        })
+                        await this.getWall();
+                        this.inputValueText = ""
+                        this.inputValueTitle = ""
+                       
+
+                    }catch(err){
+                        console.log(err)
+                    }
+                },
+               // получение данный стены с сервера
+                async getWall(){
+                    try{
+                        const res = await fetch("/pushWall")
+                        if (!res.ok) throw new Error("ошибка загрузки стены")
+                        const data = await res.json()
+                        this.wall = data
+
+                    }catch(err){
+                        console.log(err)
+                    }
+                },
+                // Удаление записей из стены
+                async deleteWall(wall_ID){
+                    try{
+                        const res = await fetch(`/deleteWall?id=${wall_ID}`, {
+                            method: "DELETE"
+                        })
+                        if (!res.ok) throw new Error('Ошибка удаления')
+                        await this.getWall()
+
+                    }catch(err){
+                        console.log(err)
+                    }
+                },
+
+
+                closeEditWall(){
+                    document.getElementById("myDialog2").close()
+                },
+                // редактирования записей на стене
+                async editWall(wall_ID){
+                    document.getElementById("myDialog2").showModal()
+                    try{
+                        const res = await fetch(`/editWall?id=${wall_ID}`, {
+                            method: "GET"
+                        })
+                        if (!res.ok) throw new Error("ошибка редактирования поста")
+                        const data = await res.json()
+                        this.valueEditTitle = data.title
+                        this.valueEditText = data.text
+                        this.editingID = wall_ID
+
+                    }catch(err){
+                        console.log(err)
+                    }
+                },
+
+                async updateEditingWall(wall_ID){
+                    document.getElementById("myDialog2").close()
+                    try{
+                        const res = await fetch(`/updateEditingWall?id=${wall_ID}`, {
+                            method: "PUT",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({title: this.valueEditTitle, text: this.valueEditText})
+                        })
+
+                    }catch (err){
+                        console.log(err)
+                    }
+                    await this.getWall()
                 }
+                
             }
         }
     Vue.createApp(App).mount('#VUE')
