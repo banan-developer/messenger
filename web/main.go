@@ -21,12 +21,15 @@ type person struct {
 	About    string `json:"about"`
 	Login    string `json:"login"`
 	Password string `json:"password"`
+	Avatar   string `json:"avatar"`
+	Sex      string `json:"sex"`
 }
 
 type wall struct {
 	Id    int    `json:"idwall"`
 	Title string `json:"title"`
 	Text  string `json:"text"`
+	Img   string `json:"img"`
 }
 
 func main() {
@@ -78,6 +81,7 @@ func main() {
 	http.HandleFunc("/login", app.autoresHandler)
 	http.HandleFunc("/register", app.regHanlder)
 	http.HandleFunc("/exit", app.exitSession)
+	http.HandleFunc("/uploadAvatar", app.uploadAvatar)
 
 	fileServer := http.FileServer(http.Dir("./pkg/ui/static"))
 	http.Handle("/static/", http.StripPrefix("/static", fileServer))

@@ -15,11 +15,12 @@
         <div class="wrapper">
             <div class="main">
                 <div class="profile-header">
-                    <img id="profile-photo" src="../static/photo.jpg " alt="Фото профиля"/>
+                    <img id="profile-photo" :src="avatarURL" alt="Фото профиля"/>
                     <p class="profile_name">{{name}}</p>
                 </div>
                 <div class="about">
                     <p class="about-text"> О себе: {{aboutPerson}}</p>
+                    <span>Пол: {{sex}}</span>
                 </div>
 
                 <div class="wall">
@@ -27,6 +28,9 @@
                     <div class="input-container">
                         <input type="text", placeholder="Тема поста" v-model="inputValueTitle"/>
                         <textarea class="textarea-wall" placeholder="Что у тебя сегодня нового?" v-model="inputValueText"></textarea>
+                        <div class="block-button-img">
+                            <!-- <input type="file" accept="image/*" @change="uplodadImg" placeholder="⠀"> -->
+                        </div>
                     </div>
 
                     <div class="button-container">
@@ -83,6 +87,9 @@
                 <p>
                     <button type="button">🚪</button>
                 </p>
+                <p>
+                    <input type="file" accept="image/*" @change="uploadAvatar" placeholder="⠀">
+                </p>
                 <form>
                     <p>
                         <label for="editName">Имя пользователя</label>
@@ -92,6 +99,7 @@
                         <label for="editAboutPerson">О себе</label>
                         <textarea name="editAboutPerson" placeholder="Расскажи о себе" v-model="valueEditAboutPers"></textarea>
                     </p>
+
                     <p>
                         <button class="button" type="button" @click="closeEditPerson">Отменить</button>
                         <button class="button" type="button" @click="PushEditedProfile" >Применить изменения</button>
@@ -116,7 +124,7 @@
         <!-- Окно редактирования записей на стене -->
         <dialog id="myDialog2">
             <div class="dialog-content">
-                <p>Редактирование заметки</p>
+                <p>Редактирование поста</p>
                 <form>
                     <p>
                         <input type="text" placeholder="⠀" v-model="valueEditTitle" @keypress.enter="updateEditingWall(editingID)"/>
@@ -137,8 +145,11 @@
     const App = {
             data() {
                 return {
+                    avatarURL: "",
                     name: "",
+                    sex: "",
                     aboutPerson: "",
+                    imgURL: "",
                     valueEditName: "",
                     valueEditAboutPers: "",
 
@@ -168,6 +179,8 @@
                         const data = await res.json()
                         this.name = data.name
                         this.aboutPerson = data.about
+                        this.avatarURL = data.avatar
+                        this.sex = data.sex
                     }catch(err){
                         console.log(err)
                     }
@@ -194,7 +207,7 @@
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 name: this.valueEditName,
-                                about: this.valueEditAboutPers
+                                about: this.valueEditAboutPers,
                             })
                         })
                          if (!res.ok) {
@@ -212,6 +225,10 @@
 // ........................................................ СТЕНА .............................................................
                 // отправка данных стены на сервер
                 async pushWalltoServer(){
+                    if (this.inputValueText == '' || this.inputValueTitle == ''){
+                        alert("Нельзя опубликовать пустой пост")
+                        return
+                    }
                     try{
                         const res = await fetch("/getWall", {
                             method: "POST",
@@ -230,7 +247,7 @@
                         console.log(err)
                     }
                 },
-               // получение данный стены с сервера
+               // получение данных стены с сервера
                 async getWall(){
                     try{
                         const res = await fetch("/pushWall")
@@ -286,12 +303,40 @@
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({title: this.valueEditTitle, text: this.valueEditText})
                         })
+                        if (!res.ok) throw new Error("ошибка редактирования поста")
 
                     }catch (err){
                         console.log(err)
                     }
                     await this.getWall()
-                }
+                },
+                async uploadAvatar(event){
+                    const file = event.target.files[0]
+                    if (!file) return
+                    const formData = new FormData()
+                    formData.append("avatar", file)
+                    try{
+                        const res = await fetch("/uploadAvatar",{
+                            method: "POST",
+                            body: formData
+                        })
+                         if (!res.ok) throw new Error("ошибка редактирования поста")
+                        const data = await res.json()
+                        this.avatarURL = data.avatar
+
+                    }catch(err){
+                        console.log(err)
+                    }
+                },
+                // async uplodadImg(event){
+                //     const file = event.target.files[0]
+                //     if (!file) return
+                //     const formData = new FormData()
+                //     formData.append("img", file)
+                //     this.imgURL = formData
+                //     console.log(formData)
+                //     console.log(this.imgURL)
+                // }
                 
             }
         }

@@ -3,8 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 )
 
 func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -39,12 +42,7 @@ func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
 func (app *application) getPerson(w http.ResponseWriter, r *http.Request) {
 	var person person
 
-	err := app.db.QueryRow("SELECT name FROM users WHERE id = ?", 1).Scan(&person.Name)
-	if err != nil {
-		http.Error(w, "Ошибка при получении информации об пользователе из БД", http.StatusInternalServerError)
-		return
-	}
-	err = app.db.QueryRow("SELECT about FROM users WHERE id = ?", 1).Scan(&person.About)
+	err := app.db.QueryRow("SELECT name, about, avatar_url, sex FROM users WHERE id = ?", 1).Scan(&person.Name, &person.About, &person.Avatar, &person.Sex)
 	if err != nil {
 		http.Error(w, "Ошибка при получении информации об пользователе из БД", http.StatusInternalServerError)
 		return
@@ -190,3 +188,67 @@ func (app *application) updateEditingWall(w http.ResponseWriter, r *http.Request
 
 	_, err = app.db.Exec("UPDATE wall SET title = ?, text = ? WHERE idwall = ?", wall.Title, wall.Text, id)
 }
+
+func (app *application) uploadAvatar(w http.ResponseWriter, r *http.Request) {
+	r.ParseMultipartForm(10 << 20)
+	file, handler, err := r.FormFile("avatar")
+
+	if err != nil {
+		http.Error(w, "Ошибка загрузки", 500)
+		return
+	}
+	defer file.Close()
+
+	filename := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
+	path := "./pkg/ui/static/avatars/" + filename
+
+	dst, err := os.Create(path)
+	if err != nil {
+		http.Error(w, "Ошибка сохранения", 500)
+		return
+	}
+	defer dst.Close()
+
+	io.Copy(dst, file)
+
+	avatarURL := "/static/avatars/" + filename
+
+	_, err = app.db.Exec(
+		"UPDATE users SET avatar_url = ? WHERE id =? ",
+		avatarURL,
+		1,
+	)
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"avatar": avatarURL,
+	})
+}
+
+// func (app *application) uploadImg(w http.ResponseWriter, r *http.Request) {
+// 	r.ParseMultipartForm(10 << 20)
+
+// 	file, handler, err := r.FormFile("img")
+
+// 	if err != nil {
+// 		http.Error(w, "Ошибка загрузки", 500)
+// 	}
+
+// 	defer file.Close()
+
+// 	filename := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
+// 	path := "./pkg/ui/static/img/" + filename
+
+// 	dst, err := os.Create(path)
+// 	if err != nil {
+// 		http.Error(w, "Ошибка сохранения", 500)
+// 		return
+// 	}
+// 	defer dst.Close()
+
+// 	io.Copy(dst, file)
+
+// 	imgURL := "/static/img/" + filename
+
+// 	_, err = app.db.Exec("INSERT INTO wall img_scr = ? WHERE wallid = ?", imgURL, 1)
+
+// }

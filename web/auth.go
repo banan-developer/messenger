@@ -68,7 +68,7 @@ func (app *application) regHanlder(w http.ResponseWriter, r *http.Request) {
 	// получение значения в input через поля
 	login := r.FormValue("email")
 	password := r.FormValue("password")
-	name := "Admin"
+	name := r.FormValue("name")
 
 	hashedPassword, _ := hashPassword(password)
 	_, err := app.db.Exec("INSERT INTO users (login, password, name) VALUES (?, ?, ?)", login, hashedPassword, name)

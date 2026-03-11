@@ -628,3 +628,8 @@ body {
     border-color: #ff3b30;
     color: #ff3b30;
 }
+
+.block-button-img{
+    display: flex;
+    justify-content: flex-end;
+}

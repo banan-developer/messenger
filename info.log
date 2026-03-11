@@ -1,4 +1,5 @@
-ERROR	2026/03/09 21:18:51 auth.go:77: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
+ERROR	2026/03/11 13:58:19 auth.go:76: REGISTER ERROR: Error 1364 (HY000): Field 'sex' doesn't have a default value
+
 ERROR	2026/03/09 21:19:02 auth.go:77: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
 ERROR	2026/03/09 21:19:11 auth.go:77: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
 ERROR	2026/03/09 21:17:07 auth.go:75: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
