@@ -1,21 +1,23 @@
 package auth
 
 import (
+	"encoding/gob"
 	"net/http"
 
 	"github.com/gorilla/sessions"
 )
 
 // создание сессии
-var Store = sessions.NewCookieStore([]byte("KEY!!!"))
+var Store = sessions.NewCookieStore([]byte("very-secret-super-long-key-1234567890"))
 
 func InitStore() {
+	gob.Register(int(0))
 	Store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   60 * 60 * 24,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
-		Secure:   true,
+		Secure:   false,
 	}
 }
 

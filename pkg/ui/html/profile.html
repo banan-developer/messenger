@@ -8,6 +8,9 @@
 </head>
 <body>
     <div id="VUE">
+        <!-- <div>
+            <h2>THE NOMAX</h2>
+        </div> -->
         <div class="header">
             <p class="profile-name" >Профиль</p>
             <button class="button" @click="openEditPerson()">⚙️</button>
@@ -53,28 +56,13 @@
                 </div>
             </div>
             <div class="sidebar">
+                <div class="btn-add"><button class="button" @click="OpenSearchFriend">+</button></div>
                 <p>Друзья</p>
-                <button class="button">+</button>
                 <ul>
-                    <li>
-                        <p>Максим Максимов</p>
-                        <p>сообщение...</p>
-                    </li>
-                    <li>
-                        <p>Максим Максимов</p>
-                        <p>сообщение...</p>
-                    </li>
-                    <li>
-                        <p>Максим Максимов</p>
-                        <p>сообщение...</p>
-                    </li>
-                    <li>
-                        <p>Максим Максимов</p>
-                        <p>сообщение...</p>
-                    </li>
-                    <li>
-                        <p>Максим Максимов</p>
-                        <p>сообщение...</p>
+                    <li v-for="(friend, i) in friends" :key="friend.id">
+                        <img :src="friend.avatar" width="25" alt="фото друга"/>
+                        {{friend.name}}
+                        <button  @click="loadFriendProfile(friend.id)">🧑‍💼</button>
                     </li>
                 </ul>
             </div>
@@ -85,11 +73,12 @@
             <div class="dialog-content">
                 <p>Настройки профиля</p>
                 <p>
-                    <button type="button">🚪</button>
+                    <button type="button" class="logout-btn" @click="exitFromAccount">Выйти из аккаунта</button>
                 </p>
-                <p>
-                    <input type="file" accept="image/*" @change="uploadAvatar" placeholder="⠀">
-                </p>
+                <div class="avatar-upload">
+                    <label for="photo">Фото пользователя</label>
+                    <input name="photo" type="file" accept="image/*" @change="uploadAvatar" placeholder="⠀">
+                </div>
                 <form>
                     <p>
                         <label for="editName">Имя пользователя</label>
@@ -110,13 +99,23 @@
         </dialog>
 
         <!-- Окно поиска друзей -->
-        <dialog>
-            <div class="searchFriends">
+        <dialog id="friends">
+            <div class="dialog-content">
                 <P>Поиск друзей</P>
+                <button class="button-exit" @click="closeEditWall">x</button>
                 <form>
                     <p>
-                        <input type="text" placeholder="Добавь своего знакомого в друзья"/>
+                        <input type="text" v-model="searchname" placeholder="Введи имя пользователя"/>
                     </p>
+                    <button @click="SearchFriends" type="button">Найти</button>
+                    <ul>
+                        <li v-for="users in foundUsers" :key="users.id">
+                            <img :src="users.avatar" width="40" alt="Фото пользователя2"/>
+                            {{users.name}}
+                            <button @click="addToFriend(users.id)">Добавить</button>
+                        </li>
+                        
+                    </ul>
                 </form>
             </div>
         </dialog>
@@ -138,208 +137,9 @@
             </div>
         </dialog>
     </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+    <script src="/js/profile.js"></script>
+
 </body>
-
-<script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
-<script>
-    const App = {
-            data() {
-                return {
-                    avatarURL: "",
-                    name: "",
-                    sex: "",
-                    aboutPerson: "",
-                    imgURL: "",
-                    valueEditName: "",
-                    valueEditAboutPers: "",
-
-                    // стена
-                    wall: [
-                        {id: 1 ,title: "Первая запись на стене!", text: "Сегодня я впервые написал на своей стене, классный момент"},
-                        {id: 2, title: "абоба", text: "стенаааааааааааа"} 
-                    ],
-                    inputValueTitle: "",
-                    inputValueText: "",
-
-                    valueEditTitle: "",
-                    valueEditText: "",
-                    editingID: null,
-
-                }
-            },
-            mounted(){
-                this.getName()
-                this.getWall()
-            },
-            methods: {
-               async getName(){
-                    try{
-                        const res = await fetch("/test")
-                        if (!res.ok) throw new Error("ошибка загрузки имени")
-                        const data = await res.json()
-                        this.name = data.name
-                        this.aboutPerson = data.about
-                        this.avatarURL = data.avatar
-                        this.sex = data.sex
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                openEditPerson(){
-                    this.valueEditName = this.name
-                    this.valueEditAboutPers = this.aboutPerson
-                    document.getElementById('myDialog').showModal()
-                },
-
-                closeEditPerson(){
-                    document.getElementById("myDialog").close()
-                },
-            
-                async PushEditedProfile(){
-                    if(this.valueEditName == ""){
-                        alert("Имя не может быть пустым!")
-                        return
-                    }
-                        
-                    try{
-                        const res = await fetch("/updateProf",{
-                            method: "POST",
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                name: this.valueEditName,
-                                about: this.valueEditAboutPers,
-                            })
-                        })
-                         if (!res.ok) {
-                            throw new Error(`HTTP error! status: ${res.status}`);
-                        }
-                        const data = await res.json();
-                        console.log('Успешно обновлено:', data);
-
-                    }catch(err){
-                        console.log("Ошибка при отправки, измененных данных на сервер")
-                    }
-                    document.getElementById('myDialog').close()
-                    await this.getName()
-                },
-// ........................................................ СТЕНА .............................................................
-                // отправка данных стены на сервер
-                async pushWalltoServer(){
-                    if (this.inputValueText == '' || this.inputValueTitle == ''){
-                        alert("Нельзя опубликовать пустой пост")
-                        return
-                    }
-                    try{
-                        const res = await fetch("/getWall", {
-                            method: "POST",
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                title: this.inputValueTitle,
-                                text: this.inputValueText
-                            })
-                        })
-                        await this.getWall();
-                        this.inputValueText = ""
-                        this.inputValueTitle = ""
-                       
-
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-               // получение данных стены с сервера
-                async getWall(){
-                    try{
-                        const res = await fetch("/pushWall")
-                        if (!res.ok) throw new Error("ошибка загрузки стены")
-                        const data = await res.json()
-                        this.wall = data
-
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                // Удаление записей из стены
-                async deleteWall(wall_ID){
-                    try{
-                        const res = await fetch(`/deleteWall?id=${wall_ID}`, {
-                            method: "DELETE"
-                        })
-                        if (!res.ok) throw new Error('Ошибка удаления')
-                        await this.getWall()
-
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-
-
-                closeEditWall(){
-                    document.getElementById("myDialog2").close()
-                },
-                // редактирования записей на стене
-                async editWall(wall_ID){
-                    document.getElementById("myDialog2").showModal()
-                    try{
-                        const res = await fetch(`/editWall?id=${wall_ID}`, {
-                            method: "GET"
-                        })
-                        if (!res.ok) throw new Error("ошибка редактирования поста")
-                        const data = await res.json()
-                        this.valueEditTitle = data.title
-                        this.valueEditText = data.text
-                        this.editingID = wall_ID
-
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-
-                async updateEditingWall(wall_ID){
-                    document.getElementById("myDialog2").close()
-                    try{
-                        const res = await fetch(`/updateEditingWall?id=${wall_ID}`, {
-                            method: "PUT",
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({title: this.valueEditTitle, text: this.valueEditText})
-                        })
-                        if (!res.ok) throw new Error("ошибка редактирования поста")
-
-                    }catch (err){
-                        console.log(err)
-                    }
-                    await this.getWall()
-                },
-                async uploadAvatar(event){
-                    const file = event.target.files[0]
-                    if (!file) return
-                    const formData = new FormData()
-                    formData.append("avatar", file)
-                    try{
-                        const res = await fetch("/uploadAvatar",{
-                            method: "POST",
-                            body: formData
-                        })
-                         if (!res.ok) throw new Error("ошибка редактирования поста")
-                        const data = await res.json()
-                        this.avatarURL = data.avatar
-
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                // async uplodadImg(event){
-                //     const file = event.target.files[0]
-                //     if (!file) return
-                //     const formData = new FormData()
-                //     formData.append("img", file)
-                //     this.imgURL = formData
-                //     console.log(formData)
-                //     console.log(this.imgURL)
-                // }
-                
-            }
-        }
-    Vue.createApp(App).mount('#VUE')
-</script>
 </html>

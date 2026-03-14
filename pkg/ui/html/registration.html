@@ -8,6 +8,7 @@
 </head>
 <body>
     <div id="div_reg">
+        <h2>Добро пожаловать на THE NOMAX</h2>
         <h2>Регистрация</h2>
         <form method="POST" action="/register">
             <p>
@@ -23,6 +24,25 @@
             <p>
                 <label for="email">Пароль</label>
                 <input type="password" name="password" placeholder="Введите пароль" required id="password" />
+            </p>
+
+            <p>
+                <p>Пол:</p>
+
+                <label>
+                    <input type="radio" name="sex" value="Мужской" required>
+                    Мужской
+                </label>
+
+                <label>
+                    <input type="radio" name="sex" value="Женский">
+                    Женский
+                </label>
+
+                <label>
+                    <input type="radio" name="sex" value="Гофер">
+                    Гофер
+                </label>
             </p>
 
             <p>

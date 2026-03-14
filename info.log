@@ -1,8 +1,8 @@
-ERROR	2026/03/11 13:58:19 auth.go:76: REGISTER ERROR: Error 1364 (HY000): Field 'sex' doesn't have a default value
-
-ERROR	2026/03/09 21:19:02 auth.go:77: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
-ERROR	2026/03/09 21:19:11 auth.go:77: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
-ERROR	2026/03/09 21:17:07 auth.go:75: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
+ERROR	2026/03/15 01:12:16 handlers.go:132: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax
+ERROR	2026/03/15 01:12:16 handlers.go:132: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax
+y '24-21' for key 'friends.PRIMARY'
+ERROR	2026/03/13 01:21:12 handlers.go:278: DB QUERY ERROR Error 1062 (23000): Duplicate entry '25-21' for key 'friends.PRIMARY'
+o:75: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value
 4 handlers.go:133: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax
 ERROR	2026/03/09 15:04:33 handlers.go:133: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax
 ERROR	2026/03/09 15:04:38 handlers.go:133: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax

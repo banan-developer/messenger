@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"messenger/auth"
 	"net/http"
 	"os"
 
@@ -17,6 +18,7 @@ type application struct {
 }
 
 type person struct {
+	ID       int    `json:"id"`
 	Name     string `json:"name"`
 	About    string `json:"about"`
 	Login    string `json:"login"`
@@ -68,23 +70,22 @@ func main() {
 		db:       db,
 	}
 
-	http.HandleFunc("/ws", app.wsHandler)
-	http.HandleFunc("/test", app.getPerson)
-	http.HandleFunc("/", app.HomeHandler)
-	http.HandleFunc("/updateProf", app.updateProfile)
-	http.HandleFunc("/getWall", app.GetWall)
-	http.HandleFunc("/pushWall", app.PushwWall)
-	http.HandleFunc("/deleteWall", app.deleteWall)
-	http.HandleFunc("/editWall", app.editWall)
-	http.HandleFunc("/updateEditingWall", app.updateEditingWall)
+	auth.InitStore()
+
+	http.Handle("/ws", auth.RequireAuth(http.HandlerFunc(app.wsHandler)))
+	http.Handle("/api/profile", auth.RequireAuth(http.HandlerFunc(app.handleProfile)))
+	http.Handle("/api/post", auth.RequireAuth(http.HandlerFunc(app.handlePost)))
+	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(app.handleFriend)))
 
 	http.HandleFunc("/login", app.autoresHandler)
 	http.HandleFunc("/register", app.regHanlder)
 	http.HandleFunc("/exit", app.exitSession)
-	http.HandleFunc("/uploadAvatar", app.uploadAvatar)
 
 	fileServer := http.FileServer(http.Dir("./pkg/ui/static"))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./pkg/ui/js"))))
 	http.Handle("/static/", http.StripPrefix("/static", fileServer))
+
+	http.Handle("/", auth.RequireAuth(http.HandlerFunc(app.HomeHandler)))
 
 	go hanldeMessage()
 	fmt.Println("Сервер запущен на http://127.0.0.1:4040/login")

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" type="text/css" href="../static/style_profile.css" />
+</head>
+<body>
+    <div id="VUE2">
+        <!-- <div>
+            <h2>THE NOMAX</h2>
+        </div> -->
+        <div class="header">
+            <p class="profile-name" >Профиль</p>
+        </div>
+        <div class="wrapper">
+            <div class="main">
+                <div class="profile-header">
+                    <img id="profile-photo" :src="avatarURL" alt="Фото профиля"/>
+                    <p class="profile_name">{{name}}</p>
+                </div>
+                <div class="about">
+                    <p class="about-text"> О себе: {{aboutPerson}}</p>
+                    <span>Пол: {{sex}}</span>
+                </div>
+
+                <div class="wall">
+                    <h3>Стена</h3>
+                    <div>
+                        <ul class="list-item">
+                            <li class="list" v-for="(note, i) in wall" :key="note.id">
+                                <h3 class="wall-title">{{note.title}}</h3>
+                                <span class="wall-text">{{note.text}}</span>
+                                <div class="list-buttons">
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar">
+                <p>Друзья</p>
+                <ul>
+                    <li v-for="(friend, i) in friends" :key="friend.id">
+                        <img :src="friend.avatar" width="25" alt="фото друга"/>
+                        {{friend.name}}
+                        <button>🧑‍💼</button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer"></div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+    <script src="/js/anotherProfile.js"></script>
+
+</body>
+</html>
