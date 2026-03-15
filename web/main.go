@@ -76,6 +76,7 @@ func main() {
 	http.Handle("/api/profile", auth.RequireAuth(http.HandlerFunc(app.handleProfile)))
 	http.Handle("/api/post", auth.RequireAuth(http.HandlerFunc(app.handlePost)))
 	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(app.handleFriend)))
+	http.Handle("/api/profile/avatar", auth.RequireAuth(http.HandlerFunc(app.handleProfileAvatar)))
 
 	http.HandleFunc("/login", app.autoresHandler)
 	http.HandleFunc("/register", app.regHanlder)
@@ -86,6 +87,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static", fileServer))
 
 	http.Handle("/", auth.RequireAuth(http.HandlerFunc(app.HomeHandler)))
+	http.Handle("/anotherProfile.html", auth.RequireAuth(http.HandlerFunc(app.anotherProfilePage)))
 
 	go hanldeMessage()
 	fmt.Println("Сервер запущен на http://127.0.0.1:4040/login")

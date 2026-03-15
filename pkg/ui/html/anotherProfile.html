@@ -24,6 +24,9 @@
                     <p class="about-text"> О себе: {{aboutPerson}}</p>
                     <span>Пол: {{sex}}</span>
                 </div>
+                <div class="button-container">
+                    <button>Написать сообщение</button>
+                </div>
 
                 <div class="wall">
                     <h3>Стена</h3>
@@ -40,12 +43,20 @@
                 </div>
             </div>
             <div class="sidebar">
-                <p>Друзья</p>
+                <div v-if="sex == 'Гофер'">
+                    <p>Друзья {{name}}а</p>
+                </div>
+                <div v-if="sex == 'Мужской'">
+                    <p>Друзья {{name}}а</p>
+                </div>
+                <div v-if="sex == 'Женский'">
+                    <p>Друзья {{name}}ы</p>
+                </div>
                 <ul>
                     <li v-for="(friend, i) in friends" :key="friend.id">
                         <img :src="friend.avatar" width="25" alt="фото друга"/>
                         {{friend.name}}
-                        <button>🧑‍💼</button>
+                        <button @click="goToFriendProfile(friend.id)">🧑‍💼</button>
                     </li>
                 </ul>
             </div>

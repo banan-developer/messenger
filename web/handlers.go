@@ -19,6 +19,10 @@ func (app *application) HomeHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./pkg/ui/html/profile.html")
 }
 
+func (app *application) anotherProfilePage(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./pkg/ui/html/anotherProfile.html")
+}
+
 func (app *application) wsHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil) // переход из http в websocket
 	if err != nil {
@@ -129,7 +133,6 @@ func (app *application) deleteWall(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idSTR)
 	if err != nil {
-		app.errorLog.Println("DB DELETE ERROR:", err)
 		http.Error(w, "Invalid note id", http.StatusBadRequest)
 		return
 	}

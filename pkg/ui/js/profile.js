@@ -256,6 +256,9 @@ const App = {
                         console.log(err)
                     }
                 },  
+                async loadFriendProfile(friendID) {
+                    window.location.href = `/anotherProfile.html?id=${friendID}`;
+                }
             }
         }
     Vue.createApp(App).mount('#VUE')

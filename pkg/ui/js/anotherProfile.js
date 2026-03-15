@@ -5,29 +5,20 @@ const App2 = {
                     name: "",
                     sex: "",
                     aboutPerson: "",
-                    imgURL: "",
-                    valueEditName: "",
-                    valueEditAboutPers: "",
-
-                    // стена
-                    wall: [
-                        {id: 1 ,title: "Первая запись на стене!", text: "Сегодня я впервые написал на своей стене, классный момент"},
-                        {id: 2, title: "абоба", text: "стенаааааааааааа"} 
-                    ],
-
+                    wall: [],
                     friends: [],
-                    searchname: "",
-                    foundUsers: [],
-                    inputValueTitle: "",
-                    inputValueText: "",
-
-                    valueEditTitle: "",
-                    valueEditText: "",
-                    editingID: null,
+                    userID: null,
 
                 }
             },
             mounted(){
+                const url = new URLSearchParams(window.location.search);
+                this.userID = url.get('id');
+                if (!this.userID) {
+                this.error = "ID пользователя не указан";
+                this.isLoading = false;
+                return;
+            }
                 this.getName()
                 this.getWall()
                 this.loadFriend()
@@ -35,9 +26,7 @@ const App2 = {
             methods: {
                async getName(){
                     try{
-                        const res = await fetch("/test", {
-                            credentials: "same-origin"
-                        })
+                        const res = await fetch( `/api/profile?id=${this.userID}`)
                         if (!res.ok) throw new Error("ошибка загрузки имени")
                         const data = await res.json()
                         this.name = data.name
@@ -48,14 +37,9 @@ const App2 = {
                         console.log(err)
                     }
                 },
-
-// ........................................................ СТЕНА .............................................................
-               // получение данных стены с сервера
                 async getWall(){
                     try{
-                        const res = await fetch("/pushWall",{
-                            credentials: "same-origin"
-                        })
+                        const res = await fetch(`/api/post?user_id=${this.userID}`)
                         if (!res.ok) throw new Error("ошибка загрузки стены")
                         const data = await res.json()
                         this.wall = data
@@ -65,51 +49,9 @@ const App2 = {
                     }
                 },
 
-                // загрузка фотки пользователя
-                async uploadAvatar(event){
-                    const file = event.target.files[0]
-                    if (!file) return
-                    const formData = new FormData()
-                    formData.append("avatar", file)
-                    try{
-                        const res = await fetch("/uploadAvatar",{
-                            credentials: "same-origin",
-                            method: "POST",
-                            body: formData
-                        })
-                        if (!res.ok) throw new Error("ошибка редактирования поста")
-                        const data = await res.json()
-                        this.avatarURL = data.avatar
-
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-
-                async OpenSearchFriend(){
-                    document.getElementById("friends").showModal()
-                },
-                async SearchFriends(){
-                    if (this.searchname == ''){
-                            alert("Введи имя пользователя")
-                            return
-                        }
-                    try{
-                        const res = await fetch(`/searchFriends?name=${this.searchname}`)
-                        if (!res.ok) throw new Error("Ошибка получения данных пользователя, при его поиске")
-                        const data = await res.json()
-                        this.foundUsers = data
-
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-
                 async loadFriend(){
                     try{
-                        const res = await fetch("/loadFriend", {
-                            method: "GET"
-                        })
+                        const res = await fetch(`/api/friend?user_id=${this.userID}`)
 
                         if (!res.ok) throw new Error("Ошибка отправления id пользователя для последующего его добавления в друзья")
                         const data = await res.json()
@@ -120,20 +62,13 @@ const App2 = {
                     }
                 },
 
-                async loadFriendProfile(friendID){
-                    try{
-                        const res = await fetch(`/loadFriendProfile?id=${friendID}`,{
-                            method: "POST"
-                        }
-                        )
+                goToFriendProfile(friendId) {
+                    window.location.href = `/anotherProfile.html?id=${friendId}`;
+                },
 
-                    }catch(err){
-                        console.log(err)
-                    }
+                goBack(){
+                    window.location.href = "/profile"
                 }
-
-     
-                
             }
         }
     Vue.createApp(App2).mount('#VUE2')
