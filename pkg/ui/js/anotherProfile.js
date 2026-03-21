@@ -8,6 +8,7 @@ const App2 = {
                     wall: [],
                     friends: [],
                     userID: null,
+                    ChatID: null,
 
                 }
             },
@@ -68,7 +69,14 @@ const App2 = {
 
                 goBack(){
                     window.location.href = "/profile"
-                }
+                },
+
+                async loadFriendMessage() {
+                    const url = new URLSearchParams(window.location.search);
+                    this.ChatID = url.get('id');
+                    window.location.href = `/chat.html?id=${this.ChatID}`;
+                },
+
             }
         }
     Vue.createApp(App2).mount('#VUE2')

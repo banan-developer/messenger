@@ -57,7 +57,7 @@ func (app *application) autoresHandler(w http.ResponseWriter, r *http.Request) {
 			return // вот тут добавить не забудь, логиравание ошибок
 		}
 
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/profile", http.StatusSeeOther)
 	}
 }
 

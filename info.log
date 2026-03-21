@@ -1,5 +1,5 @@
-ERROR	2026/03/15 01:12:16 handlers.go:132: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax
-ERROR	2026/03/15 01:12:16 handlers.go:132: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax
+ERROR	2026/03/20 17:34:49 handlersProfile.go:295: DB QUERY ERROR Error 1062 (23000): Duplicate entry '33-21' for key 'friends.PRIMARY'
+6 handlers.go:132: DB DELETE ERROR: strconv.Atoi: parsing "undefined": invalid syntax
 y '24-21' for key 'friends.PRIMARY'
 ERROR	2026/03/13 01:21:12 handlers.go:278: DB QUERY ERROR Error 1062 (23000): Duplicate entry '25-21' for key 'friends.PRIMARY'
 o:75: REGISTER ERROR: Error 1364 (HY000): Field 'name' doesn't have a default value

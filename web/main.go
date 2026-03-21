@@ -86,10 +86,13 @@ func main() {
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./pkg/ui/js"))))
 	http.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	http.Handle("/", auth.RequireAuth(http.HandlerFunc(app.HomeHandler)))
+	// http.Handle("/", auth.RequireAuth(http.HandlerFunc(app.HomeHandler)))
+	http.HandleFunc("/", app.HomeHandler)
+	http.HandleFunc("/profile", app.HomeHandler)
 	http.Handle("/anotherProfile.html", auth.RequireAuth(http.HandlerFunc(app.anotherProfilePage)))
+	http.Handle("/chat.html", auth.RequireAuth(http.HandlerFunc(app.chatWithFriend)))
 
 	go hanldeMessage()
-	fmt.Println("Сервер запущен на http://127.0.0.1:4040/login")
-	http.ListenAndServe(":4040", nil)
+	fmt.Println("Сервер запущен на http://127.0.0.1:8080/login")
+	http.ListenAndServe(":8080", nil)
 }

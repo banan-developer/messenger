@@ -8,12 +8,12 @@
 </head>
 <body>
     <div id="VUE">
-        <!-- <div>
-            <h2>THE NOMAX</h2>
-        </div> -->
         <div class="header">
-            <p class="profile-name" >Профиль</p>
-            <button class="button" @click="openEditPerson()">⚙️</button>
+                <p class="profile-name" >Профиль</p>
+                <div class="header-buttons">
+                    <button class="button" @click="openDialogInfo">🔔</button>
+                    <button class="button" @click="openEditPerson()">⚙️</button>
+                </div>
         </div>
         <div class="wrapper">
             <div class="main">
@@ -59,10 +59,9 @@
                 <div class="btn-add"><button class="button" @click="OpenSearchFriend">+</button></div>
                 <p>Друзья</p>
                 <ul>
-                    <li v-for="(friend, i) in friends" :key="friend.id">
+                    <li v-for="(friend, i) in friends" :key="friend.id" @click="loadFriendProfile(friend.id)" class="friend-item">
                         <img :src="friend.avatar" width="25" alt="фото друга"/>
                         {{friend.name}}
-                        <button  @click="loadFriendProfile(friend.id)">🧑‍💼</button>
                     </li>
                 </ul>
             </div>
@@ -117,6 +116,15 @@
                         
                     </ul>
                 </form>
+            </div>
+        </dialog>
+
+        <!-- Окно уведомлений -->
+        <dialog id="myDialogInfo">
+            <div class="dialog-content">
+                <p>Уведомления</p>
+                <button class="button-exit" @click="exitNtfct">x</button>
+                <p>У вас нет уведомлений</p>
             </div>
         </dialog>
 

@@ -258,6 +258,12 @@ const App = {
                 },  
                 async loadFriendProfile(friendID) {
                     window.location.href = `/anotherProfile.html?id=${friendID}`;
+                },
+                openDialogInfo(){
+                    document.getElementById("myDialogInfo").showModal()
+                },
+                exitNtfct(){
+                    document.getElementById("myDialogInfo").close()
                 }
             }
         }

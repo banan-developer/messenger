@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат</title>
+    <link rel="stylesheet" type="text/css" href="../static/style_profile.css" />
+</head>
+<body>
+    <div id="VUE3">
+
+        <div class="header">
+            <button class="button back-btn" @click="goBack">←</button>
+            <p class="profile-name">Чат с {{friendName}}</p>
+            <button class="button">👤</button>
+        </div>
+
+
+        <div class="chat-container" ref="chatContainer">
+            <div class="messages">
+                <div v-for="msg in messages" :key="msg.id" 
+                     :class="['message', msg.isMine ? 'my-message' : 'friend-message']">
+                    <div class="message-content">
+                        <span class="message-text">{{msg.text}}</span>
+                        <span class="message-time">{{msg.time}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <input type="text" 
+                   class="chat-input" 
+                   placeholder="Напишите сообщение..."
+                   v-model="newMessage"
+                   @keyup.enter="sendMessage">
+            <button class="send-btn" @click="sendMessage">➤</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/js/chat.js"></script>
+</body>
+</html>

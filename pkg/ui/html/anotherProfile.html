@@ -7,12 +7,16 @@
     <link rel="stylesheet" type="text/css" href="../static/style_profile.css" />
 </head>
 <body>
+    
     <div id="VUE2">
-        <!-- <div>
-            <h2>THE NOMAX</h2>
-        </div> -->
         <div class="header">
             <p class="profile-name" >Профиль</p>
+            <p>
+                <button class="button" @click="goBack">Свой профиль</button>
+            </p>
+        </div>
+    <div>
+            
         </div>
         <div class="wrapper">
             <div class="main">
@@ -25,7 +29,7 @@
                     <span>Пол: {{sex}}</span>
                 </div>
                 <div class="button-container">
-                    <button>Написать сообщение</button>
+                    <button @click="loadFriendMessage">Написать сообщение</button>
                 </div>
 
                 <div class="wall">
@@ -53,10 +57,9 @@
                     <p>Друзья {{name}}ы</p>
                 </div>
                 <ul>
-                    <li v-for="(friend, i) in friends" :key="friend.id">
+                    <li v-for="(friend, i) in friends" :key="friend.id" @click="goToFriendProfile(friend.id)">
                         <img :src="friend.avatar" width="25" alt="фото друга"/>
                         {{friend.name}}
-                        <button @click="goToFriendProfile(friend.id)">🧑‍💼</button>
                     </li>
                 </ul>
             </div>
