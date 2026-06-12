@@ -1,0 +1,841 @@
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+}
+
+body{
+height: 100%;
+background:#f5f6f8;
+display:flex;
+justify-content:center;
+min-height:100vh;
+}
+
+/* MAIN CONTAINER */
+
+#VUE{
+display: flex;
+flex-direction: column;
+padding-top: 20px; 
+width:100%;
+max-width:900px;
+background:white;
+min-height:100vh;
+border-left:1px solid #e5e5e5;
+border-right:1px solid #e5e5e5;
+}
+
+#VUE2{
+width: 100%;
+max-width: 900px;
+background:white;
+min-height:100vh;
+border-left:1px solid #e5e5e5;
+border-right:1px solid #e5e5e5;
+}
+
+/* HEADER */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Расстояние между кнопками */
+}
+
+.header-buttons .button {
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: #666;
+    padding: 8px; /* Увеличиваем область нажатия */
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.header-buttons .button:hover {
+    background-color: #f0f0f0;
+    color: #2d88ff;
+}
+
+.profile-name{
+font-size:24px;
+font-weight:600;
+}
+
+.header .button{
+background:none;
+border:none;
+font-size:22px;
+cursor:pointer;
+color:#666;
+}
+
+/* LAYOUT */
+
+.wrapper{
+display:flex;
+gap:30px;
+padding:24px;
+flex: 1;
+}
+
+.main{
+flex:2;
+}
+
+.sidebar{
+flex:1;
+border-left:1px solid #eee;
+padding-left:20px;
+}
+
+/* PROFILE */
+
+.profile-header{
+display:flex;
+align-items:center;
+gap:20px;
+}
+
+#profile-photo{
+width:120px;
+height:120px;
+border-radius:18px;
+object-fit:cover;
+border:3px solid white;
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
+}
+
+.profile_name{
+font-size:28px;
+font-weight:600;
+}
+
+.about{
+margin-top:10px;
+}
+
+.about-text{
+color:#000000;
+line-height:1.5;
+margin-bottom:6px;
+}
+
+/* SIDEBAR FRIENDS */
+
+.sidebar p{
+font-size:20px;
+font-weight:600;
+margin-bottom:10px;
+}
+
+.sidebar button{
+float:right;
+background:#2d88ff;
+border:none;
+color:white;
+width:32px;
+height:32px;
+border-radius:8px;
+cursor:pointer;
+}
+
+.sidebar ul{
+list-style:none;
+margin-top:10px;
+}
+
+.sidebar li{
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px 0;
+border-bottom:1px solid #f0f0f0;
+}
+
+.sidebar img{
+border-radius:8px;
+}
+
+/* WALL */
+
+.wall{
+margin-top:40px;
+}
+
+.wall h3{
+font-size:22px;
+margin-bottom:14px;
+}
+
+.input-container input{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #ddd;
+margin-bottom:10px;
+}
+
+.textarea-wall{
+width:100%;
+padding:12px;
+border-radius:12px;
+border:1px solid #ddd;
+resize:vertical;
+min-height:90px;
+}
+
+.button-container{
+display:flex;
+justify-content:flex-end;
+margin-top:10px;
+}
+
+.button-container button{
+background:#2d88ff;
+border:none;
+color:white;
+padding:10px 20px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.button-container button:hover{
+background:#1a5bbf;
+}
+
+/* POSTS */
+
+.list-item{
+list-style:none;
+display:flex;
+flex-direction:column;
+gap:14px;
+margin-top:20px;
+}
+
+.list{
+border:1px solid #eee;
+padding:16px;
+border-radius:14px;
+transition:.2s;
+}
+
+.list:hover{
+border-color:#2d88ff;
+}
+
+.wall-title{
+font-weight:600;
+margin-bottom:8px;
+}
+
+.wall-text{
+color:#333;
+}
+
+.list-buttons{
+display:flex;
+justify-content:flex-end;
+gap:10px;
+margin-top:10px;
+}
+
+.button-delete{
+border:1px solid #ddd;
+background:white;
+border-radius:8px;
+padding:6px 10px;
+cursor:pointer;
+}
+
+.button-delete:hover{
+border-color:#ff3b30;
+color:#ff3b30;
+}
+
+/* ================= DIALOG GLOBAL ================= */
+
+dialog{
+border:none;
+border-radius:16px;
+padding:0;
+width:420px;
+max-width:90%;
+background:white;
+box-shadow:0 20px 60px rgba(0,0,0,0.25);
+}
+
+dialog::backdrop{
+background:rgba(0,0,0,0.55);
+}
+
+.dialog-content{
+padding:22px;
+position:relative;
+}
+
+.dialog-content > p:first-child{
+font-size:20px;
+font-weight:600;
+margin-bottom:18px;
+}
+
+/* CLOSE BUTTON */
+
+.button-exit{
+position:absolute;
+top:14px;
+right:14px;
+width:28px;
+height:28px;
+border:none;
+border-radius:6px;
+background:#eee;
+cursor:pointer;
+}
+
+.button-exit:hover{
+background:#ffeded;
+color:#ff3b30;
+}
+
+/* PROFILE SETTINGS */
+
+.logout-btn{
+position:absolute;
+top:14px;
+right:50px;
+border:none;
+border-radius:8px;
+padding:6px 10px;
+background:#ff3b30;
+color:white;
+cursor:pointer;
+}
+
+.logout-btn:hover{
+background:#d92b22;
+}
+
+.avatar-upload{
+margin-bottom:20px;
+}
+
+.avatar-upload input{
+width:100%;
+padding:10px;
+border:1px dashed #ccc;
+border-radius:10px;
+background:#fafafa;
+}
+
+#myDialog form{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+#myDialog label{
+font-size:14px;
+color:#666;
+}
+
+#myDialog input,
+#myDialog textarea{
+width:100%;
+padding:10px;
+border:1px solid #ddd;
+border-radius:10px;
+}
+
+#myDialog textarea{
+min-height:90px;
+resize:vertical;
+}
+
+#myDialog form p:last-child{
+display:flex;
+justify-content:flex-end;
+gap:10px;
+}
+
+#myDialog .button{
+border:1px solid #ddd;
+background:white;
+padding:8px 14px;
+border-radius:8px;
+cursor:pointer;
+}
+
+#myDialog .button:last-child{
+background:#2d88ff;
+border:none;
+color:white;
+}
+
+#myDialog .button:last-child:hover{
+background:#1a5bbf;
+}
+
+/* FRIEND SEARCH */
+
+#friends form{
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+#friends input{
+width:100%;
+padding:10px;
+border:1px solid #ddd;
+border-radius:10px;
+}
+
+#friends form > button{
+padding:8px;
+border:none;
+border-radius:8px;
+background:#2d88ff;
+color:white;
+cursor:pointer;
+}
+
+#friends ul{
+list-style:none;
+margin-top:10px;
+max-height:200px;
+overflow-y:auto;
+}
+
+#friends li{
+display:flex;
+align-items:center;
+gap:10px;
+padding:8px;
+border-radius:8px;
+}
+
+#friends li:hover{
+background:#f5f7ff;
+}
+
+#friends li img{
+width:40px;
+height:40px;
+border-radius:8px;
+object-fit:cover;
+}
+
+#friends li button{
+margin-left:auto;
+border:none;
+border-radius:6px;
+padding:6px 10px;
+background:#2d88ff;
+color:white;
+cursor:pointer;
+}
+
+#friends li button:hover{
+background:#1a5bbf;
+}
+
+/* MOBILE */
+
+@media (max-width:650px){
+
+.wrapper{
+flex-direction:column;
+}
+
+.sidebar{
+border-left:none;
+border-top:1px solid #eee;
+padding-top:20px;
+}
+
+#VUE{
+border:none;
+}
+
+}
+/* ===== Центрирование всех dialog ===== */
+
+dialog{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    margin:0;
+
+    width:420px;
+    max-width:90%;
+
+    border:none;
+    border-radius:16px;
+
+    background:white;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+}
+
+/* затемнение фона */
+
+dialog::backdrop{
+    background:rgba(0,0,0,0.55);
+}
+.logout-btn{
+    margin-bottom: 10px;
+    margin-right: -30px;
+
+    padding:6px 12px;
+
+    border-radius:8px;
+    border:1px solid #e0e0e0;
+
+    background:#f7f7f7;
+    color:#333;
+
+    font-size:14px;
+    cursor:pointer;
+
+    transition:all .2s;
+}
+
+.logout-btn:hover{
+    background:#ececec;
+}
+/* ===== РЕДАКТИРОВАНИЕ ПОСТА ===== */
+
+#myDialog2{
+    border:none;
+    border-radius:16px;
+    padding:0;
+    width:420px;
+    max-width:90%;
+
+    background:white;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+}
+
+#myDialog2::backdrop{
+    background:rgba(0,0,0,0.55);
+}
+
+#myDialog2 .dialog-content{
+    padding:22px;
+}
+
+#myDialog2 .dialog-content > p:first-child{
+    font-size:20px;
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+/* форма */
+
+#myDialog2 form{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
+
+/* поля */
+
+#myDialog2 input{
+    width:100%;
+    padding:10px 12px;
+    margin-bottom: 20px;
+    border:1px solid #ddd;
+    border-radius:10px;
+
+    font-size:14px;
+}
+
+#myDialog2 textarea{
+    width:100%;
+    padding:10px 12px;
+
+    border:1px solid #ddd;
+    border-radius:10px;
+
+    min-height:100px;
+    resize:vertical;
+
+    font-size:14px;
+}
+
+/* фокус */
+
+#myDialog2 input:focus,
+#myDialog2 textarea:focus{
+    outline:none;
+    border-color:#2d88ff;
+}
+
+/* кнопки */
+
+#myDialog2 form p:last-child{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+}
+
+#myDialog2 .button{
+    padding:8px 14px;
+
+    border-radius:8px;
+    border:1px solid #ddd;
+
+    background:white;
+    cursor:pointer;
+
+    font-size:14px;
+}
+
+#myDialog2 .button:hover{
+    background:#f3f3f3;
+}
+
+#myDialog2 .button:last-child{
+    background:#2d88ff;
+    border:none;
+    color:white;
+}
+
+#myDialog2 .button:last-child:hover{
+    background:#1a5bbf;
+}
+
+
+/* p:last-of-type {
+    text-align: center;
+    font-size: 11px;
+    color: #8a8d91;
+    background: #f5f6f8;
+    border-top: 1px solid #dddfe2;
+    padding: 15px 0;
+    margin: 40px 0 0 0;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    letter-spacing: 0.2px;
+} */
+
+
+.footer {
+    margin-top: auto;
+    text-align: center;
+    font-size: 11px;
+    color: #8a8d91;
+    background: #f5f6f8;
+    border-top: 1px solid #dddfe2;
+    padding: 15px 0;
+}
+
+.footer p {
+    margin: 3px 0;
+}
+
+.footer .copyright {
+    font-weight: 500;
+    color: #65676b;
+}
+
+.footer .company {
+    color: #8a8d91;
+}
+/* Бренд-иконка в левом верхнем углу */
+.logo {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    z-index: 1000;
+}
+
+.logo img {
+    height: 90px;
+    width: auto;
+    display: block;
+}
+
+
+/* На мобильных устройствах отступ можно уменьшить */
+@media (max-width: 650px) {
+    .logo {
+        top: 12px;
+        left: 16px;
+    }
+    
+    .logo img {
+        height: 32px;
+    }
+    
+    #VUE {
+        padding-top: 60px;
+    }
+}
+
+
+
+#myDialogInfo form{
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+#myDialogInfo label{
+font-size:14px;
+color:#666;
+}
+
+#myDialogInfo input,
+#myDialogInfo textarea{
+width:100%;
+padding:10px;
+border:1px solid #ddd;
+border-radius:10px;
+}
+
+#myDialogInfo textarea{
+min-height:90px;
+resize:vertical;
+}
+
+#myDialogInfo form p:last-child{
+display:flex;
+justify-content:flex-end;
+gap:10px;
+}
+
+#myDialogInfo .button{
+border:1px solid #ddd;
+background:white;
+padding:8px 14px;
+border-radius:8px;
+cursor:pointer;
+}
+
+#myDialogInfo .button:last-child{
+background:#2d88ff;
+border:none;
+color:white;
+}
+
+#myDialogInfo .button:last-child:hover{
+background:#1a5bbf;
+}
+/* Контейнер для загрузки фото поста */
+.input-container .avatar-upload {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* Кнопка-лейбл для загрузки фото */
+.image-upload-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto;
+    padding: 8px 16px;
+    background: #f0f2f5;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #65676b;
+    transition: all 0.2s;
+    border: 1px solid #e0e0e0;
+}
+
+.image-upload-label:hover {
+    background: #e4e6e9;
+    color: #2d88ff;
+}
+
+/* Иконка перед текстом */
+.image-upload-label::before {
+    content: "📷";
+    font-size: 16px;
+}
+
+/* Превью выбранного фото (добавляется динамически) */
+#post-photo-preview {
+    position: relative;
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+#post-photo-preview img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+#post-photo-preview .remove-preview {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: #ff3b30;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#post-photo-preview .remove-preview:hover {
+    background: #d92b22;
+}
+
+/* Если хотите только иконку без текста */
+.image-upload-label.icon-only {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.image-upload-label.icon-only::before {
+    content: "📷";
+    font-size: 20px;
+}
+
+.image-upload-label.icon-only span {
+    display: none;
+}
+.post-image {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 10px;
+
+    object-fit: cover;
+    max-height: 400px;
+
+    border: 1px solid #eee;
+}

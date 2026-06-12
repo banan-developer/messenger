@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/profile.css" />
+    <link rel="icon" href="../static/img/favicon-16x16.png" type="image/x-icon">
+</head>
+<body>
+    <div class="logo">
+        <img  src="../static/img/mainICO.png" alt="Фото профиля"/>
+    </div>
+    <div id="VUE">
+        <div class="header">
+                <p class="profile-name" >Профиль</p>
+                <div class="header-buttons">
+                    <button class="button" @click="openDialogInfo">🔔</button>
+                    <button class="button" @click="openEditPerson()">⚙️</button>
+                </div>
+        </div>
+        <div class="wrapper">
+            <div class="main">
+                <div class="profile-header">
+                    <img id="profile-photo" :src="avatarURL" alt="Фото профиля"/>
+                    <p class="profile_name">{{name}}</p>
+                </div>
+                <div class="about">
+                    <p class="about-text"> О себе: {{aboutPerson}}</p>
+                    <span>Пол: {{sex}}</span>
+                </div>
+
+                <div class="wall">
+                    <h3>Стена</h3>
+                    <div class="input-container">
+                        <div class="avatar-upload">
+                            <label class="image-upload-label" for="post-photo">Фото поста</label>
+                            <input 
+                                id="post-photo" 
+                                name="photo" 
+                                type="file" 
+                                accept="image/*" 
+                                @change="handlePostImage" 
+                                style="display: none;"
+                            >
+                        </div>
+                        <input type="text", placeholder="Тема поста" v-model="inputValueTitle"/>
+                        <textarea class="textarea-wall" placeholder="Что у тебя сегодня нового?" v-model="inputValueText"></textarea>
+                    </div>
+
+                    <div class="button-container">
+                        <button @click="pushWalltoServer" >Добавить на стену</button>
+                    </div>
+
+                    <div>
+                        <ul class="list-item">
+                            <li class="list" v-for="(note, i) in wall" :key="note.id">
+                                <img v-if="note.img != '' " :src="note.img" alt="фото поста" class="post-image">
+                                <h3 class="wall-title">{{note.title}}</h3>
+                                <span class="wall-text">{{note.text}}</span>
+                                <div class="list-buttons">
+                                    <button class="button-delete" @click="deleteWall(note.idwall)">🗑️</button>
+                                    <button class="button-delete" @click="editWall(note.idwall)">✏️</button>
+                                </div>
+                                <p>
+                                    <span>{{note.created_at_wall}}</span>
+                                </p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar">
+                <div class="btn-add"><button class="button" @click="OpenSearchFriend">+</button></div>
+                <p>Друзья</p>
+                <ul>
+                    <li v-for="(friend, i) in friends" :key="friend.id" @click="loadFriendProfile(friend.id)" class="friend-item">
+                        <img :src="friend.avatar" width="25" alt="фото друга"/>
+                        {{friend.name}}
+                        <div>
+                            <!-- <button @click="deleteFriend(friend.id)" class="button">🗑️</button> -->
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        
+        <!-- Окно редактирования профиля -->
+        <dialog id="myDialog">
+            <div class="dialog-content">
+                <p>Настройки профиля</p>
+                <p>
+                    <button type="button" class="logout-btn" @click="exitFromAccount">Выйти из аккаунта</button>
+                </p>
+                <div class="avatar-upload">
+                    <label for="photo">Фото пользователя</label>
+                    <input name="photo" type="file" accept="image/*" @change="uploadAvatar" placeholder="⠀">
+                </div>
+                <form>
+                    <p>
+                        <label for="editName">Имя пользователя</label>
+                        <input type="text" name="editName" placeholder="Введи новое имя" v-model="valueEditName" @keypress.enter="PushEditedProfile"/>
+                    </p>
+                    <p>
+                        <label for="editAboutPerson">О себе</label>
+                        <textarea name="editAboutPerson" placeholder="Расскажи о себе" v-model="valueEditAboutPers"></textarea>
+                    </p>
+
+                    <p>
+                        <button class="button" type="button" @click="closeEditPerson">Отменить</button>
+                        <button class="button" type="button" @click="PushEditedProfile" >Применить изменения</button>
+                    </p>
+
+                </form>
+            </div>
+        </dialog>
+
+        <!-- Окно поиска друзей -->
+        <dialog id="friends">
+            <div class="dialog-content">
+                <P>Поиск друзей</P>
+                <button class="button-exit" @click="closeEditWall">x</button>
+                <form>
+                    <p>
+                        <input type="text" v-model="searchname" placeholder="Введи имя пользователя"/>
+                    </p>
+                    <button @click="SearchFriends" type="button">Найти</button>
+                    <ul>
+                        <li v-for="users in foundUsers" :key="users.id">
+                            <img :src="users.avatar" width="40" alt="Фото пользователя2"/>
+                            {{users.name}}
+                            <button @click="addToFriend(users.id)">Добавить</button>
+                        </li>
+                        
+                    </ul>
+                </form>
+            </div>
+        </dialog>
+
+        <!-- Окно уведомлений -->
+        <dialog id="myDialogInfo">
+            <div class="dialog-content">
+                <p>Уведомления</p>
+                <button class="button-exit" @click="exitNtfct">x</button>
+                <div v-if="noti != '' " class="dialog-noti">
+                    <ui>
+                        <li v-for="not in noti" :key="not.id">
+                            <img :src="not.img_src" alt="фото друга" width="40">
+                            <p>{{not.name}}</p>
+                            <p>
+                                <button class="button">Принять заявку</button>
+                                <button class="button">Отклонить</button>
+                            </p>
+                        </li>
+                    </ui>
+                </div>
+                <p v-if="noti == '' ">У вас нет уведомлений</p>
+            </div>
+        </dialog>
+
+        <!-- Окно редактирования записей на стене -->
+        <dialog id="myDialog2">
+            <div class="dialog-content">
+                <p>Редактирование поста</p>
+                <form>
+                    <p>
+                        <input type="text" placeholder="⠀" v-model="valueEditTitle" @keypress.enter="updateEditingWall(editingID)"/>
+                        <textarea class="textarea-wall" placeholder="⠀" v-model="valueEditText" ></textarea>
+                    </p>
+                    <p>
+                        <button class="button" type="button" @click="closeEditWall">Отменить</button>
+                        <button class="button" type="button" @click="updateEditingWall(editingID)">Сохранить</button>
+                    </p>
+                </form>
+            </div>
+        </dialog>
+
+        <!-- <dialog id="dialog-send">
+            <div dialog="content">
+                <p>Запрос отправлен</p>
+                <p>
+                    <button class="button type=button">Закрыть</button>
+                </p>
+            </div>
+        </dialog> -->
+
+        <div class="footer">
+            <p class="copyright">an Ilnaz production</p>
+            <p class="company" >The NOMAX © 2026</p>
+        </div>
+    </div>
+
+    
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+    <script src="/js/profile.js"></script>
+
+</body>
+</html>

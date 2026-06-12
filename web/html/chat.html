@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат</title>
+    <link rel="stylesheet" type="text/css" href="../static/style_chat.css" />
+    <link rel="icon" href="../static/img/favicon-16x16.png" type="image/x-icon">
+</head>
+<body>
+    <div id="VUECHAT">
+        <div class="header">
+            <button class="button" @click="getBack">Назад</button>
+            <p @click="loadFriendProfile">
+                <img id="profile-photo" :src="avatar_url" alt="Фото профиля">
+                {{name}}
+            </p>
+        </div>
+        <div class="wrapper">
+            <div class="main">
+                <div class="messanges">
+                    <div 
+                        v-for="msg in messanges" 
+                        :key="msg.id"
+                        class="message-wrapper"
+                        :class="Number(msg.from_id) === currentUserID ? 'my-message' : 'friend-message'">
+                        <div class="message-bubble">
+                            <span class="message-text">{{msg.text}}</span>
+                            <div class="message-meta">
+                                <span class="message-time">{{formatDate(msg.created_at)}}</span>
+                                <button v-if="msg.from_id == currentUserID" class="btn-msg-tools" @click="openMsgTools(msg.id)" >:</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input">
+                    <div v-if="isediting == 0">
+                        <input type="text" v-model="inputText" placeholder="Напишите сообщение вашему другу!" @keypress.enter="sendMessage">
+                        <div class="button-container">
+                            <button @click="sendMessage" class="button">Отправить</button>
+                        </div>
+                    </div>
+                    <div v-if="isediting == 1">
+                        <input type="text" placeholder= "поле редактирования" v-model="inputEditingText" @keypress.enter="SaveEditingMess">
+                        <div class="button-container">
+                            <button class="button" @click="SaveEditingMess">Сохранить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <dialog id="dialog-msg-tool">
+            <div class="dialog-content">
+                <button class="button-exit" @click="closeMsgTools">x</button>
+                <div class="dialog-btn">
+                    <button class="dialog-btn-edit" @click="editMess()">Редактировать</button>
+                    <button class="dialog-btn-delete" @click="deleteMess()" >Удалить</button>
+                </div>
+            </div>            
+        </dialog>
+
+        <!-- <dialog id="myDialog2">
+            <div class="dialog-content">
+                <p>Редактирование cообщения</p>
+                    <p>
+                        <input type="text" placeholder="⠀" v-model="inputEditingText" @keypress.enter=""/>
+                    </p>
+            </div>
+        </dialog> -->
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/js/chat.js"></script>
+</body>
+</html>
