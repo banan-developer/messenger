@@ -4,6 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"messenger_v2/internal/repository"
+	"messenger_v2/internal/service"
+	"messenger_v2/internal/transport"
+	"messenger_v2/pkg/auth"
 	"net/http"
 	"os"
 
@@ -42,11 +46,29 @@ func main() {
 
 	defer db.Close()
 
+	auth.InitStore()
+
+	// Инициализация слоев
+	UserRepo := repository.NewUserRepository(db)
+	UserService := service.NewUserService(UserRepo)
+	UserHanlder := transport.NewUserHandler(UserService)
+
+	AuthService := service.NewAuthService(UserRepo)
+	AuthHandler := transport.NewAuthHandler(AuthService)
+
 	fileServer := http.FileServer(http.Dir("./web/static/css"))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./web/js"))))
 	http.Handle("/static/", http.StripPrefix("/static/css", fileServer))
 
+	http.Handle("/api/profile", auth.RequireAuth(http.HandlerFunc(UserHanlder.Profile)))
+
+	http.HandleFunc("/login", AuthHandler.Login)
+	http.HandleFunc("/registration", AuthHandler.Registration)
+	http.HandleFunc("/exit", AuthHandler.Logout)
+
 	http.HandleFunc("/profile", profileHandler)
+	http.HandleFunc("/friend", friendHandler)
+	http.HandleFunc("/chat", chatHandler)
 
 	fmt.Println("Сервер запущен на http://127.0.0.1:4562/login")
 	http.ListenAndServe(":4562", nil)
@@ -55,3 +77,19 @@ func main() {
 func profileHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./web/html/profile.html")
 }
+
+func friendHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./web/html/friend.html")
+}
+
+func chatHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./web/html/chat.html")
+}
+
+// func loginHandler(w http.ResponseWriter, r *http.Request) {
+// 	http.ServeFile(w, r, "./web/html/login.html")
+// }
+
+// func registrationHandler(w http.ResponseWriter, r *http.Request) {
+// 	http.ServeFile(w, r, "./web/html/registration.html")
+// }
