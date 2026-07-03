@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 	"messenger_v2/internal/domain"
 	"messenger_v2/internal/repository"
 )
@@ -37,4 +38,15 @@ func (r *WallService) GetPost(UserId int) ([]domain.WallPost, error) {
 		return nil, errors.New("Пользователь не найден")
 	}
 	return r.repo.GetPost(UserId)
+}
+
+func (r *WallService) DeletePost(PostID, UserID int) error {
+	if PostID <= 0 {
+		log.Println("Ошибка: ID поста не может быть отрицательным")
+		return errors.New("Пост не может быть отрицательным")
+	}
+	if UserID <= 0 {
+		return errors.New("Пользователь не найден")
+	}
+	return r.repo.DeletePost(PostID, UserID)
 }

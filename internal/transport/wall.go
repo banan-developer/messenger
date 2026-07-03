@@ -10,6 +10,7 @@ import (
 	"messenger_v2/pkg/auth"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -29,6 +30,8 @@ func (p *WallHandler) Wall(w http.ResponseWriter, r *http.Request) {
 		p.Getpost(w, r)
 	case http.MethodPost:
 		p.CreatePost(w, r)
+	case http.MethodDelete:
+		p.DeletePost(w, r)
 	default:
 		http.Error(w, "MethodNotAllowed", http.StatusMethodNotAllowed)
 	}
@@ -69,20 +72,17 @@ func (p *WallHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 		path := "./web/static/uploads/posts/" + filename
 
 		dst, err := os.Create(path)
-		log.Println("Save path:", path)
 		if err != nil {
 			http.Error(w, "Ошибка сохранения", 500)
 			return
 		}
 		defer dst.Close()
 
-		n, err := io.Copy(dst, file)
+		_, err = io.Copy(dst, file)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-
-		log.Println("Copied bytes:", n)
 
 		img_scr = "/static/uploads/posts/" + filename
 	}
@@ -102,4 +102,17 @@ func (p *WallHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(post)
 
+}
+
+func (p *WallHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+	idSTR := r.URL.Query().Get("id")
+
+	PostID, err := strconv.Atoi(idSTR)
+	if err != nil {
+		http.Error(w, "Invalid note id", http.StatusBadRequest)
+		return
+	}
+	UserID, _ := auth.GetUserId(r)
+
+	p.service.DeletePost(PostID, UserID)
 }

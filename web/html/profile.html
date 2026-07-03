@@ -59,8 +59,8 @@
                                 <h3 class="wall-title">{{note.title}}</h3>
                                 <span class="wall-text">{{note.text}}</span>
                                 <div class="list-buttons">
-                                    <button class="button-delete" @click="deleteWall(note.idwall)">🗑️</button>
-                                    <button class="button-delete" @click="editWall(note.idwall)">✏️</button>
+                                    <button class="button-delete" @click="deleteWall(note.id)">🗑️</button>
+                                    <button class="button-delete" @click="editWall(note.id)">✏️</button>
                                 </div>
                                 <p>
                                     <span>{{note.created_at_wall}}</span>

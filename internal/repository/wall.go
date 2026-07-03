@@ -49,3 +49,12 @@ func (w *WallRepo) GetPost(UserID int) ([]domain.WallPost, error) {
 
 	return posts, nil
 }
+
+func (w *WallRepo) DeletePost(PostID, UserId int) error {
+	_, err := w.db.Exec("DELETE FROM wall WHERE idwall = ? AND users_id = ?", PostID, UserId)
+	if err != nil {
+		log.Println("БД: Ошибка при удалении поста", err)
+		return err
+	}
+	return nil
+}
