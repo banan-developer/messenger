@@ -56,11 +56,18 @@ func main() {
 	AuthService := service.NewAuthService(UserRepo)
 	AuthHandler := transport.NewAuthHandler(AuthService)
 
-	fileServer := http.FileServer(http.Dir("./web/static/css"))
+	WallRepo := repository.NewWallRepo(db)
+	WallService := service.NewWallService(WallRepo)
+	WallHanlder := transport.NewWallHandler(WallService)
+
+	fileServer := http.FileServer(http.Dir("./web/static"))
+
+	http.Handle("/static/",
+		http.StripPrefix("/static/", fileServer))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./web/js"))))
-	http.Handle("/static/", http.StripPrefix("/static/css", fileServer))
 
 	http.Handle("/api/profile", auth.RequireAuth(http.HandlerFunc(UserHanlder.Profile)))
+	http.Handle("/api/wall", auth.RequireAuth(http.HandlerFunc(WallHanlder.Wall)))
 
 	http.HandleFunc("/login", AuthHandler.Login)
 	http.HandleFunc("/registration", AuthHandler.Registration)

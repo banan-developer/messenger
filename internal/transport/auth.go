@@ -2,6 +2,7 @@ package transport
 
 import (
 	"fmt"
+	"messenger_v2/internal/domain"
 	"messenger_v2/internal/service"
 	"messenger_v2/pkg/auth"
 	"net/http"
@@ -44,12 +45,14 @@ func (a *AuthHandler) Registration(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "./web/html/registration.html")
 		return
 	}
-	login := r.FormValue("email")
-	password := r.FormValue("password")
-	name := r.FormValue("name")
-	sex := r.FormValue("sex")
+	res := &domain.RegistrationRequest{
+		Login:    r.FormValue("email"),
+		Password: r.FormValue("password"),
+		Name:     r.FormValue("name"),
+		Sex:      r.FormValue("sex"),
+	}
 
-	err := a.authService.Registration(login, password, name, sex)
+	err := a.authService.Registration(res)
 	if err != nil {
 		fmt.Println(err)
 		http.Error(w, "Пользователь с таким email уже существует", http.StatusInternalServerError)

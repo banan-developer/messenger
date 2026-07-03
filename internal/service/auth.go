@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"messenger_v2/internal/domain"
 	"messenger_v2/internal/repository"
 
 	"golang.org/x/crypto/bcrypt"
@@ -43,13 +44,10 @@ func (a *AuthService) Login(login string, password string) (int, error) {
 	return UserID, nil
 }
 
-func (a *AuthService) Registration(login, password, name, sex string) error {
-	hashPassword, _ := hashPassword(password)
-	about := "Пользователь TheNomax"
-	avatar_url := "unknown"
-	avatar_img := "unknow"
+func (a *AuthService) Registration(res *domain.RegistrationRequest) error {
+	hashPassword, _ := hashPassword(res.Password)
 
-	err := a.userRepo.CreateUser(login, hashPassword, name, sex, about, avatar_url, avatar_img)
+	err := a.userRepo.CreateUser(res, hashPassword)
 	if err != nil {
 		return fmt.Errorf("ошибка при создании пользователя %w", err)
 	}

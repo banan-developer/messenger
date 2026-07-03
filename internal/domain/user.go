@@ -10,14 +10,14 @@ type User struct {
 	Sex      string `json:"sex"`
 }
 
-// type LoginRequesr struct {
-// 	Login    string `json:"login"`
-// 	Password string `json:"password"`
-// }
+type LoginRequest struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
 
-// type Registration struct {
-// 	Login    string `json:"login"`
-// 	Password string `json:"password"`
-// 	Name     string `json:"name"`
-// 	Sex      string `json:"sex"`
-// }
+type RegistrationRequest struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+	Name     string `json:"name"`
+	Sex      string `json:"sex"`
+}
