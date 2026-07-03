@@ -32,6 +32,8 @@ func (p *WallHandler) Wall(w http.ResponseWriter, r *http.Request) {
 		p.CreatePost(w, r)
 	case http.MethodDelete:
 		p.DeletePost(w, r)
+	case http.MethodPut:
+		p.EditPost(w, r)
 	default:
 		http.Error(w, "MethodNotAllowed", http.StatusMethodNotAllowed)
 	}
@@ -115,4 +117,21 @@ func (p *WallHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	UserID, _ := auth.GetUserId(r)
 
 	p.service.DeletePost(PostID, UserID)
+}
+
+func (p *WallHandler) EditPost(w http.ResponseWriter, r *http.Request) {
+	var Post *domain.CreateWallRequest
+
+	err := json.NewDecoder(r.Body).Decode(&Post)
+	idSTR := r.URL.Query().Get("id")
+
+	PostID, err := strconv.Atoi(idSTR)
+	if err != nil {
+		http.Error(w, "Invalid note id", http.StatusBadRequest)
+		return
+	}
+	err = p.service.EditPostByID(Post, PostID)
+	if err != nil {
+		log.Println("Ошибка при вызове сервиса EditPost")
+	}
 }

@@ -30,14 +30,14 @@ func (r *WallService) CreatePost(res *domain.CreateWallRequest, UserID int) ([]d
 		return nil, errors.New("Ошибка при создании поста")
 	}
 
-	return r.repo.GetPost(UserID)
+	return r.repo.GetPostsByUserID(UserID)
 }
 
 func (r *WallService) GetPost(UserId int) ([]domain.WallPost, error) {
 	if UserId <= 0 {
 		return nil, errors.New("Пользователь не найден")
 	}
-	return r.repo.GetPost(UserId)
+	return r.repo.GetPostsByUserID(UserId)
 }
 
 func (r *WallService) DeletePost(PostID, UserID int) error {
@@ -49,4 +49,18 @@ func (r *WallService) DeletePost(PostID, UserID int) error {
 		return errors.New("Пользователь не найден")
 	}
 	return r.repo.DeletePost(PostID, UserID)
+}
+
+func (r *WallService) EditPostByID(res *domain.CreateWallRequest, PostID int) error {
+	if PostID <= 0 {
+		return errors.New("Пост не может быть отрицательным")
+	}
+	if res.Text == "" {
+		return errors.New("Текст пост не может быть пустым")
+	}
+	if res.Title == "" {
+		return errors.New("Заголовок поста не может быть пустым")
+	}
+	return r.repo.EditPostById(res, PostID)
+
 }

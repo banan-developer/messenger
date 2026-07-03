@@ -77,8 +77,8 @@ func main() {
 	http.HandleFunc("/friend", friendHandler)
 	http.HandleFunc("/chat", chatHandler)
 
-	fmt.Println("Сервер запущен на http://127.0.0.1:4562/login")
-	http.ListenAndServe(":4562", nil)
+	fmt.Println("Сервер запущен на http://127.0.0.1:8020/login")
+	http.ListenAndServe(":8020", nil)
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {

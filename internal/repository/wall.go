@@ -26,7 +26,7 @@ func (w *WallRepo) CreatePost(res *domain.CreateWallRequest, userID int) error {
 	return nil
 }
 
-func (w *WallRepo) GetPost(UserID int) ([]domain.WallPost, error) {
+func (w *WallRepo) GetPostsByUserID(UserID int) ([]domain.WallPost, error) {
 	rows, err := w.db.Query("SELECT idwall, title, text, img_scr FROM wall WHERE users_id  = ?", UserID)
 	if err != nil {
 		log.Printf("Ошибка получении поста %v", err)
@@ -54,6 +54,16 @@ func (w *WallRepo) DeletePost(PostID, UserId int) error {
 	_, err := w.db.Exec("DELETE FROM wall WHERE idwall = ? AND users_id = ?", PostID, UserId)
 	if err != nil {
 		log.Println("БД: Ошибка при удалении поста", err)
+		return err
+	}
+	return nil
+}
+
+func (w *WallRepo) EditPostById(res *domain.CreateWallRequest, PostID int) error {
+	_, err := w.db.Exec("UPDATE wall SET title = ?, text = ? WHERE idwall = ?", res.Title, res.Text, PostID)
+
+	if err != nil {
+		log.Println("БД: Ошибка при обновлении поста", err)
 		return err
 	}
 	return nil

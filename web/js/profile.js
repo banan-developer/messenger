@@ -157,21 +157,39 @@ const App = {
                     document.getElementById("friends").close()
                 },
                 // редактирования записей на стене
-                async editWall(wall_ID){
-                    document.getElementById("myDialog2").showModal()
-                    try{
-                        const res = await fetch(`/api/post?id=${wall_ID}`, {
-                            credentials: "same-origin",
-                            method: "GET"
-                        })
-                        if (!res.ok) throw new Error("ошибка редактирования поста")
-                        const data = await res.json()
-                        this.valueEditTitle = data.title
-                        this.valueEditText = data.text
-                        this.editingID = wall_ID
+                // async editWall(wall_ID){
+                //     document.getElementById("myDialog2").showModal()
+                //     try{
+                //         const res = await fetch(`/api/post?id=${wall_ID}`, {
+                //             credentials: "same-origin",
+                //             method: "GET"
+                //         })
+                //         if (!res.ok) throw new Error("ошибка редактирования поста")
+                //         const data = await res.json()
+                //         this.valueEditTitle = data.title
+                //         this.valueEditText = data.text
+                //         this.editingID = wall_ID
 
-                    }catch(err){
-                        console.log(err)
+                //     }catch(err){
+                //         console.log(err)
+                //     }
+                // },
+
+                editWall(wall_ID) {
+                    // Находим пост в массиве wall по ID
+                    const post = this.wall.find(item => item.id === wall_ID)
+                    
+                    if (post) {
+                        // Заполняем поля для редактирования данными из найденного поста
+                        this.valueEditTitle = post.title
+                        this.valueEditText = post.text
+                        this.editingID = wall_ID
+                        
+                        // Открываем модальное окно
+                        document.getElementById("myDialog2").showModal()
+                    } else {
+                        console.error('Пост с ID', wall_ID, 'не найден')
+                        alert('Пост не найден')
                     }
                 },
 
