@@ -37,9 +37,9 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	UserID, _ := auth.GetUserId(r)
+	userID, _ := auth.GetUserId(r)
 
-	user, err := h.service.GetProfile(UserID)
+	user, err := h.service.GetProfile(userID)
 
 	if err != nil {
 		log.Printf("GetProfile error: %v", err)

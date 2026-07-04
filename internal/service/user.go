@@ -14,6 +14,7 @@ func NewUserService(repo *repository.UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
+// TODO: исправить нейминг нахуй
 func (s *UserService) GetProfile(userID int) (*domain.User, error) {
 	if userID <= 0 {
 		return nil, errors.New("invalid user id")

@@ -60,6 +60,10 @@ func main() {
 	WallService := service.NewWallService(WallRepo)
 	WallHanlder := transport.NewWallHandler(WallService)
 
+	FriendRepo := repository.NewFriendRepo(db)
+	FriendService := service.NewFrinedService(FriendRepo)
+	FriendHandler := transport.NewFriendHandler(FriendService)
+
 	fileServer := http.FileServer(http.Dir("./web/static"))
 
 	http.Handle("/static/",
@@ -69,6 +73,7 @@ func main() {
 	http.Handle("/api/profile", auth.RequireAuth(http.HandlerFunc(UserHanlder.Profile)))
 	http.Handle("/api/profile/avatar", auth.RequireAuth(http.HandlerFunc(UserHanlder.UploadAvatarUser)))
 	http.Handle("/api/wall", auth.RequireAuth(http.HandlerFunc(WallHanlder.Wall)))
+	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(FriendHandler.Friends)))
 
 	http.HandleFunc("/login", AuthHandler.Login)
 	http.HandleFunc("/registration", AuthHandler.Registration)

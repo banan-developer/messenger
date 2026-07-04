@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+//TODO: исправить нейминг Wall -> Post
+
 type WallHandler struct {
 	service *service.WallService
 }
