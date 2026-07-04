@@ -34,3 +34,13 @@ func (s *UserService) UpdateUser(user *domain.User) error {
 
 	return s.repo.UpdateUser(user)
 }
+
+func (s *UserService) UploadAvatarUser(UserID int, AvatarURL string) error {
+	if UserID <= 0 {
+		return errors.New("invalid user id")
+	}
+	if AvatarURL == "" {
+		return errors.New("invalid avatarURL")
+	}
+	return s.repo.UploadAvatarUser(UserID, AvatarURL)
+}

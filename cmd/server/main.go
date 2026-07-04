@@ -67,6 +67,7 @@ func main() {
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("./web/js"))))
 
 	http.Handle("/api/profile", auth.RequireAuth(http.HandlerFunc(UserHanlder.Profile)))
+	http.Handle("/api/profile/avatar", auth.RequireAuth(http.HandlerFunc(UserHanlder.UploadAvatarUser)))
 	http.Handle("/api/wall", auth.RequireAuth(http.HandlerFunc(WallHanlder.Wall)))
 
 	http.HandleFunc("/login", AuthHandler.Login)
@@ -92,11 +93,3 @@ func friendHandler(w http.ResponseWriter, r *http.Request) {
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./web/html/chat.html")
 }
-
-// func loginHandler(w http.ResponseWriter, r *http.Request) {
-// 	http.ServeFile(w, r, "./web/html/login.html")
-// }
-
-// func registrationHandler(w http.ResponseWriter, r *http.Request) {
-// 	http.ServeFile(w, r, "./web/html/registration.html")
-// }

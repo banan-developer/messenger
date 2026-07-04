@@ -156,25 +156,7 @@ const App = {
                     document.getElementById("myDialog2").close()
                     document.getElementById("friends").close()
                 },
-                // редактирования записей на стене
-                // async editWall(wall_ID){
-                //     document.getElementById("myDialog2").showModal()
-                //     try{
-                //         const res = await fetch(`/api/post?id=${wall_ID}`, {
-                //             credentials: "same-origin",
-                //             method: "GET"
-                //         })
-                //         if (!res.ok) throw new Error("ошибка редактирования поста")
-                //         const data = await res.json()
-                //         this.valueEditTitle = data.title
-                //         this.valueEditText = data.text
-                //         this.editingID = wall_ID
-
-                //     }catch(err){
-                //         console.log(err)
-                //     }
-                // },
-
+                
                 editWall(wall_ID) {
                     // Находим пост в массиве wall по ID
                     const post = this.wall.find(item => item.id === wall_ID)

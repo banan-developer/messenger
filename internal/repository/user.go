@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"log"
 	"messenger_v2/internal/domain"
 )
 
@@ -45,6 +46,15 @@ func (r *UserRepository) CreateUser(res *domain.RegistrationRequest, hashedPassw
 	_, err := r.db.Exec("INSERT INTO users (login, password, name, sex, about, avatar_url, avatar_img) VALUES (?, ?, ?, ?, ?, ?, ?)", res.Login, hashedPassword, res.Name, res.Sex, "Пользователь TheNomax ", "unknown", "unknown")
 	if err != nil {
 		return errors.New("registration error")
+	}
+	return nil
+}
+
+func (r *UserRepository) UploadAvatarUser(UserID int, AvatarURL string) error {
+	_, err := r.db.Exec("UPDATE users SET avatar_url = ? WHERE id = ? ", AvatarURL, UserID)
+	if err != nil {
+		log.Println("БД: Ошибка при обнавлении данных пользователя")
+		return err
 	}
 	return nil
 }

@@ -2,11 +2,15 @@ package transport
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"messenger_v2/internal/domain"
 	"messenger_v2/internal/service"
 	"messenger_v2/pkg/auth"
 	"net/http"
+	"os"
+	"time"
 )
 
 type UserHandler struct {
@@ -69,4 +73,40 @@ func (h *UserHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+}
+
+func (h *UserHandler) UploadAvatarUser(w http.ResponseWriter, r *http.Request) {
+	UserID, _ := auth.GetUserId(r)
+	r.ParseMultipartForm(10 << 20)
+	file, handler, err := r.FormFile("avatar")
+
+	if err != nil {
+		http.Error(w, "Ошибка загрузки", 500)
+		return
+	}
+	defer file.Close()
+
+	filename := fmt.Sprintf("%d_%s", time.Now().Unix(), handler.Filename)
+	path := "./web/static/uploads/avatars/" + filename
+
+	dst, err := os.Create(path)
+	if err != nil {
+		http.Error(w, "Ошибка сохранения", 500)
+		return
+	}
+	defer dst.Close()
+
+	io.Copy(dst, file)
+
+	avatarURL := "/static/uploads/avatars/" + filename
+
+	err = h.service.UploadAvatarUser(UserID, avatarURL)
+	if err != nil {
+		log.Println("Ошибка при вызове сервиса UploadAvatarUser")
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string{
+		"avatar": avatarURL,
+	})
 }
