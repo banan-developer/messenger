@@ -7,6 +7,7 @@ services:
       MYSQL_DATABASE: messanger
     ports:
       - "3307:3306"
+      - "8020:8020"
     volumes:
       - mysql-data:/var/lib/mysql
       - ./db/Dump.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
@@ -25,10 +26,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    network_mode: service:db
     environment:
       DB_PASSWORD: ${DB_PASSWORD:-rootpass}
-    ports:
-      - "8020:8020"
     restart: unless-stopped
 
 volumes:
