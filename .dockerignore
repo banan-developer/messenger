@@ -1,0 +1,9 @@
+.git
+.gitignore
+README.md
+readme/
+info.log
+*.log
+.vscode
+__pycache__
+**/.DS_Store
