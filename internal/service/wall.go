@@ -7,6 +7,7 @@ import (
 	"messenger_v2/internal/repository"
 )
 
+// TODO: исправить нейминг нахуйq
 type WallService struct {
 	repo *repository.WallRepo
 }
