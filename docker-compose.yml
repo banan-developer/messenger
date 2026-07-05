@@ -1,0 +1,35 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: messenger-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpass}
+      MYSQL_DATABASE: messanger
+    ports:
+      - "3307:3306"
+      - "8020:8020"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db/Dump.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: messenger-app
+    depends_on:
+      db:
+        condition: service_healthy
+    network_mode: service:db
+    environment:
+      DB_PASSWORD: ${DB_PASSWORD:-rootpass}
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
