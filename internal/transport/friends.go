@@ -36,7 +36,18 @@ func (f *FriendHandler) Friends(w http.ResponseWriter, r *http.Request) {
 }
 
 func (f *FriendHandler) GetFriendByID(w http.ResponseWriter, r *http.Request) {
-	UserID, _ := auth.GetUserId(r)
+	UseridSTR := r.URL.Query().Get("user_id")
+	var UserID int
+	var err error
+	if UseridSTR != "" {
+		UserID, err = strconv.Atoi(UseridSTR)
+		if err != nil {
+			http.Error(w, "Invalid note id", http.StatusBadRequest)
+			return
+		}
+	} else {
+		UserID, _ = auth.GetUserId(r)
+	}
 
 	friends, err := f.service.GetFriendsByID(UserID)
 	if err != nil {
@@ -62,7 +73,7 @@ func (f *FriendHandler) AddToFriend(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid note id", http.StatusBadRequest)
 		return
 	}
-	status := "invited"
+	status := "accepted"
 
 	f.service.AddToFriend(UserID, FriendID, status)
 }

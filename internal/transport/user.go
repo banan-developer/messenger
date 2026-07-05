@@ -10,6 +10,7 @@ import (
 	"messenger_v2/pkg/auth"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -24,7 +25,12 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		h.GetProfile(w, r)
+		idSTR := r.URL.Query().Get("id")
+		if idSTR != "" {
+			h.GetPersonByID(w, r)
+		} else {
+			h.GetProfile(w, r)
+		}
 	case http.MethodPut:
 		h.UpdateProfile(w, r)
 	default:
@@ -109,4 +115,26 @@ func (h *UserHandler) UploadAvatarUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{
 		"avatar": avatarURL,
 	})
+}
+
+func (h *UserHandler) GetPersonByID(w http.ResponseWriter, r *http.Request) {
+	idSTR := r.URL.Query().Get("id")
+	PersonID, err := strconv.Atoi(idSTR)
+	if err != nil {
+		http.Error(w, "Invalid note id", http.StatusBadRequest)
+		return
+	}
+	person, err := h.service.GetPersonByID(PersonID)
+	if err != nil {
+		fmt.Println("REAL DB ERROR:", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+
+	err = json.NewEncoder(w).Encode(person)
+	if err != nil {
+		http.Error(w, "Ошибка при отравки данных о пользователе", http.StatusInternalServerError)
+	}
+
 }

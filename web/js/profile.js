@@ -103,7 +103,7 @@ const App = {
                     formData.append("text", this.inputValueText)
                     formData.append("img", this.postImageFile)
                     try{
-                        const res = await fetch("/api/wall", {
+                        const res = await fetch("/api/post", {
                             method: "POST",
                             body: formData
                         })
@@ -124,7 +124,7 @@ const App = {
                // получение данных стены с сервера
                 async getWall(){
                     try{
-                        const res = await fetch("/api/wall",{
+                        const res = await fetch("/api/post",{
                             method: "GET",
                             credentials: "same-origin"
                         })
@@ -139,7 +139,7 @@ const App = {
                 // Удаление записей из стены
                 async deleteWall(wall_ID){
                     try{
-                        const res = await fetch(`/api/wall?id=${wall_ID}`, {
+                        const res = await fetch(`/api/post?id=${wall_ID}`, {
                             method: "DELETE",
                             credentials: "same-origin"
                         })
@@ -178,7 +178,7 @@ const App = {
                 async updateEditingWall(wall_ID){
                     document.getElementById("myDialog2").close()
                     try{
-                        const res = await fetch(`/api/wall?id=${wall_ID}`, {
+                        const res = await fetch(`/api/post?id=${wall_ID}`, {
                             credentials: "same-origin",
                             method: "PUT",
                             headers: {'Content-Type': 'application/json'},
@@ -288,7 +288,7 @@ const App = {
                     }
                 },  
                 async loadFriendProfile(friendID) {
-                    window.location.href = `/anotherProfile.html?id=${friendID}`;
+                    window.location.href = `/friend?id=${friendID}`;
                 },
                 openDialogInfo(){
                     document.getElementById("myDialogInfo").showModal()

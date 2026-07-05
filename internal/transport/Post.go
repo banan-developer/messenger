@@ -14,19 +14,17 @@ import (
 	"time"
 )
 
-//TODO: исправить нейминг Wall -> Post
-
-type WallHandler struct {
-	service *service.WallService
+type PostHandler struct {
+	service *service.PostService
 }
 
-func NewWallHandler(service *service.WallService) *WallHandler {
-	return &WallHandler{
+func NewWallHandler(service *service.PostService) *PostHandler {
+	return &PostHandler{
 		service: service,
 	}
 }
 
-func (p *WallHandler) Wall(w http.ResponseWriter, r *http.Request) {
+func (p *PostHandler) Post(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		p.Getpost(w, r)
@@ -41,9 +39,21 @@ func (p *WallHandler) Wall(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (p *WallHandler) Getpost(w http.ResponseWriter, r *http.Request) {
+func (p *PostHandler) Getpost(w http.ResponseWriter, r *http.Request) {
 
-	UserID, _ := auth.GetUserId(r)
+	var UserID int
+	var err error
+	UserIDSTR := r.URL.Query().Get("user_id")
+	if UserIDSTR != "" {
+		UserID, err = strconv.Atoi(UserIDSTR)
+		if err != nil {
+			http.Error(w, "Invalid note id", http.StatusBadRequest)
+			return
+		}
+
+	} else {
+		UserID, _ = auth.GetUserId(r)
+	}
 
 	post, err := p.service.GetPost(UserID)
 
@@ -60,7 +70,7 @@ func (p *WallHandler) Getpost(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (p *WallHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
+func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	UserID, _ := auth.GetUserId(r)
 	r.ParseMultipartForm(10 << 20)
@@ -108,7 +118,7 @@ func (p *WallHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (p *WallHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
+func (p *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	idSTR := r.URL.Query().Get("id")
 
 	PostID, err := strconv.Atoi(idSTR)
@@ -121,7 +131,7 @@ func (p *WallHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	p.service.DeletePost(PostID, UserID)
 }
 
-func (p *WallHandler) EditPost(w http.ResponseWriter, r *http.Request) {
+func (p *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	var Post *domain.CreateWallRequest
 
 	err := json.NewDecoder(r.Body).Decode(&Post)

@@ -58,3 +58,13 @@ func (r *UserRepository) UploadAvatarUser(UserID int, AvatarURL string) error {
 	}
 	return nil
 }
+
+func (r *UserRepository) GetPersonByID(PersonID int) (*domain.UserResponse, error) {
+	var Person domain.UserResponse
+	err := r.db.QueryRow("SELECT name, about, avatar_url, sex FROM users WHERE id = ?", PersonID).Scan(&Person.Name, &Person.About, &Person.Avatar, &Person.Sex)
+	if err != nil {
+		log.Println("БД: Ошибка при получении данных другого пользователя")
+		return nil, err
+	}
+	return &Person, nil
+}

@@ -10,6 +10,13 @@ type User struct {
 	Sex      string `json:"sex"`
 }
 
+type UserResponse struct {
+	Name   string `json:"name"`
+	About  string `json:"about"`
+	Avatar string `json:"avatar"`
+	Sex    string `json:"sex"`
+}
+
 type LoginRequest struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`

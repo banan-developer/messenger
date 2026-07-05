@@ -72,7 +72,7 @@ func main() {
 
 	http.Handle("/api/profile", auth.RequireAuth(http.HandlerFunc(UserHanlder.Profile)))
 	http.Handle("/api/profile/avatar", auth.RequireAuth(http.HandlerFunc(UserHanlder.UploadAvatarUser)))
-	http.Handle("/api/wall", auth.RequireAuth(http.HandlerFunc(WallHanlder.Wall)))
+	http.Handle("/api/post", auth.RequireAuth(http.HandlerFunc(WallHanlder.Post)))
 	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(FriendHandler.Friends)))
 
 	http.HandleFunc("/login", AuthHandler.Login)

@@ -7,18 +7,17 @@ import (
 	"messenger_v2/internal/repository"
 )
 
-// TODO: исправить нейминг нахуйq
-type WallService struct {
+type PostService struct {
 	repo *repository.WallRepo
 }
 
-func NewWallService(repo *repository.WallRepo) *WallService {
-	return &WallService{
+func NewWallService(repo *repository.WallRepo) *PostService {
+	return &PostService{
 		repo: repo,
 	}
 }
 
-func (r *WallService) CreatePost(res *domain.CreateWallRequest, UserID int) ([]domain.WallPost, error) {
+func (r *PostService) CreatePost(res *domain.CreateWallRequest, UserID int) ([]domain.WallPost, error) {
 	if len(res.Title) <= 0 {
 		return nil, errors.New("Название поста не может быть пустым")
 	}
@@ -34,14 +33,14 @@ func (r *WallService) CreatePost(res *domain.CreateWallRequest, UserID int) ([]d
 	return r.repo.GetPostsByUserID(UserID)
 }
 
-func (r *WallService) GetPost(UserId int) ([]domain.WallPost, error) {
+func (r *PostService) GetPost(UserId int) ([]domain.WallPost, error) {
 	if UserId <= 0 {
 		return nil, errors.New("Пользователь не найден")
 	}
 	return r.repo.GetPostsByUserID(UserId)
 }
 
-func (r *WallService) DeletePost(PostID, UserID int) error {
+func (r *PostService) DeletePost(PostID, UserID int) error {
 	if PostID <= 0 {
 		log.Println("Ошибка: ID поста не может быть отрицательным")
 		return errors.New("Пост не может быть отрицательным")
@@ -52,7 +51,7 @@ func (r *WallService) DeletePost(PostID, UserID int) error {
 	return r.repo.DeletePost(PostID, UserID)
 }
 
-func (r *WallService) EditPostByID(res *domain.CreateWallRequest, PostID int) error {
+func (r *PostService) EditPostByID(res *domain.CreateWallRequest, PostID int) error {
 	if PostID <= 0 {
 		return errors.New("Пост не может быть отрицательным")
 	}

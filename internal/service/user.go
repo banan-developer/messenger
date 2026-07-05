@@ -45,3 +45,10 @@ func (s *UserService) UploadAvatarUser(UserID int, AvatarURL string) error {
 	}
 	return s.repo.UploadAvatarUser(UserID, AvatarURL)
 }
+
+func (s *UserService) GetPersonByID(PersonID int) (*domain.UserResponse, error) {
+	if PersonID <= 0 {
+		return nil, errors.New("invalid user id")
+	}
+	return s.repo.GetPersonByID(PersonID)
+}
