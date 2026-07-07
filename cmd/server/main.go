@@ -74,6 +74,7 @@ func main() {
 	http.Handle("/api/profile/avatar", auth.RequireAuth(http.HandlerFunc(UserHanlder.UploadAvatarUser)))
 	http.Handle("/api/post", auth.RequireAuth(http.HandlerFunc(WallHanlder.Post)))
 	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(FriendHandler.Friends)))
+	http.Handle("/api/incomingrequest", auth.RequireAuth(http.HandlerFunc(FriendHandler.GetIncomigRequest)))
 
 	http.HandleFunc("/login", AuthHandler.Login)
 	http.HandleFunc("/registration", AuthHandler.Registration)
@@ -82,6 +83,7 @@ func main() {
 	http.HandleFunc("/profile", profileHandler)
 	http.HandleFunc("/friend", friendHandler)
 	http.HandleFunc("/chat", chatHandler)
+	http.HandleFunc("/friendList", friendList)
 
 	fmt.Println("Сервер запущен на http://127.0.0.1:8020/login")
 	http.ListenAndServe(":8020", nil)
@@ -97,4 +99,8 @@ func friendHandler(w http.ResponseWriter, r *http.Request) {
 
 func chatHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./web/html/chat.html")
+}
+
+func friendList(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./web/html/friendList.html")
 }

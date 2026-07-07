@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="app5">
+        <p>Заявки в друзья</p>
+    <ui>
+        <li v-for="(friend, i) in friends" :key="friend.id" class="friend-item">
+            <img :src="friend.avatar" width="25" alt="фото друга"/>
+            {{friend.name}}
+            <div>
+                <button @click="SetAcceptStatus(friend.id)">Принять</button>
+                <button>Отклонить</button> отклонить не работает, не знаю что будем делать, либо удалять запрос, либо оставлять в подписчиках
+            </div>
+        </li>
+        <button @click="RedirectOnProfile">На страницу</button>
+    </ui>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+    <script src="/js/friendList.js"></script>
+</body>
+</html>
+

@@ -30,6 +30,8 @@ func (f *FriendHandler) Friends(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodPost:
 		f.AddToFriend(w, r)
+	case http.MethodPut:
+		f.AcceptComingRequset(w, r)
 	default:
 		http.Error(w, "MethodNotAllowed", http.StatusMethodNotAllowed)
 	}
@@ -73,7 +75,7 @@ func (f *FriendHandler) AddToFriend(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid note id", http.StatusBadRequest)
 		return
 	}
-	status := "accepted"
+	status := "invited"
 
 	f.service.AddToFriend(UserID, FriendID, status)
 }
@@ -90,4 +92,35 @@ func (f *FriendHandler) FoundFriendByID(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		http.Error(w, "Ошибка при отправки данных пользователя при запросе добавить в друзья", http.StatusInternalServerError)
 	}
+}
+
+func (f *FriendHandler) GetIncomigRequest(w http.ResponseWriter, r *http.Request) {
+	UserID, _ := auth.GetUserId(r)
+
+	friendRequest, err := f.service.GetIncomingRequest(UserID)
+	if err != nil {
+		http.Error(w, "Ошибка получения данных", 500)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(friendRequest)
+	if err != nil {
+		http.Error(w, "Ошибка при отправки данных входящих заявок", http.StatusInternalServerError)
+	}
+}
+
+func (f *FriendHandler) AcceptComingRequset(w http.ResponseWriter, r *http.Request) {
+	UserID, _ := auth.GetUserId(r)
+
+	FriendidSTR := r.URL.Query().Get("friendID")
+	FriendID, err := strconv.Atoi(FriendidSTR)
+	if err != nil {
+		http.Error(w, "Invalid note id", http.StatusBadRequest)
+		return
+	}
+	err = f.service.AcceptComingRequset(FriendID, UserID)
+	if err != nil {
+		http.Error(w, "Ошибка при обнавлении данных", http.StatusInternalServerError)
+	}
+
 }

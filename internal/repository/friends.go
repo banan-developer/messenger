@@ -73,3 +73,46 @@ func (f *FriendRepo) FoundFriendByID(FriendName string) ([]domain.FriendResponse
 	}
 	return friends, nil
 }
+
+func (f *FriendRepo) GetIncomingRequest(UserID int) ([]domain.FriendResponse, error) {
+	rows, err := f.db.Query(
+		`SELECT u.id, u.name, u.avatar_url
+        FROM friends f
+        JOIN users u ON u.id = f.users_id
+        WHERE f.friend_id = ?
+        AND f.status = 'invited'`,
+		UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var friends []domain.FriendResponse
+	for rows.Next() {
+		var friend domain.FriendResponse
+		err := rows.Scan(&friend.ID, &friend.Name, &friend.Avatar)
+		if err != nil {
+			return nil, err
+		}
+		friends = append(friends, friend)
+	}
+
+	return friends, nil
+}
+
+func (f *FriendRepo) AcceptComingRequset(FriendID, UserID int) error {
+	tx, _ := f.db.Begin()
+	defer tx.Rollback()
+
+	tx.Exec(
+		"UPDATE friends SET status = 'accepted' WHERE friend_id = ? AND users_id = ?",
+		UserID, FriendID,
+	)
+
+	tx.Exec(
+		"INSERT INTO friends (friend_id, users_id, status) VALUES (?, ?, 'accepted')",
+		FriendID, UserID,
+	)
+
+	return tx.Commit()
+}

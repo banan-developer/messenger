@@ -50,3 +50,21 @@ func (f *FriendService) FoundFriendByID(FriendName string) ([]domain.FriendRespo
 	}
 	return f.repo.FoundFriendByID(FriendName)
 }
+
+func (f *FriendService) GetIncomingRequest(UserID int) ([]domain.FriendResponse, error) {
+	if UserID <= 0 {
+		log.Println("Пользователь не найден")
+		return nil, errors.New("Пользователь не найден")
+	}
+	return f.repo.GetIncomingRequest(UserID)
+}
+
+func (f *FriendService) AcceptComingRequset(FriendID, UserID int) error {
+	if UserID <= 0 {
+		return errors.New("Пользователь не найден")
+	}
+	if FriendID <= 0 {
+		return errors.New("Пользователь(Друг) не найден")
+	}
+	return f.repo.AcceptComingRequset(FriendID, UserID)
+}
