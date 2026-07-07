@@ -46,7 +46,7 @@ const App3 = {
                     window.location.href = "/profile"
                 },
                 async loadFriendProfile() {
-                    window.location.href = `/anotherProfile.html?id=${this.friendID}`;
+                    window.location.href = `/friend?id=${this.friendID}`;
                 },
 
                 connectSocket(){
@@ -83,7 +83,7 @@ const App3 = {
                 },
                 async getCurrentId(){
                      try{
-                        const res = await fetch("/getUserId")
+                        const res = await fetch("/api/profile")
                         if (!res.ok) throw new Error("ошибка загрузки айди")
                         const data = await res.json()
                         this.currentUserID = data.id
@@ -95,7 +95,7 @@ const App3 = {
                 },
                 async GetAllMessage(){
                     try{
-                        const res = await fetch(`/api/AllMessage?id=${this.friendID}&user_id=${this.currentUserID}`)
+                        const res = await fetch(`/api/messages?id=${this.friendID}&user_id=${this.currentUserID}`)
                         if (!res.ok) throw new Error("Ошибка получения сообщения")
                         const data = await res.json()
                         this.messanges = data

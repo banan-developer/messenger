@@ -64,6 +64,10 @@ func main() {
 	FriendService := service.NewFrinedService(FriendRepo)
 	FriendHandler := transport.NewFriendHandler(FriendService)
 
+	MessagesRepo := repository.NewMessageRepo(db)
+	MessagesService := service.NewMessagesService(MessagesRepo)
+	MessgesHandler := transport.NewMessageHandler(MessagesService)
+
 	fileServer := http.FileServer(http.Dir("./web/static"))
 
 	http.Handle("/static/",
@@ -74,6 +78,7 @@ func main() {
 	http.Handle("/api/profile/avatar", auth.RequireAuth(http.HandlerFunc(UserHanlder.UploadAvatarUser)))
 	http.Handle("/api/post", auth.RequireAuth(http.HandlerFunc(WallHanlder.Post)))
 	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(FriendHandler.Friends)))
+	http.Handle("/api/messages", auth.RequireAuth(http.HandlerFunc(MessgesHandler.Messages)))
 
 	http.HandleFunc("/login", AuthHandler.Login)
 	http.HandleFunc("/registration", AuthHandler.Registration)

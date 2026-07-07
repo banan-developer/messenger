@@ -74,7 +74,7 @@ const App2 = {
                 async loadFriendMessage() {
                     const url = new URLSearchParams(window.location.search);
                     this.ChatID = url.get('id');
-                    window.location.href = `/chat.html?id=${this.ChatID}`;
+                    window.location.href = `/chat?id=${this.ChatID}`;
                 },
 
             }
