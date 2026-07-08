@@ -5,13 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile</title>
     <link rel="stylesheet" type="text/css" href="../static/css/profile.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/app.css" />
     <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
 </head>
 <body>
-    <div class="logo">
-        <img  src="../static/uploads/images/mainICO.png" alt="Фото профиля"/>
-    </div>
-    <div id="VUE">
+    <div id="VUE" class="app-layout">
+        <app-sidebar
+            active="profile"
+            :user-name="name"
+            :user-avatar="avatarURL"
+            @logout="exitFromAccount">
+        </app-sidebar>
+
+        <main class="app-content">
         <div class="header">
                 <p class="profile-name" >Профиль</p>
                 <div class="header-buttons">
@@ -189,11 +196,13 @@
             <p class="copyright">made for SUAI</p>
             <p class="company" >The NOMAX © 2026</p>
         </div>
+        </main>
     </div>
 
     
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+    <script src="/js/components/sidebar.js"></script>
     <script src="/js/profile.js"></script>
 
 </body>

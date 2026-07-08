@@ -298,4 +298,6 @@ const App = {
                 }
             }
         }
-    Vue.createApp(App).mount('#VUE')
+    Vue.createApp(App)
+        .component('app-sidebar', AppSidebar)
+        .mount('#VUE')

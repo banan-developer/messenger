@@ -16,15 +16,8 @@ min-height:100vh;
 /* MAIN CONTAINER */
 
 #VUE{
-display: flex;
-flex-direction: column;
-padding-top: 20px; 
-width:100%;
-max-width:900px;
 background:white;
 min-height:100vh;
-border-left:1px solid #e5e5e5;
-border-right:1px solid #e5e5e5;
 }
 
 #VUE2{
