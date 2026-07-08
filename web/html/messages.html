@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сообщения</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/app.css" />
+    <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
+</head>
+<body>
+    <div id="MESSAGES" class="app-layout">
+        <app-sidebar
+            active="messages"
+            :user-name="userName"
+            :user-avatar="userAvatar"
+            @logout="exitFromAccount">
+        </app-sidebar>
+
+        <main class="app-content">
+            <div class="topbar">
+                <div class="control has-icons-left topbar-search">
+                    <input class="input" type="text" placeholder="Поиск..." v-model="globalSearch">
+                    <span class="icon is-left">🔍</span>
+                </div>
+                <button class="button is-white settings-btn">⚙️</button>
+            </div>
+
+            <div class="page-body">
+                <h1 class="title is-4">Сообщения</h1>
+
+                <div class="control has-icons-left chats-search">
+                    <input class="input" type="text" placeholder="Чаты" v-model="chatSearch">
+                    <span class="icon is-left">🔍</span>
+                </div>
+
+                <ul class="chat-list">
+                    <li
+                        v-for="chat in filteredChats"
+                        :key="chat.id"
+                        class="chat-item"
+                        @click="openChat(chat)">
+                        <div class="avatar-circle" :class="{ 'is-group': chat.isGroup }">{{ chat.initials }}</div>
+                        <div class="chat-info">
+                            <div class="chat-top">
+                                <span class="chat-name">{{ chat.name }}</span>
+                                <span class="chat-time">{{ chat.time }}</span>
+                            </div>
+                            <div class="chat-bottom">
+                                <span class="chat-preview">{{ chat.lastMessage }}</span>
+                                <span v-if="chat.unread > 0" class="chat-badge">{{ chat.unread }}</span>
+                            </div>
+                        </div>
+                    </li>
+                    <li v-if="filteredChats.length === 0" class="chat-empty">Ничего не найдено</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="/js/components/sidebar.js"></script>
+    <script src="/js/messages.js"></script>
+</body>
+</html>

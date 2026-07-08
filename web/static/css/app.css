@@ -112,6 +112,209 @@
     margin: 0 auto;
 }
 
+/* ===== TOPBAR (messages.html) ===== */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+}
+
+.topbar-search {
+    flex: 1;
+}
+
+.settings-btn {
+    font-size: 18px;
+}
+
+/* ===== PAGE BODY (общий контейнер контента страницы) ===== */
+
+.page-body {
+    padding: 24px;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.chats-search,
+.friends-search {
+    margin: 16px 0;
+}
+
+/* ===== AVATAR (кружок с инициалами) ===== */
+
+.avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #eaf2ff;
+    color: #2d88ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.avatar-circle.is-group {
+    background: #f0f0f0;
+}
+
+/* ===== CHAT LIST ===== */
+
+.chat-list {
+    list-style: none;
+}
+
+.chat-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.chat-item:hover {
+    border-color: #2d88ff;
+    background: #fafbff;
+}
+
+.chat-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.chat-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.chat-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+}
+
+.chat-preview {
+    font-size: 13px;
+    color: #777;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chat-badge {
+    background: #2d88ff;
+    color: white;
+    font-size: 11px;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    flex-shrink: 0;
+}
+
+.chat-empty {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+/* ===== FRIENDS PAGE ===== */
+
+.friends-tabs {
+    margin-bottom: 4px;
+}
+
+.friend-list {
+    list-style: none;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.friend-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.friend-name {
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.friend-status {
+    font-size: 13px;
+    color: #888;
+}
+
+.icon-btn {
+    font-size: 16px;
+}
+
+.friend-menu-wrap {
+    position: relative;
+}
+
+.friend-menu {
+    position: absolute;
+    top: 36px;
+    right: 0;
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    min-width: 180px;
+    z-index: 10;
+    padding: 6px 0;
+}
+
+.friend-menu-item {
+    display: block;
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+}
+
+.friend-menu-item:hover {
+    background: #f5f5f5;
+}
+
+.friend-menu-item.is-danger {
+    color: #ff3b30;
+}
+
 @media (max-width: 650px) {
     .app-sidebar {
         display: none;
