@@ -10,22 +10,13 @@
     <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
 </head>
 <body>
-    <div id="VUE">
-        <div class="columns profile-layout is-gapless">
-            <aside class="column is-3 profile-menu has-background-light">
-                <div class="menu-brand">
-                    <img src="../static/uploads/images/mainICO.png" alt="Логотип" class="menu-logo" />
-                    <!-- <p class="menu-title">TheNomax</p> -->
-                </div>
-                <div class="menu-block">
-                    <p class="menu-heading">Навигация</p>
-                    <ul class="menu-list">
-                        <li><a class="is-active" href="#">Профиль</a></li>
-                        <li><a href="/friendList">Друзья</a></li>
-                        <li><a href="#">Чат</a></li>
-                    </ul>
-                </div>
-            </aside>
+    <div id="VUE" class="app-layout">
+        <app-sidebar
+            active="profile"
+            :user-name="name"
+            :user-avatar="avatarURL"
+            @logout="exitFromAccount">
+        </app-sidebar>
 
         <main class="app-content">
         <div class="header">
