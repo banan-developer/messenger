@@ -6,18 +6,14 @@ const FriendsApp = {
             activeTab: "all",
             searchQuery: "",
             openMenuId: null,
-            friends: [
-                { id: 1, name: "Светлана Анисимова", initials: "СА", status: "В сети, 1241" },
-                { id: 2, name: "Андрей Абрамов", initials: "АА", status: "Не в сети. Факультет 4" },
-                { id: 3, name: "Василий Васильев", initials: "ВВ", status: "В сети, 1441" }
-            ],
-            requests: [
-                { id: 4, name: "Мария Иванова", initials: "МИ", status: "3 общих друга" },
-                { id: 5, name: "Дмитрий Орлов", initials: "ДО", status: "1 общий друг" },
-                { id: 6, name: "Ольга Петрова", initials: "ОП", status: "5 общих друзей" }
-            ]
+            friends: [],
+            requests: []
         }
     },
+     mounted(){
+            this.loadFriend()
+            this.GetFrienedRequest()
+        },
     computed: {
         filteredFriends() {
             const query = this.searchQuery.trim().toLowerCase()
@@ -34,7 +30,46 @@ const FriendsApp = {
         },
         exitFromAccount() {
             window.location.href = "/login"
-        }
+        },
+        async GetFrienedRequest(){
+            try{
+                const res =  await fetch("/api/incomingrequest",{
+                    method: "GET",
+                    credentials: "same-origin",
+                })
+                if (!res.ok) throw new Error("ошибка получения друзей")
+                const data = await res.json()
+                this.requests = data
+            }catch(err){
+                console.log(err)
+            }
+        },
+        async loadFriend(){
+            try{
+                const res = await fetch("/api/friend", {
+                    method: "GET"
+                })
+
+                if (!res.ok) throw new Error("Ошибка отправления id пользователя для последующего его добавления в друзья")
+                const data = await res.json()
+                this.friends = data
+                        
+            }catch(err){
+                console.log(err)
+            }
+        },
+        async SetAcceptStatus(friendID){
+            try{
+                const res = await fetch(`/api/friend?friendID=${friendID}`,{
+                    method: "PUT",
+                    credentials: "same-origin",
+                })
+                if (!res.ok) throw new Error("Принятия в друзья")
+                await this.GetFriendRequest()
+            }catch(err){
+                console.log(err)
+            }
+        },
     }
 }
 

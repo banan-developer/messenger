@@ -83,7 +83,7 @@ func main() {
 	http.HandleFunc("/profile", profileHandler)
 	http.HandleFunc("/friend", friendHandler)
 	http.HandleFunc("/chat", chatHandler)
-	http.HandleFunc("/friendList", friendList)
+	http.HandleFunc("/friends", friendList)
 
 	fmt.Println("Сервер запущен на http://127.0.0.1:8020/login")
 	http.ListenAndServe(":8020", nil)
@@ -102,5 +102,5 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func friendList(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./web/html/friendList.html")
+	http.ServeFile(w, r, "./web/html/friends.html")
 }

@@ -39,7 +39,9 @@
 
                 <ul v-if="activeTab === 'all'" class="friend-list">
                     <li v-for="friend in filteredFriends" :key="friend.id" class="friend-item">
-                        <div class="avatar-circle">{{ friend.initials }}</div>
+                        <div class="avatar-circle">
+                            <img :src="friend.avatar" width="25" alt="фото друга"/>
+                        </div>
                         <div class="friend-info">
                             <div class="friend-name">{{ friend.name }}</div>
                             <div class="friend-status">{{ friend.status }}</div>
@@ -58,12 +60,13 @@
 
                 <ul v-if="activeTab === 'requests'" class="friend-list">
                     <li v-for="req in requests" :key="req.id" class="friend-item">
-                        <div class="avatar-circle">{{ req.initials }}</div>
+                        <div class="avatar-circle">
+                             <img :src="req.avatar" width="25" alt="фото друга"/>
+                        </div>
                         <div class="friend-info">
                             <div class="friend-name">{{ req.name }}</div>
-                            <div class="friend-status">{{ req.status }}</div>
                         </div>
-                        <button class="button is-primary is-small">Принять</button>
+                        <button class="button is-primary is-small" @click="SetAcceptStatus(req.id)">Принять</button>
                         <button class="button is-white is-small">Отклонить</button>
                     </li>
                     <li v-if="requests.length === 0" class="chat-empty">Заявок нет</li>
