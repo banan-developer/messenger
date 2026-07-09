@@ -64,7 +64,7 @@ const App2 = {
                 },
 
                 goToFriendProfile(friendId) {
-                    window.location.href = `/anotherProfile.html?id=${friendId}`;
+                    window.location.href = `/friend?id=${friendId}`;
                 },
 
                 goBack(){
@@ -85,7 +85,7 @@ const App2 = {
                 async loadFriendMessage() {
                     const url = new URLSearchParams(window.location.search);
                     this.ChatID = url.get('id');
-                    window.location.href = `/chat.html?id=${this.ChatID}`;
+                    window.location.href = `/chat?id=${this.ChatID}`;
                 },
 
             }

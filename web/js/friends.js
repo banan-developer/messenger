@@ -65,7 +65,7 @@ const FriendsApp = {
                     credentials: "same-origin",
                 })
                 if (!res.ok) throw new Error("Принятия в друзья")
-                await this.GetFriendRequest()
+                await this.GetFrienedRequest()
             }catch(err){
                 console.log(err)
             }

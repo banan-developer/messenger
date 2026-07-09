@@ -17,7 +17,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 
 func (r *UserRepository) GetUserById(UserID int) (*domain.User, error) {
 	var User domain.User
-	err := r.db.QueryRow("SELECT name, about, avatar_url, sex FROM users WHERE id = ?", UserID).Scan(&User.Name, &User.About, &User.Avatar, &User.Sex)
+	err := r.db.QueryRow("SELECT id, name, about, avatar_url, sex FROM users WHERE id = ?", UserID).Scan(&User.ID, &User.Name, &User.About, &User.Avatar, &User.Sex)
 
 	if err != nil {
 		return nil, err

@@ -64,6 +64,10 @@ func main() {
 	FriendService := service.NewFrinedService(FriendRepo)
 	FriendHandler := transport.NewFriendHandler(FriendService)
 
+	MessagesRepo := repository.NewMessageRepo(db)
+	MessagesService := service.NewMessagesService(MessagesRepo)
+	MessgesHandler := transport.NewMessageHandler(MessagesService)
+
 	fileServer := http.FileServer(http.Dir("./web/static"))
 
 	http.Handle("/static/",
@@ -75,6 +79,7 @@ func main() {
 	http.Handle("/api/post", auth.RequireAuth(http.HandlerFunc(WallHanlder.Post)))
 	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(FriendHandler.Friends)))
 	http.Handle("/api/incomingrequest", auth.RequireAuth(http.HandlerFunc(FriendHandler.GetIncomigRequest)))
+	http.Handle("/api/messages", auth.RequireAuth(http.HandlerFunc(MessgesHandler.Messages)))
 
 	http.HandleFunc("/login", AuthHandler.Login)
 	http.HandleFunc("/registration", AuthHandler.Registration)
@@ -84,6 +89,7 @@ func main() {
 	http.HandleFunc("/friend", friendHandler)
 	http.HandleFunc("/chat", chatHandler)
 	http.HandleFunc("/friends", friendList)
+	http.HandleFunc("/messages", messagesList)
 
 	fmt.Println("Сервер запущен на http://127.0.0.1:8020/login")
 	http.ListenAndServe(":8020", nil)
@@ -103,4 +109,8 @@ func chatHandler(w http.ResponseWriter, r *http.Request) {
 
 func friendList(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "./web/html/friends.html")
+}
+
+func messagesList(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "./web/html/messages.html")
 }

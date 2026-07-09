@@ -1,8 +1,38 @@
 const AppSidebar = {
     props: {
-        active: { type: String, default: '' },
-        userName: { type: String, default: '' },
-        userAvatar: { type: String, default: '' }
+        active: { type: String, default: '' }
+    },
+    data() {
+        return {
+            currentUser: {
+                name: '',
+                avatar: ''
+            }
+        }
+    },
+    async mounted() {
+        await this.loadCurrentUser()
+    },
+    methods: {
+        async loadCurrentUser() {
+            try {
+                const res = await fetch("/api/profile", {
+                    credentials: "same-origin"
+                })
+                if (!res.ok) throw new Error("Ошибка загрузки профиля")
+                const data = await res.json()
+                this.currentUser.name = data.name
+                this.currentUser.avatar = data.avatar || '/static/avatars/default.jpg'
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        handleLogout() {
+            this.$emit('logout')
+        },
+        goProfile(){
+            window.location.href = "/profile"
+        },
     },
     emits: ['logout'],
     template: `
@@ -33,12 +63,12 @@ const AppSidebar = {
                 </li>
             </ul>
 
-            <div class="sidebar-bottom">
+            <div class="sidebar-bottom" >
                 <div class="mini-profile">
-                    <img :src="userAvatar" alt="avatar" class="mini-avatar">
-                    <span class="mini-name">{{ userName }}</span>
+                    <img :src="currentUser.avatar" alt="avatar" class="mini-avatar" @click="goProfile">
+                    <span  class="mini-name">{{ currentUser.name }}</span>
                 </div>
-                <button class="sidebar-logout" @click="$emit('logout')">
+                <button class="sidebar-logout" @click="handleLogout">
                     <span class="sidebar-icon">🚪</span>
                     <span>Выход</span>
                 </button>
