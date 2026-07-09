@@ -39,15 +39,17 @@
                         v-for="chat in filteredChats"
                         :key="chat.id"
                         class="chat-item"
-                        @click="openChat(chat)">
-                        <div class="avatar-circle" :class="{ 'is-group': chat.isGroup }">{{ chat.initials }}</div>
-                        <div class="chat-info">
-                            <div class="chat-top">
-                                <span class="chat-name">{{ chat.name }}</span>
-                                <span class="chat-time">{{ chat.time }}</span>
+                        @click="goToChatByFrinedId(chat.user_id )">
+                        <div class="avatar-circle" :class="{ 'is-group': chat.isGroup }">
+                                <img :src="chat.avatar" width="25" alt="фото друга"/>
+                            </div>
+                            <div class="chat-info">
+                                <div class="chat-top">
+                                    <span class="chat-name">{{ chat.name }}</span>
+                                <span span class="chat-time">{{ chat.last_message_time }}</span>
                             </div>
                             <div class="chat-bottom">
-                                <span class="chat-preview">{{ chat.lastMessage }}</span>
+                                <span class="chat-preview">{{ chat.last_message }}</span>
                                 <span v-if="chat.unread > 0" class="chat-badge">{{ chat.unread }}</span>
                             </div>
                         </div>

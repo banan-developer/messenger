@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"messenger_v2/internal/domain"
 	"messenger_v2/internal/repository"
@@ -24,9 +23,16 @@ func (m *MessageService) GetMessagesByChatID(FriendID, UserID int) ([]domain.Mes
 		return nil, errors.New("Друг не найден")
 	}
 	if UserID <= 0 {
-		fmt.Println(UserID)
 		log.Println("Пользователь не найден")
 		return nil, errors.New("Пользователь не найден")
 	}
 	return m.repo.GetMessagesByChatID(FriendID, UserID)
+}
+
+func (m *MessageService) GetChatsWithLastMessages(UserID int) ([]domain.ChatListItem, error) {
+	if UserID <= 0 {
+		return nil, errors.New("Пользователь не найден")
+	}
+	return m.repo.GetChatsWithLastMessages(UserID)
+
 }

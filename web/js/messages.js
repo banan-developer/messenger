@@ -5,20 +5,23 @@ const MessagesApp = {
             userAvatar: "",
             globalSearch: "",
             chatSearch: "",
-            chats: [
-                { id: 1, name: "Алексей Петров", initials: "АП", lastMessage: "Ок, спасибо!", time: "Вчера", unread: 0, isGroup: false },
-                { id: 2, name: "Группа 1442", initials: "👥", lastMessage: "Пётр: Кто завтра в библиотеку?", time: "10:15", unread: 0, isGroup: true },
-                { id: 3, name: "Светлана Анисимова", initials: "СА", lastMessage: "Привет! Давай обсудим проект?", time: "10:30", unread: 2, isGroup: false },
-                { id: 4, name: "Сергей Михайлов", initials: "СМ", lastMessage: "Не забудь про нашу встречу завтра в 11.", time: "15:45", unread: 0, isGroup: false }
-            ]
+            chats: []
         }
     },
+    mounted(){
+                this.GetListChatsWithLastMessage()
+            },
     computed: {
         filteredChats() {
             const query = this.chatSearch.trim().toLowerCase()
-            if (!query) return this.chats
-            return this.chats.filter(c => c.name.toLowerCase().includes(query))
-        }
+        
+            let result = this.chats.filter(c => c.last_message && c.last_message.trim() !== '')
+        
+            if (query) {
+            result = result.filter(c => c.name.toLowerCase().includes(query))
+            }
+            return result
+            }
     },
     methods: {
         openChat(chat) {
@@ -26,6 +29,22 @@ const MessagesApp = {
         },
         exitFromAccount() {
             window.location.href = "/login"
+        },
+        async GetListChatsWithLastMessage(){
+            try{
+                const res = await fetch("/api/messages",{
+                method: "GET",
+                credentials: "same-origin",
+                })
+                if (!res.ok) throw new Error("Ошибка при получении списка последних сообщений")
+                const data = await res.json()
+                this.chats = data
+            }catch(err){
+                console.log(err)
+            }
+        },
+        goToChatByFrinedId(ChatID){
+            window.location.href = `/chat?id=${ChatID}`
         }
     }
 }

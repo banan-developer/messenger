@@ -66,6 +66,7 @@ const FriendsApp = {
                 })
                 if (!res.ok) throw new Error("Принятия в друзья")
                 await this.GetFrienedRequest()
+                await this.loadFriend() 
             }catch(err){
                 console.log(err)
             }

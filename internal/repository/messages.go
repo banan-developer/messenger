@@ -44,3 +44,42 @@ func (m *MessageRepo) GetMessagesByChatID(FriendID, UserID int) ([]domain.Messag
 
 	return messages, nil
 }
+
+func (m *MessageRepo) GetChatsWithLastMessages(UserID int) ([]domain.ChatListItem, error) {
+	rows, err := m.db.Query(`
+        SELECT 
+            c.id,
+            u.id AS user_id,
+            u.name,
+            u.avatar_url,
+            COALESCE(m.text, '') AS last_message,
+            COALESCE(m.created_at, '') AS last_message_time
+        FROM chats c
+        JOIN users u ON u.id = CASE 
+            WHEN c.user1 = ? THEN c.user2
+            WHEN c.user2 = ? THEN c.user1
+        END
+        LEFT JOIN messeges m ON m.chats_id = c.id
+        AND m.created_at = (
+            SELECT MAX(created_at) FROM messeges WHERE chats_id = c.id
+        )
+        WHERE c.user1 = ? OR c.user2 = ?
+        ORDER BY m.created_at DESC
+    `, UserID, UserID, UserID, UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var messages []domain.ChatListItem
+	for rows.Next() {
+		var message domain.ChatListItem
+		rows.Scan(&message.ID, &message.UserID, &message.Name, &message.Avatar, &message.LastMessage, &message.LastMessageTime)
+		messages = append(messages, message)
+	}
+	if messages == nil {
+		messages = []domain.ChatListItem{}
+	}
+
+	return messages, nil
+}
