@@ -71,6 +71,17 @@ const App2 = {
                     window.location.href = "/profile"
                 },
 
+                async exitFromAccount(){
+                    try{
+                        const res = await fetch("/exit")
+                        if (!res.ok) throw new Error("Ошибка выхода с аккаунта")
+                        window.location.href = "/login"
+
+                    }catch(err){
+                        console.log(err)
+                    }
+                },
+
                 async loadFriendMessage() {
                     const url = new URLSearchParams(window.location.search);
                     this.ChatID = url.get('id');
@@ -79,4 +90,6 @@ const App2 = {
 
             }
         }
-    Vue.createApp(App2).mount('#VUE2')
+    Vue.createApp(App2)
+        .component('app-sidebar', AppSidebar)
+        .mount('#VUE2')

@@ -6,70 +6,75 @@
     <title>Profile</title>
     <link rel="stylesheet" type="text/css" href="../static/css/profile.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="../static/css/app.css" />
     <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
 </head>
 <body>
-    
-    <div id="VUE2">
-        <div class="header">
-            <p class="profile-name" >Профиль</p>
-            <p>
-                <button class="button" @click="goBack">Свой профиль</button>
-            </p>
-        </div>
-    <div>
-            
-        </div>
-        <div class="wrapper">
-            <div class="main">
-                <div class="profile-header">
-                    <img id="profile-photo" :src="avatarURL" alt="Фото профиля"/>
-                    <p class="profile_name">{{name}}</p>
-                </div>
-                <div class="about">
-                    <p class="about-text"> О себе: {{aboutPerson}}</p>
-                    <span>Пол:{{sex}}</span>
-                </div>
-                <div class="button-container">
-                    <button @click="loadFriendMessage">Написать сообщение</button>
-                </div>
+    <div id="VUE2" class="app-layout">
+        <app-sidebar
+            active="friends"
+            :user-name="name"
+            :user-avatar="avatarURL"
+            @logout="exitFromAccount">
+        </app-sidebar>
 
-                <div class="wall">
-                    <h3>Стена</h3>
-                    <div>
-                        <ul class="list-item">
-                            <li class="list" v-for="(note, i) in wall" :key="note.id">
-                                <div>
-                                    <img v-if="note.img != '' " :src="note.img" alt="фото поста" class="post-image">
-                                    <h3 class="wall-title">{{note.title}}</h3>
-                                    <span class="wall-text">{{note.text}}</span>
-                                </div>
-                                <p>
-                                    <span>{{note.created_at_wall}}</span>
-                                </p>
-                            </li>
-                        </ul>
+        <main class="app-content">
+            <div class="header">
+                <p class="profile-name">Профиль</p>
+                <p>
+                    <button class="button" @click="goBack">Свой профиль</button>
+                </p>
+            </div>
+
+            <div class="wrapper">
+                <div class="main">
+                    <div class="profile-header">
+                        <img id="profile-photo" :src="avatarURL" alt="Фото профиля"/>
+                        <p class="profile_name">{{name}}</p>
+                    </div>
+                    <div class="about">
+                        <p class="about-text"> О себе: {{aboutPerson}}</p>
+                        <span>Пол:{{sex}}</span>
+                    </div>
+                    <div class="button-container">
+                        <button @click="loadFriendMessage">Написать сообщение</button>
+                    </div>
+
+                    <div class="wall">
+                        <h3>Стена</h3>
+                        <div>
+                            <ul class="list-item">
+                                <li class="list" v-for="(note, i) in wall" :key="note.id">
+                                    <div>
+                                        <img v-if="note.img != '' " :src="note.img" alt="фото поста" class="post-image">
+                                        <h3 class="wall-title">{{note.title}}</h3>
+                                        <span class="wall-text">{{note.text}}</span>
+                                    </div>
+                                    <p>
+                                        <span>{{note.created_at_wall}}</span>
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="sidebar">
-                <div>
-                    <p>Друзья пользователя {{name}}</p>
+                <div class="sidebar">
+                    <div>
+                        <p>Друзья пользователя {{name}}</p>
+                    </div>
+                    <ul>
+                        <li v-for="(friend, i) in friends" :key="friend.id" @click="goToFriendProfile(friend.id)">
+                            <img :src="friend.avatar" width="25" alt="фото друга"/>
+                            {{friend.name}}
+                        </li>
+                    </ul>
                 </div>
-                <ul>
-                    <li v-for="(friend, i) in friends" :key="friend.id" @click="goToFriendProfile(friend.id)">
-                        <img :src="friend.avatar" width="25" alt="фото друга"/>
-                        {{friend.name}}
-                    </li>
-                </ul>
             </div>
-        </div>
-
-        
+        </main>
     </div>
-    
 
     <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
+    <script src="/js/components/sidebar.js"></script>
     <script src="/js/friend.js"></script>
 
 </body>
