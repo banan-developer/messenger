@@ -96,6 +96,9 @@ func (f *FriendRepo) GetIncomingRequest(UserID int) ([]domain.FriendResponse, er
 		}
 		friends = append(friends, friend)
 	}
+	if friends == nil {
+		friends = []domain.FriendResponse{}
+	}
 
 	return friends, nil
 }
@@ -115,4 +118,9 @@ func (f *FriendRepo) AcceptComingRequset(FriendID, UserID int) error {
 	)
 
 	return tx.Commit()
+}
+
+func (f *FriendRepo) DeleteFriend(userID, friendID int) error {
+	_, err := f.db.Exec("DELETE FROM friends WHERE (users_id=? AND friend_id=?) OR (users_id=? AND friend_id=?)", userID, friendID, friendID, userID)
+	return err
 }

@@ -68,3 +68,5 @@ func (f *FriendService) AcceptComingRequset(FriendID, UserID int) error {
 	}
 	return f.repo.AcceptComingRequset(FriendID, UserID)
 }
+
+func (f *FriendService) DeleteFriend(userID, friendID int) error { return f.repo.DeleteFriend(userID,friendID) }

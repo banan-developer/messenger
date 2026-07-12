@@ -46,12 +46,11 @@
                             <div class="friend-name">{{ friend.name }}</div>
                             <div class="friend-status">{{ friend.status }}</div>
                         </div>
-                        <button class="button is-white icon-btn" @click="openChatWith(friend)">💬</button>
                         <div class="friend-menu-wrap">
                             <button class="button is-white icon-btn" @click="toggleMenu(friend.id)">⋮</button>
                             <div v-if="openMenuId === friend.id" class="friend-menu">
-                                <a class="friend-menu-item" @click="toggleMenu(null)">Написать сообщение</a>
-                                <a class="friend-menu-item is-danger" @click="toggleMenu(null)">Удалить из друзей</a>
+                                <a class="friend-menu-item" @click="openChatWith(friend)">Написать сообщение</a>
+                                <a class="friend-menu-item is-danger" @click="deleteFriend(friend.id)">Удалить из друзей</a>
                             </div>
                         </div>
                     </li>

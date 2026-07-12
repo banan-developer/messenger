@@ -32,6 +32,8 @@ func (f *FriendHandler) Friends(w http.ResponseWriter, r *http.Request) {
 		f.AddToFriend(w, r)
 	case http.MethodPut:
 		f.AcceptComingRequset(w, r)
+	case http.MethodDelete:
+		userID,_:=auth.GetUserId(r); friendID,err:=strconv.Atoi(r.URL.Query().Get("id")); if err!=nil {http.Error(w,"Invalid friend id",400);return}; if err=f.service.DeleteFriend(userID,friendID);err!=nil{http.Error(w,"Failed",500);return}; w.WriteHeader(http.StatusNoContent)
 	default:
 		http.Error(w, "MethodNotAllowed", http.StatusMethodNotAllowed)
 	}

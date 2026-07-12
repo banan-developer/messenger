@@ -11,75 +11,194 @@ type MessageRepo struct {
 }
 
 func NewMessageRepo(db *sql.DB) *MessageRepo {
-	return &MessageRepo{
-		db: db,
-	}
+	return &MessageRepo{db: db}
 }
 
-func (m *MessageRepo) GetMessagesByChatID(FriendID, UserID int) ([]domain.Message, error) {
-	var ChatID int
-	err := m.db.QueryRow("SELECT id FROM chats WHERE (user1 = ? AND user2 = ?) OR (user1 = ? AND user2 = ?)", UserID, FriendID, FriendID, UserID).Scan(&ChatID)
+// GetOrCreateChat — найти или создать личный чат
+func (r *MessageRepo) GetOrCreateChat(user1ID, user2ID int) (int, error) {
+	var chatID int
+
+	// Ищем существующий чат
+	err := r.db.QueryRow(`
+		SELECT c.id 
+		FROM chats c
+		JOIN users_has_chats uhc1 ON c.id = uhc1.chats_id AND uhc1.users_id = ?
+		JOIN users_has_chats uhc2 ON c.id = uhc2.chats_id AND uhc2.users_id = ?
+		WHERE c.is_group = 0
+	`, user1ID, user2ID).Scan(&chatID)
+
+	if err == nil {
+		return chatID, nil
+	}
+
+	if err != sql.ErrNoRows {
+		log.Println("GetOrCreateChat error:", err)
+		return 0, err
+	}
+
+	// Создаём чат
+	tx, err := r.db.Begin()
 	if err != nil {
-		log.Println("БД: Ошибка при получении id чата")
+		return 0, err
+	}
+	defer tx.Rollback()
+
+	res, err := tx.Exec("INSERT INTO chats (is_group) VALUES (0)")
+	if err != nil {
+		return 0, err
+	}
+	id, _ := res.LastInsertId()
+	chatID = int(id)
+
+	// Добавляем участников
+	_, err = tx.Exec(`
+		INSERT INTO users_has_chats (chats_id, users_id) VALUES (?, ?), (?, ?)
+	`, chatID, user1ID, chatID, user2ID)
+	if err != nil {
+		return 0, err
+	}
+
+	tx.Commit()
+	return chatID, nil
+}
+
+func (r *MessageRepo) GetChatsForUser(userID int) ([]map[string]interface{}, error) {
+	rows, err := r.db.Query(`
+		SELECT c.id, c.is_group, COALESCE((SELECT other_member.users_id FROM users_has_chats other_member WHERE other_member.chats_id = c.id AND other_member.users_id <> ? LIMIT 1), 0),
+			CASE WHEN c.is_group = 1 THEN COALESCE(c.title, '') ELSE COALESCE((
+				SELECT u.name FROM users_has_chats other_member
+				JOIN users u ON u.id = other_member.users_id
+				WHERE other_member.chats_id = c.id AND other_member.users_id <> ? LIMIT 1
+			), '') END AS name,
+			CASE WHEN c.is_group = 1 THEN COALESCE(c.avatar_url, '') ELSE COALESCE((
+				SELECT u.avatar_url FROM users_has_chats other_member
+				JOIN users u ON u.id = other_member.users_id
+				WHERE other_member.chats_id = c.id AND other_member.users_id <> ? LIMIT 1
+			), '') END AS avatar,
+			COALESCE((SELECT text FROM messeges WHERE chats_id = c.id ORDER BY created_at DESC LIMIT 1), '')
+		FROM chats c
+		JOIN users_has_chats uh ON uh.chats_id = c.id
+		WHERE uh.users_id = ?
+		ORDER BY c.id DESC
+	`, userID, userID, userID, userID)
+	if err != nil {
 		return nil, err
 	}
-	rows, err := m.db.Query("SELECT id, text, DATE_FORMAT(created_at, '%m-%d %H:%i') as created_at, from_id, to_id FROM messeges WHERE chats_id = ?", ChatID)
+	defer rows.Close()
+	result := make([]map[string]interface{}, 0)
+	for rows.Next() {
+		var id, otherUserID int
+		var group bool
+		var title, avatar, last string
+		if err := rows.Scan(&id, &group, &otherUserID, &title, &avatar, &last); err != nil {
+			return nil, err
+		}
+		result = append(result, map[string]interface{}{"id": id, "user_id": otherUserID, "is_group": group, "name": title, "avatar": avatar, "last_message": last})
+	}
+	return result, rows.Err()
+}
 
+// SaveMessage — сохранить сообщение
+func (r *MessageRepo) SaveMessage(msg *domain.Message) error {
+	result, err := r.db.Exec(`
+		INSERT INTO messeges (text, from_id, to_id, chats_id, attachment_url) 
+		VALUES (?, ?, ?, ?, ?)
+	`, msg.Text, msg.FromID, msg.ToID, msg.ChatID, msg.AttachmentURL)
 	if err != nil {
-		log.Println("БД: Ошибка при получении сообщения")
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+	msg.ID = int(id)
+	return nil
+}
+
+// GetMessagesByChatID — получить все сообщения чата
+func (r *MessageRepo) GetMessagesByChatID(chatID int) ([]domain.Message, error) {
+	if chatID <= 0 {
+		return []domain.Message{}, nil
+	}
+
+	rows, err := r.db.Query(`
+		SELECT id, text, DATE_FORMAT(created_at, '%m-%d %H:%i') as created_at, 
+		       from_id, to_id, COALESCE(attachment_url, '') as attachment_url
+		FROM messeges WHERE chats_id = ? ORDER BY created_at ASC
+	`, chatID)
+	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var messages []domain.Message
+	messages := make([]domain.Message, 0)
 	for rows.Next() {
-		var message domain.Message
-		rows.Scan(&message.Id, &message.Text, &message.CreateAt, &message.FromID, &message.ToID)
-		message.ChatId = ChatID
-		messages = append(messages, message)
+		var msg domain.Message
+		err := rows.Scan(&msg.ID, &msg.Text, &msg.CreatedAt, &msg.FromID, &msg.ToID, &msg.AttachmentURL)
+		if err != nil {
+			return nil, err
+		}
+		messages = append(messages, msg)
 	}
-	if messages == nil {
-		messages = []domain.Message{}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
-
 	return messages, nil
 }
 
-func (m *MessageRepo) GetChatsWithLastMessages(UserID int) ([]domain.ChatListItem, error) {
-	rows, err := m.db.Query(`
-        SELECT 
-            c.id,
-            u.id AS user_id,
-            u.name,
-            u.avatar_url,
-            COALESCE(m.text, '') AS last_message,
-            COALESCE(m.created_at, '') AS last_message_time
-        FROM chats c
-        JOIN users u ON u.id = CASE 
-            WHEN c.user1 = ? THEN c.user2
-            WHEN c.user2 = ? THEN c.user1
-        END
-        LEFT JOIN messeges m ON m.chats_id = c.id
-        AND m.created_at = (
-            SELECT MAX(created_at) FROM messeges WHERE chats_id = c.id
-        )
-        WHERE c.user1 = ? OR c.user2 = ?
-        ORDER BY m.created_at DESC
-    `, UserID, UserID, UserID, UserID)
+// GetMessageByID — получить сообщение по ID
+func (r *MessageRepo) GetMessageByID(msgID int) (*domain.Message, error) {
+	var msg domain.Message
+	err := r.db.QueryRow(`
+		SELECT id, text, from_id, to_id, chats_id, attachment_url FROM messeges WHERE id = ?
+	`, msgID).Scan(&msg.ID, &msg.Text, &msg.FromID, &msg.ToID, &msg.ChatID, &msg.AttachmentURL)
+	if err != nil {
+		return nil, err
+	}
+	return &msg, nil
+}
+
+// UpdateMessage — обновить текст сообщения
+func (r *MessageRepo) UpdateMessage(msgID int, newText string) error {
+	if newText == "" {
+		_, err := r.db.Exec("DELETE FROM messeges WHERE id = ?", msgID)
+		return err
+	}
+	_, err := r.db.Exec("UPDATE messeges SET text = ? WHERE id = ?", newText, msgID)
+	return err
+}
+
+// DeleteMessage — удалить сообщение
+func (r *MessageRepo) DeleteMessage(msgID int) error {
+	_, err := r.db.Exec("DELETE FROM messeges WHERE id = ?", msgID)
+	return err
+}
+
+// GetChatParticipants — получить участников чата
+func (r *MessageRepo) GetChatParticipants(chatID int) ([]int, error) {
+	rows, err := r.db.Query(`
+		SELECT users_id FROM users_has_chats WHERE chats_id = ?
+	`, chatID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var messages []domain.ChatListItem
+	var users []int
 	for rows.Next() {
-		var message domain.ChatListItem
-		rows.Scan(&message.ID, &message.UserID, &message.Name, &message.Avatar, &message.LastMessage, &message.LastMessageTime)
-		messages = append(messages, message)
+		var userID int
+		rows.Scan(&userID)
+		users = append(users, userID)
 	}
-	if messages == nil {
-		messages = []domain.ChatListItem{}
-	}
+	return users, nil
+}
 
-	return messages, nil
+func (r *MessageRepo) IsChatParticipant(chatID, userID int) (bool, error) {
+	var exists int
+	err := r.db.QueryRow("SELECT 1 FROM users_has_chats WHERE chats_id = ? AND users_id = ?", chatID, userID).Scan(&exists)
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+	return err == nil, err
 }

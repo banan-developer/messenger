@@ -29,6 +29,7 @@
             <div class="page-body">
                 <h1 class="title is-4">Сообщения</h1>
 
+                <button class="button is-primary mb-4" @click="isGroupModalOpen = true">Создать беседу</button>
                 <div class="control has-icons-left chats-search">
                     <input class="input" type="text" placeholder="Чаты" v-model="chatSearch">
                     <span class="icon is-left">🔍</span>
@@ -39,7 +40,7 @@
                         v-for="chat in filteredChats"
                         :key="chat.id"
                         class="chat-item"
-                        @click="goToChatByFrinedId(chat.user_id )">
+                        @click="openChat(chat)">
                         <div class="avatar-circle" :class="{ 'is-group': chat.isGroup }">
                                 <img :src="chat.avatar" width="25" alt="фото друга"/>
                             </div>
@@ -56,6 +57,7 @@
                     </li>
                     <li v-if="filteredChats.length === 0" class="chat-empty">Ничего не найдено</li>
                 </ul>
+                <div v-if="isGroupModalOpen" class="modal is-active"><div class="modal-background" @click="isGroupModalOpen=false"></div><div class="modal-card"><section class="modal-card-body"><input class="input mb-3" v-model="groupTitle" placeholder="Название беседы"><label v-for="friend in friends" :key="friend.id" class="is-block"><input type="checkbox" :value="friend.id" v-model="selectedFriendIds"> {{friend.name}}</label></section><footer class="modal-card-foot"><button class="button is-primary" @click="createGroup">Создать</button><button class="button" @click="isGroupModalOpen=false">Отмена</button></footer></div></div>
             </div>
         </main>
     </div>

@@ -13,12 +13,19 @@
         
         <div class="header">
             <button class="button" @click="getBack">Назад</button>
-            <p @click="loadFriendProfile">
+            <p :class="{ 'group-title': chatID }" @click="loadFriendProfile">
                 <img id="profile-photo" :src="avatar_url" alt="Фото профиля">
                 {{name}}
             </p>
         </div>
         <div class="wrapper">
+            <div v-if="chatID" class="group-header">
+                <div class="group-avatars"><img v-for="member in groupMembers.slice(0, 4)" :key="member.id" :src="member.avatar || '/static/avatars/default.jpg'" :alt="member.name"></div>
+                <div><strong>Групповая беседа</strong><small>{{ groupMembers.map(member => member.name).join(', ') }}</small></div>
+                <button @click="isGroupSettingsOpen=true">⚙</button>
+            </div>
+            <dialog id="group-settings" :open="isGroupSettingsOpen"><h3>Управление беседой</h3><input v-model="groupTitle" placeholder="Новое название"><button @click="renameGroup">Сохранить</button><div class="settings-members"><b>Участники ({{groupMembers.length}}/50)</b><div v-for="member in groupMembers" :key="member.id" class="settings-member"><img :src="member.avatar || '/static/avatars/default.jpg'"><span>{{member.name}}</span><button v-if="member.id !== currentUserID" @click="removeGroupMember(member.id)">Удалить</button></div><select v-model="groupMemberID"><option value="">Добавить друга</option><option v-for="friend in groupFriends" :value="friend.id">{{friend.name}}</option></select><button @click="addGroupMember">Добавить</button></div><button @click="deleteGroup">Удалить беседу</button><button @click="isGroupSettingsOpen=false">Закрыть</button></dialog>
+            <div v-if="chatID" class="group-members"><b>Участники ({{groupMembers.length}}/50)</b><span v-for="member in groupMembers" :key="member.id">{{member.name}} <button v-if="member.id !== currentUserID" @click="removeGroupMember(member.id)">×</button></span><select v-model="groupMemberID"><option value="">Выберите друга</option><option v-for="friend in groupFriends" :value="friend.id">{{friend.name}}</option></select><button @click="addGroupMember">Добавить</button></div>
             <div class="main">
                 <div class="messanges">
                     <div 
@@ -26,8 +33,11 @@
                         :key="msg.id"
                         class="message-wrapper"
                         :class="Number(msg.from_id) === currentUserID ? 'my-message' : 'friend-message'">
+                        <img v-if="messageAuthor(msg.from_id)" class="message-author-avatar" :src="messageAuthor(msg.from_id).avatar || '/static/avatars/default.jpg'" :alt="messageAuthor(msg.from_id).name">
                         <div class="message-bubble">
-                            <span class="message-text">{{msg.text}}</span>
+                            <span v-if="chatID && Number(msg.from_id) !== currentUserID && messageAuthor(msg.from_id)" class="message-author-name">{{ messageAuthor(msg.from_id).name }}</span>
+                            <span v-if="msg.text" class="message-text">{{msg.text}}</span>
+                            <img v-if="msg.attachment_url" class="message-image" :src="msg.attachment_url" alt="Вложенная фотография">
                             <div class="message-meta">
                                 <span class="message-time">{{formatDate(msg.created_at)}}</span>
                                 <button v-if="msg.from_id == currentUserID" class="btn-msg-tools" @click="openMsgTools(msg.id)" >:</button>
@@ -36,9 +46,17 @@
                     </div>
                 </div>
 
-                <div class="input">
+                <div class="chat-composer">
                     <div v-if="isediting == 0">
                         <input type="text" v-model="inputText" placeholder="Напишите сообщение вашему другу!" @keypress.enter="sendMessage">
+                        <div class="attachment-controls">
+                            <label class="file-button">
+                                <input ref="fileInput" type="file" accept="image/*" @change="selectFile">
+                                📎 Фото
+                            </label>
+                            <span v-if="selectedFileName" class="selected-file">{{ selectedFileName }}</span>
+                        </div>
+                        <p v-if="error" class="chat-error">{{ error }}</p>
                         <div class="button-container">
                             <button @click="sendMessage" class="button">Отправить</button>
                         </div>

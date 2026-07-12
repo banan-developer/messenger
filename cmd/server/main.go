@@ -7,6 +7,7 @@ import (
 	"messenger_v2/internal/repository"
 	"messenger_v2/internal/service"
 	"messenger_v2/internal/transport"
+	"messenger_v2/internal/transport/websocket.go"
 	"messenger_v2/pkg/auth"
 	"net/http"
 	"os"
@@ -47,6 +48,7 @@ func main() {
 	defer db.Close()
 
 	auth.InitStore()
+	hub := websocket.NewHub()
 
 	// Инициализация слоев
 	UserRepo := repository.NewUserRepository(db)
@@ -65,8 +67,10 @@ func main() {
 	FriendHandler := transport.NewFriendHandler(FriendService)
 
 	MessagesRepo := repository.NewMessageRepo(db)
-	MessagesService := service.NewMessagesService(MessagesRepo)
-	MessgesHandler := transport.NewMessageHandler(MessagesService)
+	ChatRepo := repository.NewChatRepo(db)
+	MessagesService := service.NewMessageService(MessagesRepo)
+	MessgesHandler := transport.NewMessageHandler(MessagesService, hub)
+	GroupHandler := transport.NewGroupHandler(ChatRepo)
 
 	fileServer := http.FileServer(http.Dir("./web/static"))
 
@@ -80,6 +84,13 @@ func main() {
 	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(FriendHandler.Friends)))
 	http.Handle("/api/incomingrequest", auth.RequireAuth(http.HandlerFunc(FriendHandler.GetIncomigRequest)))
 	http.Handle("/api/messages", auth.RequireAuth(http.HandlerFunc(MessgesHandler.Messages)))
+	http.Handle("/api/messages/file", auth.RequireAuth(http.HandlerFunc(MessgesHandler.SendMessageWithFile)))
+	http.Handle("/api/groups", auth.RequireAuth(http.HandlerFunc(GroupHandler.Groups)))
+
+	wsHandler := transport.NewWebSocketHandler(MessagesService, hub)
+
+	// Роут для WebSocket
+	http.HandleFunc("/ws", wsHandler.HandleWS)
 
 	http.HandleFunc("/login", AuthHandler.Login)
 	http.HandleFunc("/registration", AuthHandler.Registration)

@@ -636,9 +636,11 @@ dialog::backdrop{
     text-align: center;
     font-size: 11px;
     color: #8a8d91;
-    background: #f5f6f8;
+    background-color: #f5f6f8 !important;
     border-top: 1px solid #dddfe2;
     padding: 15px 0;
+    width: 100%;
+    flex-shrink: 0;
 }
 
 .footer p {

@@ -28,6 +28,11 @@ const FriendsApp = {
         openChatWith(friend) {
             window.location.href = `/chat.html?id=${friend.id}`
         },
+		async deleteFriend(friendID) {
+			if (!confirm('Удалить из друзей?')) return
+			const res = await fetch(`/api/friend?id=${friendID}`, { method: 'DELETE' })
+			if (res.ok) { this.toggleMenu(null); await this.loadFriend() }
+		},
         exitFromAccount() {
             window.location.href = "/login"
         },
