@@ -1,0 +1,209 @@
+:root {
+  --color-bg: #EEF1F7;
+  --color-sidebar-start: #101F4D;
+  --color-sidebar-end: #1B3F8B;
+  --color-accent-1: #6C3FD1;
+  --color-accent-2: #C13584;
+  --color-accent-3: #E1306C;
+  --color-white: #FFFFFF;
+  --color-text: #1F2430;
+  --color-text-muted: #6B7280;
+  --color-border: #E4E8F1;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 20px rgba(21, 35, 74, 0.08);
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+[v-cloak] { display: none; }
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+
+.app-shell { display: flex; min-height: 100vh; }
+
+/* ===== БОКОВАЯ ПАНЕЛЬ ===== */
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, var(--color-sidebar-start), var(--color-sidebar-end));
+  display: flex;
+  flex-direction: column;
+  padding: 22px 16px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 26px;
+  color: var(--color-white);
+}
+
+.logo-icon {
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--color-accent-1), var(--color-accent-3));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+}
+
+.sidebar-nav { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.72); font-weight: 500; font-size: 0.94rem;
+  text-decoration: none; transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-item i { width: 18px; text-align: center; }
+.nav-item:hover { background: rgba(255, 255, 255, 0.08); color: var(--color-white); }
+.nav-item.is-active { background: rgba(255, 255, 255, 0.14); color: var(--color-white); box-shadow: inset 3px 0 0 var(--color-accent-3); }
+
+.sidebar-footer { margin-top: auto; border-top: 1px solid rgba(255, 255, 255, 0.12); padding-top: 16px; }
+.nav-item.logout:hover { color: #ffb4c6; }
+
+/* ===== ОСНОВНАЯ ОБЛАСТЬ ===== */
+.main-shell { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.topbar {
+  background: var(--color-white);
+  padding: 16px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 1.3rem; margin: 0;
+}
+
+.accent-strip { height: 4px; background: linear-gradient(90deg, var(--color-accent-1), var(--color-accent-2), var(--color-accent-3)); }
+
+/* ===== СЕТКА КОНТЕНТА ===== */
+.content-grid {
+  flex: 1; display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px; padding: 24px 32px 48px; align-items: start;
+}
+
+.card {
+  background: var(--color-white); border-radius: var(--radius);
+  box-shadow: var(--shadow); padding: 22px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 1.05rem; margin: 0 0 16px;
+}
+
+/* Карточка профиля */
+.profile-card { display: flex; align-items: center; gap: 20px; }
+
+.avatar-wrap {
+  width: 84px; height: 84px;
+  flex-shrink: 0; border-radius: 50%; overflow: hidden;
+}
+
+.avatar-img, .avatar-placeholder { width: 100%; height: 100%; object-fit: cover; }
+.avatar-placeholder {
+  background: linear-gradient(135deg, var(--color-accent-1), var(--color-accent-3));
+  color: var(--color-white); display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 1.6rem;
+}
+
+.profile-info { flex: 1; min-width: 0; }
+.profile-name { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; margin: 0 0 2px; color: var(--color-text); }
+.profile-meta { color: var(--color-text-muted); font-size: 0.9rem; margin: 0 0 6px; }
+.profile-about { margin: 0; font-size: 0.93rem; color: var(--color-text); line-height: 1.5; }
+
+/* Стена и посты */
+.wall-section { margin-top: 24px; }
+.posts-feed { display: flex; flex-direction: column; gap: 16px; }
+.post-card { padding: 18px 22px; }
+
+.post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.post-avatar {
+  width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--color-accent-1), var(--color-accent-3));
+  color: var(--color-white); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;
+}
+.post-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.post-author { display: flex; flex-direction: column; line-height: 1.25; }
+.post-author strong { font-size: 0.92rem; }
+.post-date { font-size: 0.78rem; color: var(--color-text-muted); }
+
+.post-title { font-family: var(--font-display); font-weight: 700; font-size: 1rem; margin: 0 0 6px; }
+.post-text { margin: 0 0 12px; font-size: 0.93rem; line-height: 1.55; white-space: pre-wrap; }
+.post-image { width: 100%; border-radius: var(--radius-sm); display: block; margin-top: 10px; }
+
+/* Друзья в правой колонке */
+.friends-header { display: flex; align-items: center; justify-content: space-between; }
+.friends-header .section-title { margin-bottom: 0; }
+.friends-count {
+  background: var(--color-bg); color: var(--color-text-muted);
+  font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px;
+}
+
+.friends-list { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+
+.friend-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.friend-row.is-clickable { cursor: pointer; }
+.friend-row.is-clickable:hover { background: var(--color-bg); transform: translateX(2px); }
+
+.friend-avatar {
+  width: 34px; height: 34px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--color-accent-1), var(--color-accent-2));
+  color: var(--color-white); display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700;
+}
+.friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.friend-name { flex: 1; min-width: 0; font-size: 0.88rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.friend-arrow { font-size: 0.75rem; color: var(--color-border); transition: color 0.15s ease; }
+.friend-row:hover .friend-arrow { color: var(--color-text-muted); }
+
+/* Кнопки и общие стили */
+.btn {
+  font-family: var(--font-body); font-weight: 600; font-size: 0.88rem;
+  border-radius: 10px; padding: 10px 18px; border: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--color-sidebar-end); color: var(--color-white); }
+.btn-primary:hover { background: #163573; }
+.btn-ghost { background: var(--color-bg); color: var(--color-text); }
+.btn-ghost:hover { background: #E3E8F3; }
+
+.empty-state { text-align: center; color: var(--color-text-muted); padding: 30px 10px; font-size: 0.9rem; }
+.empty-state i { font-size: 1.8rem; display: block; margin-bottom: 8px; opacity: 0.4; }
+.empty-state.small { padding: 16px 6px; font-size: 0.84rem; }
+
+@media (max-width: 960px) { .content-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .app-shell { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; padding: 16px; }
+  .sidebar-footer { display: none; }
+  .topbar, .content-grid { padding: 16px; }
+  .profile-card { flex-direction: column; text-align: center; }
+}

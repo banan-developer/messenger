@@ -1,81 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/profile.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/app.css" />
-    <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Профиль пользователя — ГУАП</title>
+
+  <!-- Шрифты и библиотеки (единый стиль со всеми страницами) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../static/css/friend.css">
+  <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
 </head>
 <body>
-    <div id="VUE2" class="app-layout">
-        <app-sidebar
-            active="friends"
-            :user-name="name"
-            :user-avatar="avatarURL"
-            @logout="exitFromAccount">
-        </app-sidebar>
 
-        <main class="app-content">
-            <div class="header">
-                <p class="profile-name">Профиль</p>
-                <!-- <p>
-                    <button class="button" @click="goBack">Свой профиль</button>
-                </p> -->
-            </div>
+<!-- Точка монтирования Vue приложения (#VUE2 согласно friend.js) -->
+<div id="VUE2" class="app-shell" v-cloak>
 
-            <div class="wrapper">
-                <div class="main">
-                    <div class="profile-header">
-                        <img id="profile-photo" :src="avatarURL" alt="Фото профиля"/>
-                        <p class="profile_name">{{name}}</p>
-                    </div>
-                    <div class="about">
-                        <p class="about-text"> О себе: {{aboutPerson}}</p>
-                        <span>Пол:{{sex}}</span>
-                    </div>
-                    <div class="button-container">
-                        <button @click="loadFriendMessage">Написать сообщение</button>
-                    </div>
-
-                    <div class="wall">
-                        <h3>Стена</h3>
-                        <div>
-                            <ul class="list-item">
-                                <li class="list" v-for="(note, i) in wall" :key="note.id">
-                                    <div>
-                                        <img v-if="note.img != '' " :src="note.img" alt="фото поста" class="post-image">
-                                        <h3 class="wall-title">{{note.title}}</h3>
-                                        <span class="wall-text">{{note.text}}</span>
-                                    </div>
-                                    <p>
-                                        <span>{{note.created_at_wall}}</span>
-                                    </p>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="sidebar">
-                    <div>
-                        <p>Друзья пользователя {{name}}</p>
-                    </div>
-                    <ul>
-                        <li v-for="(friend, i) in friends" :key="friend.id" @click="goToFriendProfile(friend.id)">
-                            <img :src="friend.avatar" width="25" alt="фото друга"/>
-                            {{friend.name}}
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </main>
+  <!-- ===== БОКОВАЯ ПАНЕЛЬ ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon"><i class="fas fa-satellite"></i></span>
+      <span class="logo-text">ГУАП</span>
     </div>
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
-    <script src="/js/components/sidebar.js"></script>
-    <script src="/js/friend.js"></script>
+    <nav class="sidebar-nav">
+      <a href="/profile" class="nav-item">
+        <i class="fas fa-user"></i><span>Мой профиль</span>
+      </a>
+      <a href="/messages" class="nav-item">
+        <i class="far fa-comment-dots"></i><span>Сообщения</span>
+      </a>
+      <a href="/friends" class="nav-item">
+        <i class="fas fa-user-friends"></i><span>Друзья</span>
+      </a>
+    </nav>
 
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item logout" @click.prevent="exitFromAccount">
+        <i class="fas fa-right-from-bracket"></i><span>Выход</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ===== ОСНОВНАЯ ОБЛАСТЬ ===== -->
+  <div class="main-shell">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title">Профиль пользователя</h1>
+      </div>
+      <!-- Кнопка возврата в свой профиль -->
+      <button class="btn btn-ghost" @click="goBack" title="Вернуться к себе">
+        <i class="fas fa-arrow-left"></i> <span>Мой профиль</span>
+      </button>
+    </header>
+    <div class="accent-strip"></div>
+
+    <main class="content-grid">
+
+      <!-- ---- ЛЕВАЯ КОЛОНКА (ОСНОВНАЯ) ---- -->
+      <section class="content-main">
+
+        <!-- Карточка пользователя -->
+        <div class="card profile-card">
+          <div class="avatar-wrap">
+            <img v-if="avatarURL" :src="avatarURL" class="avatar-img" alt="Аватар" />
+            <div v-else class="avatar-placeholder">
+              {{ (name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}
+            </div>
+          </div>
+
+          <div class="profile-info">
+            <h2 class="profile-name">{{ name || 'Загрузка...' }}</h2>
+            <p class="profile-meta" v-if="sex">{{ sex }}</p>
+            <p class="profile-about">{{ aboutPerson || 'Пользователь пока не рассказал о себе.' }}</p>
+          </div>
+
+          <!-- Кнопка действия -->
+          <div class="profile-actions">
+            <button class="btn btn-primary" @click="loadFriendMessage">
+              <i class="far fa-comment-dots"></i> Написать сообщение
+            </button>
+          </div>
+        </div>
+
+        <!-- Стена пользователя -->
+        <div class="wall-section">
+          <h3 class="section-title">Стена пользователя</h3>
+
+          <div v-if="!wall || !wall.length" class="empty-state card">
+            <i class="fas fa-feather"></i>
+            <p>На стене этого пользователя пока нет записей.</p>
+          </div>
+
+          <div class="posts-feed" v-else>
+            <article v-for="note in wall" :key="note.id" class="card post-card">
+              <div class="post-header">
+                <div class="post-avatar">
+                  <img v-if="avatarURL" :src="avatarURL" alt="" />
+                  <span v-else>{{ (name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
+                </div>
+                <div class="post-author">
+                  <strong>{{ name }}</strong>
+                  <span class="post-date">{{ note.created_at_wall }}</span>
+                </div>
+              </div>
+              <h4 class="post-title" v-if="note.title">{{ note.title }}</h4>
+              <p class="post-text">{{ note.text }}</p>
+              <img v-if="note.img && note.img !== ''" :src="note.img" class="post-image" alt="Фото поста" />
+            </article>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ---- ПРАВАЯ КОЛОНКА (ДРУЗЬЯ) ---- -->
+      <aside class="content-side">
+        <div class="card friends-card">
+          <div class="friends-header">
+            <h3 class="section-title">Друзья</h3>
+            <span class="friends-count" v-if="friends && friends.length">{{ friends.length }}</span>
+          </div>
+
+          <div v-if="!friends || !friends.length" class="empty-state small">
+            <p>Список друзей пуст.</p>
+          </div>
+
+          <!-- Кликабельный список друзей -->
+          <ul class="friends-list" v-else>
+            <li v-for="friend in friends" :key="friend.id" class="friend-row is-clickable" @click="goToFriendProfile(friend.id)">
+              <div class="friend-avatar">
+                <img v-if="friend.avatar" :src="friend.avatar" alt="" />
+                <span v-else>{{ (friend.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
+              </div>
+              <span class="friend-name">{{ friend.name }}</span>
+              <i class="fas fa-chevron-right friend-arrow"></i>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+</div>
+
+<!-- Подключение Vue и скрипта -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<script src="/js/friend.js"></script>
 </body>
 </html>

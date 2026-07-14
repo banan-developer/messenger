@@ -177,13 +177,16 @@
           </div>
 
           <ul class="friends-list">
-            <li v-for="friend in friends" :key="friend.id" class="friend-row">
+            <!-- Добавили @click="goToProfile(friend.id)" и класс is-clickable -->
+            <li v-for="friend in friends" :key="friend.id" class="friend-row is-clickable" @click="goToProfile(friend.id)">
               <div class="friend-avatar">
                 <img v-if="friend.avatar" :src="friend.avatar" alt="" />
                 <span v-else>{{ friendInitials(friend.name) }}</span>
               </div>
               <span class="friend-name">{{ friend.name }}</span>
-              <button class="icon-btn danger" title="Удалить из друзей" @click="removeFriend(friend.id)">
+              
+              <!-- ВАЖНО: добавили .stop в @click.stop="removeFriend(friend.id)" -->
+              <button class="icon-btn danger" title="Удалить из друзей" @click.stop="removeFriend(friend.id)">
                 <i class="fas fa-user-minus"></i>
               </button>
             </li>

@@ -73,6 +73,11 @@ createApp({
         .toUpperCase();
     },
 
+    goToProfile(userId) {
+      // Укажите ваш роут: например, /profile?id=... или /profile.html?id=...
+      window.location.href = `/friend?id=${userId}`;
+    },
+
     // ===== PROFILE =====
     async fetchProfile() {
       try {

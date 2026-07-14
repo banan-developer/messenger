@@ -91,5 +91,4 @@ const App2 = {
             }
         }
     Vue.createApp(App2)
-        .component('app-sidebar', AppSidebar)
         .mount('#VUE2')
