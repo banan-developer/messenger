@@ -43,11 +43,14 @@ func (r *MessageRepo) GetOrCreateChat(user1ID, user2ID int) (int, error) {
 	}
 	defer tx.Rollback()
 
-	res, err := tx.Exec("INSERT INTO chats (is_group) VALUES (0)")
+	res, err := tx.Exec("INSERT INTO chats (is_group, created_by) VALUES (0, ?)", user1ID)
 	if err != nil {
 		return 0, err
 	}
-	id, _ := res.LastInsertId()
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
 	chatID = int(id)
 
 	// Добавляем участников
@@ -58,7 +61,9 @@ func (r *MessageRepo) GetOrCreateChat(user1ID, user2ID int) (int, error) {
 		return 0, err
 	}
 
-	tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
 	return chatID, nil
 }
 
