@@ -28,16 +28,21 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a href="#" class="nav-item is-active" @click.prevent="closeMobileMenu">
-        <i class="fas fa-user"></i><span>Мой профиль</span>
-      </a>
-      <a href="#" class="nav-item" @click.prevent="closeMobileMenu">
-        <i class="far fa-comment-dots"></i><span>Сообщения</span>
-      </a>
-      <a href="#" class="nav-item" @click.prevent="closeMobileMenu">
-        <i class="fas fa-user-friends"></i><span>Друзья</span>
-      </a>
-    </nav>
+        <!-- Ссылка на текущую страницу профиля -->
+        <a href="/profile" class="nav-item is-active" @click="closeMobileMenu">
+          <i class="fas fa-user"></i><span>Мой профиль</span>
+        </a>
+      
+        <!-- Ссылка на сообщения -->
+        <a href="/messages" class="nav-item" @click="closeMobileMenu">
+          <i class="far fa-comment-dots"></i><span>Сообщения</span>
+        </a>
+    
+        <!-- Ссылка на друзей -->
+        <a href="/friends" class="nav-item" @click="closeMobileMenu">
+          <i class="fas fa-user-friends"></i><span>Друзья</span>
+        </a>
+</nav>
 
     <div class="sidebar-footer">
       <a href="#" class="nav-item logout" @click.prevent="logout">
