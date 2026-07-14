@@ -1,81 +1,181 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Друзья</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/app.css" />
-    <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Друзья — ГУАП</title>
+
+  <!-- Шрифты и библиотеки (аналогично профилю) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../static/css/friends.css">
 </head>
 <body>
-    <div id="FRIENDS" class="app-layout">
-        <app-sidebar
-            active="friends"
-            :user-name="userName"
-            :user-avatar="userAvatar"
-            @logout="exitFromAccount">
-        </app-sidebar>
 
-        <main class="app-content">
-            <div class="page-body">
-                <h1 class="title is-4">Друзья</h1>
+<!-- Точка монтирования Vue приложения (#FRIENDS) -->
+<div id="FRIENDS" class="app-shell" v-cloak @click="openMenuId = null">
 
-                <div class="tabs friends-tabs">
-                    <ul>
-                        <li :class="{ 'is-active': activeTab === 'all' }">
-                            <a @click="activeTab = 'all'">Все друзья</a>
-                        </li>
-                        <li :class="{ 'is-active': activeTab === 'requests' }">
-                            <a @click="activeTab = 'requests'">Заявки ({{ requests.length }})</a>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="control has-icons-left friends-search">
-                    <input class="input" type="text" placeholder="Поиск друзей..." v-model="searchQuery">
-                    <span class="icon is-left">🔍</span>
-                </div>
-
-                <ul v-if="activeTab === 'all'" class="friend-list">
-                    <li v-for="friend in filteredFriends" :key="friend.id" class="friend-item">
-                        <div class="avatar-circle">
-                            <img :src="friend.avatar" width="25" alt="фото друга"/>
-                        </div>
-                        <div class="friend-info">
-                            <div class="friend-name">{{ friend.name }}</div>
-                            <div class="friend-status">{{ friend.status }}</div>
-                        </div>
-                        <div class="friend-menu-wrap">
-                            <button class="button is-white icon-btn" @click="toggleMenu(friend.id)">⋮</button>
-                            <div v-if="openMenuId === friend.id" class="friend-menu">
-                                <a class="friend-menu-item" @click="openChatWith(friend)">Написать сообщение</a>
-                                <a class="friend-menu-item is-danger" @click="deleteFriend(friend.id)">Удалить из друзей</a>
-                            </div>
-                        </div>
-                    </li>
-                    <li v-if="filteredFriends.length === 0" class="chat-empty">Ничего не найдено</li>
-                </ul>
-
-                <ul v-if="activeTab === 'requests'" class="friend-list">
-                    <li v-for="req in requests" :key="req.id" class="friend-item">
-                        <div class="avatar-circle">
-                             <img :src="req.avatar" width="25" alt="фото друга"/>
-                        </div>
-                        <div class="friend-info">
-                            <div class="friend-name">{{ req.name }}</div>
-                        </div>
-                        <button class="button is-primary is-small" @click="SetAcceptStatus(req.id)">Принять</button>
-                        <button class="button is-white is-small">Отклонить</button>
-                    </li>
-                    <li v-if="requests.length === 0" class="chat-empty">Заявок нет</li>
-                </ul>
-            </div>
-        </main>
+  <!-- ===== БОКОВАЯ ПАНЕЛЬ ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon"><i class="fas fa-satellite"></i></span>
+      <span class="logo-text">ГУАП</span>
     </div>
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="/js/components/sidebar.js"></script>
-    <script src="/js/friends.js"></script>
+    <nav class="sidebar-nav">
+      <a href="/profile" class="nav-item">
+        <i class="fas fa-user"></i><span>Мой профиль</span>
+      </a>
+      <a href="/messages" class="nav-item">
+        <i class="far fa-comment-dots"></i><span>Сообщения</span>
+      </a>
+      <a href="/friends" class="nav-item is-active">
+        <i class="fas fa-user-friends"></i><span>Друзья</span>
+      </a>
+    </nav>
+
+    <!-- Нижняя часть с мини-профилем и кнопкой выхода (согласно макету) -->
+    <div class="sidebar-footer">
+      <div class="sidebar-mini-profile">
+        <div class="mini-avatar">
+          <img v-if="userAvatar" :src="userAvatar" alt="Аватар" />
+          <span v-else>{{ (userName || 'ИИ').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
+        </div>
+        <span class="mini-name">{{ userName }}</span>
+      </div>
+      
+      <a href="#" class="nav-item logout" @click.prevent="exitFromAccount">
+        <i class="fas fa-right-from-bracket"></i><span>Выход</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ===== ОСНОВНАЯ ОБЛАСТЬ ===== -->
+  <div class="main-shell">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title">Друзья</h1>
+      </div>
+    </header>
+    <div class="accent-strip"></div>
+
+    <main class="content-container">
+
+      <!-- Панель вкладок -->
+      <div class="tabs-nav">
+        <button 
+          class="tab-btn" 
+          :class="{ 'is-active': activeTab === 'all' }" 
+          @click="activeTab = 'all'">
+          Все друзья
+        </button>
+        <button 
+          class="tab-btn" 
+          :class="{ 'is-active': activeTab === 'requests' }" 
+          @click="activeTab = 'requests'">
+          Заявки <span class="tab-badge" v-if="requests.length">{{ requests.length }}</span>
+        </button>
+      </div>
+
+      <!-- Вкладка: ВСЕ ДРУЗЬЯ -->
+      <section v-if="activeTab === 'all'" class="tab-content">
+        <!-- Построчный поиск -->
+        <div class="search-box">
+          <i class="fas fa-search search-icon"></i>
+          <input 
+            class="input search-input" 
+            type="text" 
+            v-model="searchQuery" 
+            placeholder="Поиск друзей..." />
+        </div>
+
+        <!-- Пустое состояние -->
+        <div v-if="!filteredFriends.length" class="empty-state card">
+          <i class="fas fa-user-group"></i>
+          <p v-if="searchQuery">По запросу «{{ searchQuery }}» никого не найдено.</p>
+          <p v-else>У вас пока нет добавленных друзей.</p>
+        </div>
+
+        <!-- Список друзей -->
+        <div class="friends-grid">
+          <article v-for="friend in filteredFriends" :key="friend.id" class="friend-card">
+            <div class="friend-avatar-wrap">
+              <img v-if="friend.avatar" :src="friend.avatar" :alt="friend.name" class="friend-avatar-img" />
+              <div v-else class="friend-avatar-placeholder">
+                {{ (friend.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}
+              </div>
+            </div>
+
+            <div class="friend-info">
+              <h3 class="friend-name">{{ friend.name }}</h3>
+              <p class="friend-status" :class="{ 'is-online': friend.status === 'Онлайн' }">
+                <span class="status-dot" v-if="friend.status === 'Онлайн'"></span>
+                {{ friend.status || 'Нет в сети' }}
+              </p>
+            </div>
+
+            <div class="friend-actions">
+              <!-- Переход в чат -->
+              <button class="icon-btn" title="Написать сообщение" @click="openChatWith(friend)">
+                <i class="far fa-comment-dots"></i>
+              </button>
+
+              <!-- Выпадающее меню действия с другом -->
+              <div class="dropdown" :class="{ 'is-active': openMenuId === friend.id }">
+                <button class="icon-btn" title="Действия" @click.stop="toggleMenu(friend.id)">
+                  <i class="fas fa-ellipsis-vertical"></i>
+                </button>
+                <div class="dropdown-menu-custom" v-if="openMenuId === friend.id" @click.stop>
+                  <a class="dropdown-item danger" @click="deleteFriend(friend.id)">
+                    <i class="fas fa-user-minus"></i> Удалить из друзей
+                  </a>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Вкладка: ЗАЯВКИ В ДРУЗЬЯ -->
+      <section v-if="activeTab === 'requests'" class="tab-content">
+        <div v-if="!requests.length" class="empty-state card">
+          <i class="fas fa-envelope-open"></i>
+          <p>Новых заявок в друзья пока нет.</p>
+        </div>
+
+        <div class="friends-grid">
+          <article v-for="req in requests" :key="req.id" class="friend-card">
+            <div class="friend-avatar-wrap">
+              <img v-if="req.avatar" :src="req.avatar" :alt="req.name" class="friend-avatar-img" />
+              <div v-else class="friend-avatar-placeholder">
+                {{ (req.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}
+              </div>
+            </div>
+
+            <div class="friend-info">
+              <h3 class="friend-name">{{ req.name }}</h3>
+              <p class="friend-status">Хочет добавить вас в друзья</p>
+            </div>
+
+            <div class="friend-actions">
+              <button class="btn btn-primary btn-small" @click="SetAcceptStatus(req.id)">
+                <i class="fas fa-check"></i> Принять
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+</div>
+
+<!-- Подключение Vue и существующего скрипта -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<script src="../js/friends.js"></script>
 </body>
 </html>

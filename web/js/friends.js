@@ -80,5 +80,4 @@ const FriendsApp = {
 }
 
 Vue.createApp(FriendsApp)
-    .component('app-sidebar', AppSidebar)
     .mount('#FRIENDS')
