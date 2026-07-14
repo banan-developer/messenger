@@ -7,7 +7,7 @@ import (
 	"messenger_v2/internal/repository"
 	"messenger_v2/internal/service"
 	"messenger_v2/internal/transport"
-	"messenger_v2/internal/transport/websocket.go"
+	"messenger_v2/internal/transport/websocket"
 	"messenger_v2/pkg/auth"
 	"net/http"
 	"os"
@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// строка подключения к бд
-	dsn := fmt.Sprintf("root:%s@tcp(127.0.0.1:3306)/messanger", dbPassword)
+	dsn := fmt.Sprintf("root:%s@tcp(db:3306)/messanger", dbPassword)
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
