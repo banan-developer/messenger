@@ -5,7 +5,7 @@ import (
 	"log"
 	"messenger_v2/internal/domain"
 	"messenger_v2/internal/service"
-	"messenger_v2/internal/transport/websocket.go"
+	"messenger_v2/internal/transport/websocket"
 	"net/http"
 	"strconv"
 	"time"

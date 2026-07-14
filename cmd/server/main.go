@@ -7,7 +7,7 @@ import (
 	"messenger_v2/internal/repository"
 	"messenger_v2/internal/service"
 	"messenger_v2/internal/transport"
-	"messenger_v2/internal/transport/websocket.go"
+	"messenger_v2/internal/transport/websocket"
 	"messenger_v2/pkg/auth"
 	"net/http"
 	"os"
