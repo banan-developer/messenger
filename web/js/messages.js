@@ -54,5 +54,4 @@ const MessagesApp = {
 }
 
 Vue.createApp(MessagesApp)
-    .component('app-sidebar', AppSidebar)
     .mount('#MESSAGES')
