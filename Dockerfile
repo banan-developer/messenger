@@ -1,16 +1,15 @@
 FROM golang:1.25-alpine AS build
 WORKDIR /go/src/messenger_v2
 
-RUN apk add --no-cache git
+# Копируем go.mod и go.sum для скачивания зависимостей
+COPY go.mod go.sum ./
+RUN go mod download
 
+# Копируем остальной код
 COPY . .
 
-# Инициализируем модуль внутри контейнера, затем скачиваем зависимости и собираем проект
-RUN go mod init messenger_v2 && \
-    go get github.com/go-sql-driver/mysql && \
-    go get github.com/gorilla/sessions && \
-    go get golang.org/x/crypto/bcrypt && \
-    go build -o /out/messenger ./cmd/server
+# Собираем бинарник
+RUN go build -o /out/messenger ./cmd/server
 
 FROM alpine:3.19
 WORKDIR /app
