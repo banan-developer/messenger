@@ -38,13 +38,7 @@
 
     <!-- Нижняя часть с мини-профилем и кнопкой выхода (согласно макету) -->
     <div class="sidebar-footer">
-      <div class="sidebar-mini-profile">
-        <div class="mini-avatar">
-          <img v-if="userAvatar" :src="userAvatar" alt="Аватар" />
-          <span v-else>{{ (userName || 'ИИ').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
-        </div>
-        <span class="mini-name">{{ userName }}</span>
-      </div>
+      
       
       <a href="#" class="nav-item logout" @click.prevent="exitFromAccount">
         <i class="fas fa-right-from-bracket"></i><span>Выход</span>
