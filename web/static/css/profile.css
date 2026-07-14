@@ -53,20 +53,20 @@ body {
   color: var(--color-white);
 }
 
-.sidebar-close {
+.icon-btn.sidebar-close {
   display: none;
   margin-left: auto;
   background: rgba(255, 255, 255, 0.1);
   color: var(--color-white);
 }
 
-.sidebar-close:hover { background: rgba(255, 255, 255, 0.18); }
+.icon-btn.sidebar-close:hover { background: rgba(255, 255, 255, 0.18); }
 
 .sidebar-backdrop {
   display: none;
 }
 
-.burger-btn { display: none; }
+.icon-btn.burger-btn { display: none; }
 
 .topbar-left {
   display: flex;
@@ -508,7 +508,7 @@ body {
 @media (max-width: 720px) {
   .app-shell { flex-direction: column; }
 
-  .burger-btn { display: inline-flex; }
+  .icon-btn.burger-btn { display: inline-flex; }
 
   .sidebar {
     position: fixed;
@@ -523,7 +523,7 @@ body {
 
   .sidebar.is-open { transform: translateX(0); }
 
-  .sidebar-close { display: inline-flex; }
+  .icon-btn.sidebar-close { display: inline-flex; }
 
   .sidebar-backdrop {
     display: block;
