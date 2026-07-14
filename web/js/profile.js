@@ -1,303 +1,365 @@
-const App = {
-            data() {
-                return {
-                    avatarURL: "",
-                    name: "",
-                    sex: "",
-                    aboutPerson: "",
-                    imgURL: "",
-                    valueEditName: "",
-                    valueEditAboutPers: "",
+const { createApp } = Vue;
 
-                    // стена
-                    wall: [],
-                    noti: [],
+createApp({
+  data() {
+    return {
+      user: {
+        id: null,
+        name: '',
+        about: '',
+        sex: '',
+        avatar: ''
+      },
 
-                    friends: [],
-                    searchname: "",
-                    foundUsers: [],
-                    inputValueTitle: "",
-                    inputValueText: "",
+      posts: [],
+      postsLoading: true,
 
-                    valueEditTitle: "",
-                    valueEditText: "",
-                    editingID: null,
-                    test: 2,
-                    postImageFile: null,
+      friends: [],
+      friendsLoading: true,
 
-                }
-            },
-            mounted(){
-                this.getName()
-                this.getWall()
-                this.loadFriend()
-            },
-            methods: {
-               async getName(){
-                    try{
-                        const res = await fetch("/api/profile", {
-                            credentials: "same-origin"
-                        })
-                        if (!res.ok) throw new Error("ошибка загрузки имени")
-                        const data = await res.json()
-                        this.name = data.name
-                        this.aboutPerson = data.about
-                        this.avatarURL = data.avatar
-                        this.sex = data.sex
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                openEditPerson(){
-                    this.valueEditName = this.name
-                    this.valueEditAboutPers = this.aboutPerson
-                    document.getElementById('myDialog').showModal()
-                },
+      // wall composer
+      newPost: { title: '', text: '', imageFile: null, imageName: '' },
+      posting: false,
+      postError: '',
 
-                closeEditPerson(){
-                    document.getElementById("myDialog").close()
-                },
-            
-                async PushEditedProfile(){
-                    if(this.valueEditName == ""){
-                        alert("Имя не может быть пустым!")
-                        return
-                    }
-                        
-                    try{
-                        const res = await fetch("/api/profile",{
-                            method: "PUT",
-                            credentials: "same-origin",
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({
-                                name: this.valueEditName,
-                                about: this.valueEditAboutPers,
-                            })
-                        })
-                         if (!res.ok) {
-                            throw new Error(`HTTP error! status: ${res.status}`);
-                        }
-                        const data = await res.json();
-                        console.log('Успешно обновлено:', data);
+      // post editing
+      editingPostId: null,
+      editPostForm: { title: '', text: '' },
+      editPostError: '',
 
-                    }catch(err){
-                        console.log("Ошибка при отправки, измененных данных на сервер")
-                    }
-                    document.getElementById('myDialog').close()
-                    await this.getName()
-                },
-// ........................................................ СТЕНА .............................................................
-                handlePostImage(event) {
-                    this.postImageFile = event.target.files[0]
-                },
+      // edit profile modal
+      showEditProfile: false,
+      editProfileForm: { name: '', about: '' },
+      editProfileError: '',
+      savingProfile: false,
 
-                // отправка данных стены на сервер
-                async pushWalltoServer(){
-                    if (this.inputValueText == '' || this.inputValueTitle == ''){
-                        alert("Нельзя опубликовать пустой пост")
-                        return
-                    }
+      // add friend modal
+      showAddFriend: false,
+      friendSearchQuery: '',
+      friendSearchResults: [],
+      friendSearchLoading: false,
+      friendSearchTimer: null,
 
-                    const formData = new FormData()
-                    formData.append("title", this.inputValueTitle)
-                    formData.append("text", this.inputValueText)
-                    formData.append("img", this.postImageFile)
-                    try{
-                        const res = await fetch("/api/post", {
-                            method: "POST",
-                            body: formData
-                        })
-                        if (!res.ok) throw new Error("Ошибка отправления поста")
-                        const data = await res.json()
-                        this.wall = data
+      // mobile burger menu
+      mobileMenuOpen: false
+    };
+  },
 
-                    }catch(err){
-                        console.log(err)
-                    }
+  computed: {
+    initials() {
+      return this.friendInitials(this.user.name);
+    }
+  },
 
-                    this.inputValueText = ""
-                    this.inputValueTitle = ""
-                    this.postImageFile = null
-                    document.getElementById('post-photo').value = ''
-                    
-                },
-               // получение данных стены с сервера
-                async getWall(){
-                    try{
-                        const res = await fetch("/api/post",{
-                            method: "GET",
-                            credentials: "same-origin"
-                        })
-                        if (!res.ok) throw new Error("ошибка загрузки стены")
-                        const data = await res.json()
-                        this.wall = data
+  mounted() {
+    this.fetchProfile();
+    this.fetchPosts();
+    this.fetchFriends();
 
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                // Удаление записей из стены
-                async deleteWall(wall_ID){
-                    try{
-                        const res = await fetch(`/api/post?id=${wall_ID}`, {
-                            method: "DELETE",
-                            credentials: "same-origin"
-                        })
-                        if (!res.ok) throw new Error('Ошибка удаления')
-                        await this.getWall()
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 720) this.mobileMenuOpen = false;
+    });
+  },
 
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
+  methods: {
+    friendInitials(name) {
+      if (!name) return '?';
+      return name
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part => part[0])
+        .join('')
+        .toUpperCase();
+    },
 
+    goToProfile(userId) {
+      // Укажите ваш роут: например, /profile?id=... или /profile.html?id=...
+      window.location.href = `/friend?id=${userId}`;
+    },
 
-                closeEditWall(){
-                    document.getElementById("myDialog2").close()
-                    document.getElementById("friends").close()
-                },
-                
-                editWall(wall_ID) {
-                    // Находим пост в массиве wall по ID
-                    const post = this.wall.find(item => item.id === wall_ID)
-                    
-                    if (post) {
-                        // Заполняем поля для редактирования данными из найденного поста
-                        this.valueEditTitle = post.title
-                        this.valueEditText = post.text
-                        this.editingID = wall_ID
-                        
-                        // Открываем модальное окно
-                        document.getElementById("myDialog2").showModal()
-                    } else {
-                        console.error('Пост с ID', wall_ID, 'не найден')
-                        alert('Пост не найден')
-                    }
-                },
+    // ===== PROFILE =====
+    async fetchProfile() {
+      try {
+        const res = await fetch('/api/profile', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Не удалось загрузить профиль');
+        this.user = await res.json();
+      } catch (err) {
+        console.log(err);
+      }
+    },
 
-                async updateEditingWall(wall_ID){
-                    document.getElementById("myDialog2").close()
-                    try{
-                        const res = await fetch(`/api/post?id=${wall_ID}`, {
-                            credentials: "same-origin",
-                            method: "PUT",
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({title: this.valueEditTitle, text: this.valueEditText})
-                        })
-                        if (!res.ok) throw new Error("ошибка редактирования поста")
+    openEditProfile() {
+      this.editProfileForm.name = this.user.name || '';
+      this.editProfileForm.about = this.user.about || '';
+      this.editProfileError = '';
+      this.showEditProfile = true;
+    },
 
-                    }catch (err){
-                        console.log(err)
-                    }
-                    await this.getWall()
-                },
-                // загрузка фотки пользователя
-                async uploadAvatar(event){
-                    const file = event.target.files[0]
-                    if (!file) return
-                    const formData = new FormData()
-                    formData.append("avatar", file)
-                    try{
-                        const res = await fetch("/api/profile/avatar",{
-                            credentials: "same-origin",
-                            method: "POST",
-                            body: formData
-                        })
-                        if (!res.ok) throw new Error("ошибка отправки фото пользователя")
-                        const data = await res.json()
-                        this.avatarURL = data.avatar
+    closeEditProfile() {
+      this.showEditProfile = false;
+    },
 
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                async uploadImg(event){
-                    const file = event.target.files[0]
-                    if (!file) return
-                    const formData = new FormData()
-                    formData.append("img", file)
-                    
-                },
+    async saveProfile() {
+      if (!this.editProfileForm.name) {
+        this.editProfileError = 'Укажите имя — это поле не может быть пустым.';
+        return;
+      }
+      this.editProfileError = '';
+      this.savingProfile = true;
+      try {
+        const res = await fetch('/api/profile', {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: this.editProfileForm.name,
+            about: this.editProfileForm.about
+          })
+        });
+        if (!res.ok) throw new Error('Не удалось сохранить профиль');
+        await this.fetchProfile();
+        this.showEditProfile = false;
+      } catch (err) {
+        console.log(err);
+        this.editProfileError = 'Не получилось сохранить изменения. Попробуйте ещё раз.';
+      } finally {
+        this.savingProfile = false;
+      }
+    },
 
-                async exitFromAccount(){
-                    try{
-                        const res = await fetch("/exit")
-                        if (!res.ok) throw new Error("Ошибка выхода с аккаунта")
-                        window.location.href = "/login"
+    triggerAvatarUpload() {
+      this.$refs.avatarInput.click();
+    },
 
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
+    async onAvatarSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('avatar', file);
+      try {
+        const res = await fetch('/api/profile/avatar', {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: formData
+        });
+        if (!res.ok) throw new Error('Не удалось обновить аватар');
+        const data = await res.json();
+        this.user.avatar = data.avatar;
+      } catch (err) {
+        console.log(err);
+      } finally {
+        e.target.value = '';
+      }
+    },
 
-                async OpenSearchFriend(){
-                    document.getElementById("friends").showModal()
-                },
-                async SearchFriends(){
-                    if (this.searchname == ''){
-                            alert("Введи имя пользователя")
-                            return
-                        }
-                    try{
-                        const res = await fetch(`/api/friend?name=${this.searchname}`)
-                        if (!res.ok) throw new Error("Ошибка получения данных пользователя, при его поиске")
-                        const data = await res.json()
-                        this.foundUsers = data
+    // ===== WALL / POSTS =====
+    async fetchPosts() {
+      this.postsLoading = true;
+      try {
+        const res = await fetch('/api/post', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Не удалось загрузить стену');
+        this.posts = await res.json();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.postsLoading = false;
+      }
+    },
 
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                // Добавление в друзья
-                async addToFriend(idUser){
-                    try{
-                        const res = await fetch(`/api/friend?id=${idUser}`,{
-                            method: "POST"
-                        })
-                        if (!res.ok) throw new Error("Ошибка отправления id пользователя для последующего добавления в друзья")
-                
-                    }catch(err){
-                        console.log(err)
-                    }
-                    // document.getElementById("dialog-send").showModal()
-                },
+    triggerPostImage() {
+      this.$refs.postImageInput.click();
+    },
 
-                async deleteFriend(idUser){
-                    try{
-                        const res = await fetch(`/api/friend?id=${idUser}`,{
-                            method: "DELETE"
-                        })
-                        if (!res.ok) throw new Error("Ошибка удаления пользователя на фронте")
+    onPostImageSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      this.newPost.imageFile = file;
+      this.newPost.imageName = file.name;
+    },
 
-                    }catch(err){
-                        console.log(err)
-                    }
-                },
-                async loadFriend(){
-                    try{
-                        const res = await fetch("/api/friend", {
-                            method: "GET"
-                        })
+    clearPostImage() {
+      this.newPost.imageFile = null;
+      this.newPost.imageName = '';
+      this.$refs.postImageInput.value = '';
+    },
 
-                        if (!res.ok) throw new Error("Ошибка отправления id пользователя для последующего его добавления в друзья")
-                        const data = await res.json()
-                        this.friends = data
-                        
-                    }catch(err){
-                        console.log(err)
-                    }
-                },  
-                async loadFriendProfile(friendID) {
-                    window.location.href = `/friend?id=${friendID}`;
-                },
-                openDialogInfo(){
-                    document.getElementById("myDialogInfo").showModal()
-                },
-                exitNtfct(){
-                    document.getElementById("myDialogInfo").close()
-                }
-            }
+    async createPost() {
+      if (!this.newPost.title || !this.newPost.text) {
+        this.postError = 'Заполните тему и текст поста.';
+        return;
+      }
+      this.postError = '';
+      this.posting = true;
+      try {
+        const formData = new FormData();
+        formData.append('title', this.newPost.title);
+        formData.append('text', this.newPost.text);
+        if (this.newPost.imageFile) formData.append('img', this.newPost.imageFile);
+
+        const res = await fetch('/api/post', {
+          method: 'POST',
+          credentials: 'same-origin',
+          body: formData
+        });
+        if (!res.ok) throw new Error('Не удалось опубликовать пост');
+
+        this.newPost = { title: '', text: '', imageFile: null, imageName: '' };
+        if (this.$refs.postImageInput) this.$refs.postImageInput.value = '';
+        await this.fetchPosts();
+      } catch (err) {
+        console.log(err);
+        this.postError = 'Не получилось опубликовать пост. Попробуйте ещё раз.';
+      } finally {
+        this.posting = false;
+      }
+    },
+
+    startEditPost(post) {
+      this.editingPostId = post.id;
+      this.editPostForm.title = post.title;
+      this.editPostForm.text = post.text;
+      this.editPostError = '';
+    },
+
+    cancelEditPost() {
+      this.editingPostId = null;
+    },
+
+    async saveEditPost(id) {
+      if (!this.editPostForm.title || !this.editPostForm.text) {
+        this.editPostError = 'Тема и текст не могут быть пустыми.';
+        return;
+      }
+      try {
+        const res = await fetch(`/api/post?id=${encodeURIComponent(id)}`, {
+          method: 'PUT',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: this.editPostForm.title,
+            text: this.editPostForm.text
+          })
+        });
+        if (!res.ok) throw new Error('Не удалось сохранить пост');
+        this.editingPostId = null;
+        await this.fetchPosts();
+      } catch (err) {
+        console.log(err);
+        this.editPostError = 'Не получилось сохранить изменения.';
+      }
+    },
+
+    async deletePost(id) {
+      try {
+        const res = await fetch(`/api/post?id=${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          credentials: 'same-origin'
+        });
+        if (!res.ok) throw new Error('Не удалось удалить пост');
+        this.posts = this.posts.filter(p => p.id !== id);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    // ===== FRIENDS =====
+    async fetchFriends() {
+      this.friendsLoading = true;
+      try {
+        const res = await fetch('/api/friend', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('Не удалось загрузить друзей');
+        this.friends = await res.json();
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.friendsLoading = false;
+      }
+    },
+
+    async removeFriend(id) {
+      try {
+        const res = await fetch(`/api/friend?id=${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          credentials: 'same-origin'
+        });
+        if (!res.ok) throw new Error('Не удалось удалить из друзей');
+        this.friends = this.friends.filter(f => f.id !== id);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    openAddFriend() {
+      this.showAddFriend = true;
+      this.friendSearchQuery = '';
+      this.friendSearchResults = [];
+    },
+
+    closeAddFriend() {
+      this.showAddFriend = false;
+    },
+
+    onSearchFriends() {
+      clearTimeout(this.friendSearchTimer);
+      const query = this.friendSearchQuery;
+      if (!query) {
+        this.friendSearchResults = [];
+        return;
+      }
+      this.friendSearchTimer = setTimeout(() => this.searchFriends(query), 300);
+    },
+
+    async searchFriends(query) {
+      this.friendSearchLoading = true;
+      try {
+        const res = await fetch(`/api/friend?name=${encodeURIComponent(query)}`, {
+          credentials: 'same-origin'
+        });
+        if (!res.ok) throw new Error('Не удалось выполнить поиск');
+        const results = await res.json();
+        this.friendSearchResults = results.map(person => ({ ...person, _added: false }));
+      } catch (err) {
+        console.log(err);
+        this.friendSearchResults = [];
+      } finally {
+        this.friendSearchLoading = false;
+      }
+    },
+
+    async addFriend(person) {
+      try {
+        const res = await fetch(`/api/friend?id=${encodeURIComponent(person.id)}`, {
+          method: 'POST',
+          credentials: 'same-origin'
+        });
+        if (!res.ok) throw new Error('Не удалось добавить друга');
+        person._added = true;
+        await this.fetchFriends();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    // ===== MOBILE MENU =====
+    toggleMobileMenu() {
+      this.mobileMenuOpen = !this.mobileMenuOpen;
+    },
+
+    closeMobileMenu() {
+      this.mobileMenuOpen = false;
+    },
+
+    // ===== SESSION =====
+    async logout() {
+      try {
+        const res = await fetch('/exit', { credentials: 'same-origin' });
+        if (res.ok) {
+          window.location.href = '/login';
         }
-    Vue.createApp(App)
-        .component('app-sidebar', AppSidebar)
-        .mount('#VUE')
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+}).mount('#app');

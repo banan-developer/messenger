@@ -1,69 +1,165 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Сообщения</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/app.css" />
-    <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Сообщения — ГУАП</title>
+
+  <!-- Шрифты и библиотеки (аналогично профилю) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../static/css/messages.css">
 </head>
 <body>
-    <div id="MESSAGES" class="app-layout">
-        <app-sidebar
-            active="messages"
-            :user-name="userName"
-            :user-avatar="userAvatar"
-            @logout="exitFromAccount">
-        </app-sidebar>
 
-        <main class="app-content">
-            <div class="topbar">
-                <div class="control has-icons-left topbar-search">
-                    <input class="input" type="text" placeholder="Поиск..." v-model="globalSearch">
-                    <span class="icon is-left">🔍</span>
-                </div>
-                <button class="button is-white settings-btn">⚙️</button>
-            </div>
+<!-- Точка монтирования Vue приложения (#MESSAGES) -->
+<div id="MESSAGES" class="app-shell" v-cloak>
 
-            <div class="page-body">
-                <h1 class="title is-4">Сообщения</h1>
-
-                <button class="button is-primary mb-4" @click="isGroupModalOpen = true">Создать беседу</button>
-                <div class="control has-icons-left chats-search">
-                    <input class="input" type="text" placeholder="Чаты" v-model="chatSearch">
-                    <span class="icon is-left">🔍</span>
-                </div>
-
-                <ul class="chat-list">
-                    <li
-                        v-for="chat in filteredChats"
-                        :key="chat.id"
-                        class="chat-item"
-                        @click="openChat(chat)">
-                        <div class="avatar-circle" :class="{ 'is-group': chat.isGroup }">
-                                <img :src="chat.avatar" width="25" alt="фото друга"/>
-                            </div>
-                            <div class="chat-info">
-                                <div class="chat-top">
-                                    <span class="chat-name">{{ chat.name }}</span>
-                                <span span class="chat-time">{{ chat.last_message_time }}</span>
-                            </div>
-                            <div class="chat-bottom">
-                                <span class="chat-preview">{{ chat.last_message }}</span>
-                                <span v-if="chat.unread > 0" class="chat-badge">{{ chat.unread }}</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li v-if="filteredChats.length === 0" class="chat-empty">Ничего не найдено</li>
-                </ul>
-                <div v-if="isGroupModalOpen" class="modal is-active"><div class="modal-background" @click="isGroupModalOpen=false"></div><div class="modal-card"><section class="modal-card-body"><input class="input mb-3" v-model="groupTitle" placeholder="Название беседы"><label v-for="friend in friends" :key="friend.id" class="is-block"><input type="checkbox" :value="friend.id" v-model="selectedFriendIds"> {{friend.name}}</label></section><footer class="modal-card-foot"><button class="button is-primary" @click="createGroup">Создать</button><button class="button" @click="isGroupModalOpen=false">Отмена</button></footer></div></div>
-            </div>
-        </main>
+  <!-- ===== БОКОВАЯ ПАНЕЛЬ ===== -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon"><i class="fas fa-satellite"></i></span>
+      <span class="logo-text">ГУАП</span>
     </div>
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="/js/components/sidebar.js"></script>
-    <script src="/js/messages.js"></script>
+    <nav class="sidebar-nav">
+      <a href="/profile" class="nav-item">
+        <i class="fas fa-user"></i><span>Мой профиль</span>
+      </a>
+      <a href="/messages" class="nav-item is-active">
+        <i class="far fa-comment-dots"></i><span>Сообщения</span>
+      </a>
+      <a href="/friends" class="nav-item">
+        <i class="fas fa-user-friends"></i><span>Друзья</span>
+      </a>
+    </nav>
+
+    <!-- Нижняя часть с мини-профилем и кнопкой выхода -->
+    <div class="sidebar-footer">
+      
+      <a href="#" class="nav-item logout" @click.prevent="exitFromAccount">
+        <i class="fas fa-right-from-bracket"></i><span>Выход</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- ===== ОСНОВНАЯ ОБЛАСТЬ ===== -->
+  <div class="main-shell">
+
+    <!-- Верхняя панель навигации и глобального поиска -->
+    <header class="topbar">
+      <div class="topbar-search">
+        <i class="fas fa-search topbar-search-icon"></i>
+        <input 
+          class="input topbar-search-input" 
+          type="text" 
+          v-model="globalSearch" 
+          placeholder="Поиск..." />
+      </div>
+      <button class="icon-btn" title="Настройки">
+        <i class="fas fa-gear"></i>
+      </button>
+    </header>
+    <div class="accent-strip"></div>
+
+    <main class="content-container">
+
+      <div class="messages-header">
+        <h1 class="topbar-title">Сообщения</h1>
+      </div>
+
+      <!-- Поиск по списку чатов и создание группы -->
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          class="input search-input" 
+          type="text" 
+          v-model="chatSearch" 
+          placeholder="Чаты..." />
+        <button class="icon-btn create-group-btn" title="Создать групповой чат" @click="isGroupModalOpen = true">
+          <i class="fas fa-users"></i>
+        </button>
+      </div>
+
+      <!-- Пустое состояние -->
+      <div v-if="!filteredChats.length" class="empty-state card">
+        <i class="far fa-comments"></i>
+        <p v-if="chatSearch">По запросу «{{ chatSearch }}» чатов не найдено.</p>
+        <p v-else>У вас пока нет активных диалогов. Напишите кому-нибудь из списка друзей!</p>
+      </div>
+
+      <!-- Список чатов -->
+      <div class="chats-grid">
+        <article 
+          v-for="chat in filteredChats" 
+          :key="chat.id" 
+          class="chat-card" 
+          @click="openChat(chat)">
+          
+          <div class="chat-avatar-wrap">
+            <img v-if="chat.avatar" :src="chat.avatar" :alt="chat.name" class="chat-avatar-img" />
+            <div v-else class="chat-avatar-placeholder">
+              <i v-if="chat.is_group || chat.isGroup" class="fas fa-users"></i>
+              <span v-else>{{ (chat.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
+            </div>
+          </div>
+
+          <div class="chat-info">
+            <div class="chat-top-row">
+              <h3 class="chat-name">{{ chat.name }}</h3>
+              <span class="chat-time" v-if="chat.last_message_time">{{ chat.last_message_time }}</span>
+            </div>
+            <div class="chat-bottom-row">
+              <p class="chat-last-message">{{ chat.last_message || 'Нет сообщений' }}</p>
+              <span class="unread-badge" v-if="chat.unread > 0">{{ chat.unread }}</span>
+            </div>
+          </div>
+
+        </article>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ===== МОДАЛЬНОЕ ОКНО СОЗДАНИЯ ГРУППЫ ===== -->
+  <div class="modal" :class="{ 'is-active': isGroupModalOpen }">
+    <div class="modal-background" @click="isGroupModalOpen = false"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Создать групповой чат</p>
+        <button class="delete" aria-label="close" @click="isGroupModalOpen = false"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Название группы</label>
+          <input class="input" type="text" v-model.trim="groupTitle" placeholder="Например, Проект 1442" />
+        </div>
+        <div class="field">
+          <label class="label">Выберите участников из друзей</label>
+          <div v-if="!friends.length" class="empty-state small">Список друзей пуст</div>
+          <div class="group-friends-list">
+            <label v-for="f in friends" :key="f.id" class="checkbox friend-select-row">
+              <input type="checkbox" :value="f.id" v-model="selectedFriendIds" />
+              <span class="friend-select-name">{{ f.name }}</span>
+            </label>
+          </div>
+        </div>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="btn btn-primary" :disabled="!groupTitle.trim() || !selectedFriendIds.length" @click="createGroup">
+          Создать
+        </button>
+        <button class="btn btn-text" @click="isGroupModalOpen = false">Отмена</button>
+      </footer>
+    </div>
+  </div>
+
+</div>
+
+<!-- Подключение Vue и исправленного скрипта -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<script src="../js/messages.js"></script>
 </body>
 </html>

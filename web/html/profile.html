@@ -1,209 +1,265 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/profile.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" type="text/css" href="../static/css/app.css" />
-    <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Профиль — ГУАП</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="../static/css/profile.css">
 </head>
 <body>
-    <div id="VUE" class="app-layout">
-        <app-sidebar
-            active="profile"
-            :user-name="name"
-            :user-avatar="avatarURL"
-            @logout="exitFromAccount">
-        </app-sidebar>
 
-        <main class="app-content">
-        <div class="header">
-                <p class="profile-name" >Профиль</p>
-                <div class="header-buttons">
-                    <button class="button" @click="openDialogInfo">🔔</button>
-                    <button class="button" @click="openEditPerson()">⚙️</button>
-                </div>
-        </div>
-        <div class="wrapper">
-            <div class="main">
-                <div class="profile-header">
-                    <img id="profile-photo" :src="avatarURL" alt="Фото профиля"/>
-                    <p class="profile_name">{{name}}</p>
-                </div>
-                <div class="about">
-                    <p class="about-text"> О себе: {{aboutPerson}}</p>
-                    <span>Пол: {{sex}}</span>
-                </div>
+<div id="app" class="app-shell" v-cloak>
 
-                <div class="wall">
-                    <h3>Стена</h3>
-                    <div class="input-container">
-                        <div class="avatar-upload">
-                            <label class="image-upload-label" for="post-photo">Фото поста</label>
-                            <input 
-                                id="post-photo" 
-                                name="photo" 
-                                type="file" 
-                                accept="image/*" 
-                                @change="handlePostImage" 
-                                style="display: none;"
-                            >
-                        </div>
-                        <input type="text", placeholder="Тема поста" v-model="inputValueTitle"/>
-                        <textarea class="textarea-wall" placeholder="Что у тебя сегодня нового?" v-model="inputValueText"></textarea>
-                    </div>
+  <!-- ===== SIDEBAR ===== -->
+  <div class="sidebar-backdrop" :class="{ 'is-visible': mobileMenuOpen }" @click="closeMobileMenu"></div>
 
-                    <div class="button-container">
-                        <button @click="pushWalltoServer" >Добавить на стену</button>
-                    </div>
-
-                    <div>
-                        <ul class="list-item">
-                            <li class="list" v-for="(note, i) in wall" :key="note.id">
-                                <img v-if="note.img != '' " :src="note.img" alt="фото поста" class="post-image">
-                                <h3 class="wall-title">{{note.title}}</h3>
-                                <span class="wall-text">{{note.text}}</span>
-                                <div class="list-buttons">
-                                    <button class="button-delete" @click="deleteWall(note.id)">🗑️</button>
-                                    <button class="button-delete" @click="editWall(note.id)">✏️</button>
-                                </div>
-                                <p>
-                                    <span>{{note.created_at}}</span>
-                                </p>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="sidebar">
-                <div class="btn-add"><button class="button" @click="OpenSearchFriend">+</button></div>
-                <p>Друзья</p>
-                <ul>
-                    <li v-for="(friend, i) in friends" :key="friend.id" @click="loadFriendProfile(friend.id)" class="friend-item">
-                        <img :src="friend.avatar" width="25" alt="фото друга"/>
-                        {{friend.name}}
-                        <div>
-                            <!-- <button @click="deleteFriend(friend.id)" class="button">🗑️</button> -->
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        
-        
-        <!-- Окно редактирования профиля -->
-        <dialog id="myDialog">
-            <div class="dialog-content">
-                <p>Настройки профиля</p>
-                <p>
-                    <button type="button" class="logout-btn" @click="exitFromAccount">Выйти из аккаунта</button>
-                </p>
-                <div class="avatar-upload">
-                    <label for="photo">Фото пользователя</label>
-                    <input name="photo" type="file" accept="image/*" @change="uploadAvatar" placeholder="⠀">
-                </div>
-                <form>
-                    <p>
-                        <label for="editName">Имя пользователя</label>
-                        <input type="text" name="editName" placeholder="Введи новое имя" v-model="valueEditName" @keypress.enter="PushEditedProfile"/>
-                    </p>
-                    <p>
-                        <label for="editAboutPerson">О себе</label>
-                        <textarea name="editAboutPerson" placeholder="Расскажи о себе" v-model="valueEditAboutPers"></textarea>
-                    </p>
-
-                    <p>
-                        <button class="button" type="button" @click="closeEditPerson">Отменить</button>
-                        <button class="button" type="button" @click="PushEditedProfile" >Применить изменения</button>
-                    </p>
-
-                </form>
-            </div>
-        </dialog>
-
-        <!-- Окно поиска друзей -->
-        <dialog id="friends">
-            <div class="dialog-content">
-                <P>Поиск друзей</P>
-                <button class="button-exit" @click="closeEditWall">x</button>
-                <form>
-                    <p>
-                        <input type="text" v-model="searchname" placeholder="Введи имя пользователя"/>
-                    </p>
-                    <button @click="SearchFriends" type="button">Найти</button>
-                    <ul>
-                        <li v-for="users in foundUsers" :key="users.id">
-                            <img :src="users.avatar" width="40" alt="Фото пользователя2"/>
-                            {{users.name}}
-                            <button @click="addToFriend(users.id)">Добавить</button>
-                        </li>
-                        
-                    </ul>
-                </form>
-            </div>
-        </dialog>
-
-        <!-- Окно уведомлений -->
-        <dialog id="myDialogInfo">
-            <div class="dialog-content">
-                <p>Уведомления</p>
-                <button class="button-exit" @click="exitNtfct">x</button>
-                <div v-if="noti != '' " class="dialog-noti">
-                    <ui>
-                        <li v-for="not in noti" :key="not.id">
-                            <img :src="not.img_src" alt="фото друга" width="40">
-                            <p>{{not.name}}</p>
-                            <p>
-                                <button class="button">Принять заявку</button>
-                                <button class="button">Отклонить</button>
-                            </p>
-                        </li>
-                    </ui>
-                </div>
-                <p v-if="noti == '' ">У вас нет уведомлений</p>
-            </div>
-        </dialog>
-
-        <!-- Окно редактирования записей на стене -->
-        <dialog id="myDialog2">
-            <div class="dialog-content">
-                <p>Редактирование поста</p>
-                <form>
-                    <p>
-                        <input type="text" placeholder="⠀" v-model="valueEditTitle" @keypress.enter="updateEditingWall(editingID)"/>
-                        <textarea class="textarea-wall" placeholder="⠀" v-model="valueEditText" ></textarea>
-                    </p>
-                    <p>
-                        <button class="button" type="button" @click="closeEditWall">Отменить</button>
-                        <button class="button" type="button" @click="updateEditingWall(editingID)">Сохранить</button>
-                    </p>
-                </form>
-            </div>
-        </dialog>
-
-        <!-- <dialog id="dialog-send">
-            <div dialog="content">
-                <p>Запрос отправлен</p>
-                <p>
-                    <button class="button type=button">Закрыть</button>
-                </p>
-            </div>
-        </dialog> -->
-
-        <div class="footer">
-            <p class="copyright">made for SUAI</p>
-            <p class="company" >The NOMAX © 2026</p>
-        </div>
-        </main>
+  <aside class="sidebar" :class="{ 'is-open': mobileMenuOpen }">
+    <div class="sidebar-logo">
+      <span class="logo-icon"><i class="fas fa-satellite"></i></span>
+      <span class="logo-text">ГУАП</span>
+      <button class="icon-btn sidebar-close" title="Закрыть меню" @click="closeMobileMenu">
+        <i class="fas fa-xmark"></i>
+      </button>
     </div>
 
+    <nav class="sidebar-nav">
+        <!-- Ссылка на текущую страницу профиля -->
+        <a href="/profile" class="nav-item is-active" @click="closeMobileMenu">
+          <i class="fas fa-user"></i><span>Мой профиль</span>
+        </a>
+      
+        <!-- Ссылка на сообщения -->
+        <a href="/messages" class="nav-item" @click="closeMobileMenu">
+          <i class="far fa-comment-dots"></i><span>Сообщения</span>
+        </a>
     
+        <!-- Ссылка на друзей -->
+        <a href="/friends" class="nav-item" @click="closeMobileMenu">
+          <i class="fas fa-user-friends"></i><span>Друзья</span>
+        </a>
+</nav>
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js" ></script>
-    <script src="/js/components/sidebar.js"></script>
-    <script src="/js/profile.js"></script>
+    <div class="sidebar-footer">
+      <a href="#" class="nav-item logout" @click.prevent="logout">
+        <i class="fas fa-right-from-bracket"></i><span>Выйти</span>
+      </a>
+    </div>
+  </aside>
 
+  <!-- ===== MAIN ===== -->
+  <div class="main-shell">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="icon-btn burger-btn" title="Открыть меню" @click="toggleMobileMenu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <h1 class="topbar-title">Мой профиль</h1>
+      </div>
+      <button class="icon-btn" title="Настройки профиля" @click="openEditProfile">
+        <i class="fas fa-gear"></i>
+      </button>
+    </header>
+    <div class="accent-strip"></div>
+
+    <main class="content-grid">
+
+      <!-- ---- MAIN COLUMN ---- -->
+      <section class="content-main">
+
+        <!-- profile summary -->
+        <div class="card profile-card">
+          <div class="avatar-wrap" @click="triggerAvatarUpload" title="Изменить аватар">
+            <img v-if="user.avatar" :src="user.avatar" class="avatar-img" alt="Аватар" />
+            <div v-else class="avatar-placeholder">{{ initials }}</div>
+            <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
+            <input type="file" ref="avatarInput" accept="image/*" class="is-hidden" @change="onAvatarSelected" />
+          </div>
+
+          <div class="profile-info">
+            <h2 class="profile-name">{{ user.name || 'Без имени' }}</h2>
+            <p class="profile-meta" v-if="user.sex">{{ user.sex }}</p>
+            <p class="profile-about">{{ user.about || 'Пользователь пока не рассказал о себе.' }}</p>
+          </div>
+
+          <button class="icon-btn edit-btn" title="Редактировать профиль" @click="openEditProfile">
+            <i class="fas fa-pen"></i>
+          </button>
+        </div>
+
+        <!-- wall composer -->
+        <div class="card composer-card">
+          <h3 class="section-title">Стена</h3>
+
+          <div class="composer-photo-row">
+            <button class="btn btn-ghost" @click="triggerPostImage">
+              <i class="fas fa-camera"></i> Фото поста
+            </button>
+            <span v-if="newPost.imageName" class="file-chip">
+              {{ newPost.imageName }}
+              <i class="fas fa-xmark" @click="clearPostImage"></i>
+            </span>
+            <input type="file" ref="postImageInput" accept="image/*" class="is-hidden" @change="onPostImageSelected" />
+          </div>
+
+          <input class="input" type="text" v-model.trim="newPost.title" placeholder="Тема поста" maxlength="120" />
+          <textarea class="textarea" v-model.trim="newPost.text" placeholder="Что у тебя сегодня нового?" rows="3"></textarea>
+
+          <div class="composer-footer">
+            <span class="form-error" v-if="postError">{{ postError }}</span>
+            <button class="btn btn-primary" :disabled="posting" @click="createPost">
+              <span v-if="!posting">Добавить на стену</span>
+              <span v-else>Публикуем…</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- posts feed -->
+        <div class="posts-feed">
+          <div v-if="postsLoading" class="empty-state">Загружаем стену…</div>
+          <div v-else-if="!posts.length" class="empty-state">
+            <i class="fas fa-feather"></i>
+            <p>На стене пока пусто. Напишите первый пост.</p>
+          </div>
+
+          <article v-for="post in posts" :key="post.id" class="card post-card">
+            <template v-if="editingPostId === post.id">
+              <input class="input" type="text" v-model.trim="editPostForm.title" placeholder="Тема поста" />
+              <textarea class="textarea" v-model.trim="editPostForm.text" rows="3"></textarea>
+              <p class="form-error" v-if="editPostError">{{ editPostError }}</p>
+              <div class="post-edit-actions">
+                <button class="btn btn-text" @click="cancelEditPost">Отмена</button>
+                <button class="btn btn-primary" @click="saveEditPost(post.id)">Сохранить</button>
+              </div>
+            </template>
+
+            <template v-else>
+              <div class="post-header">
+                <div class="post-avatar">
+                  <img v-if="user.avatar" :src="user.avatar" alt="" />
+                  <span v-else>{{ initials }}</span>
+                </div>
+                <div class="post-author">
+                  <strong>{{ user.name }}</strong>
+                  <span class="post-date">{{ post.created_at }}</span>
+                </div>
+                <div class="post-actions">
+                  <button class="icon-btn" title="Редактировать" @click="startEditPost(post)"><i class="fas fa-pen"></i></button>
+                  <button class="icon-btn danger" title="Удалить" @click="deletePost(post.id)"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+              <h4 class="post-title" v-if="post.title">{{ post.title }}</h4>
+              <p class="post-text">{{ post.text }}</p>
+              <img v-if="post.img" :src="post.img" class="post-image" alt="" />
+            </template>
+          </article>
+        </div>
+      </section>
+
+      <!-- ---- SIDE COLUMN ---- -->
+      <aside class="content-side">
+        <div class="card friends-card">
+          <div class="friends-header">
+            <h3 class="section-title">Друзья</h3>
+            <button class="btn btn-ghost btn-small" title="Найти друзей" @click="openAddFriend">
+              <i class="fas fa-user-plus"></i>
+            </button>
+          </div>
+
+          <div v-if="friendsLoading" class="empty-state small">Загружаем список…</div>
+          <div v-else-if="!friends.length" class="empty-state small">
+            <p>Пока нет друзей. Найдите знакомых через поиск.</p>
+          </div>
+
+          <ul class="friends-list">
+            <!-- Добавили @click="goToProfile(friend.id)" и класс is-clickable -->
+            <li v-for="friend in friends" :key="friend.id" class="friend-row is-clickable" @click="goToProfile(friend.id)">
+              <div class="friend-avatar">
+                <img v-if="friend.avatar" :src="friend.avatar" alt="" />
+                <span v-else>{{ friendInitials(friend.name) }}</span>
+              </div>
+              <span class="friend-name">{{ friend.name }}</span>
+              
+              <!-- ВАЖНО: добавили .stop в @click.stop="removeFriend(friend.id)" -->
+              <button class="icon-btn danger" title="Удалить из друзей" @click.stop="removeFriend(friend.id)">
+                <i class="fas fa-user-minus"></i>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </aside>
+
+    </main>
+  </div>
+
+  <!-- ===== EDIT PROFILE MODAL ===== -->
+  <div class="modal" :class="{ 'is-active': showEditProfile }">
+    <div class="modal-background" @click="closeEditProfile"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Редактировать профиль</p>
+        <button class="delete" aria-label="close" @click="closeEditProfile"></button>
+      </header>
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Имя</label>
+          <input class="input" type="text" v-model.trim="editProfileForm.name" placeholder="Имя Фамилия" />
+        </div>
+        <div class="field">
+          <label class="label">О себе</label>
+          <textarea class="textarea" v-model.trim="editProfileForm.about" rows="3" placeholder="Расскажите о себе"></textarea>
+        </div>
+        <p class="form-error" v-if="editProfileError">{{ editProfileError }}</p>
+      </section>
+      <footer class="modal-card-foot">
+        <button class="btn btn-primary" :disabled="savingProfile" @click="saveProfile">
+          {{ savingProfile ? 'Сохраняем…' : 'Сохранить' }}
+        </button>
+        <button class="btn btn-text" @click="closeEditProfile">Отмена</button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ===== ADD FRIEND MODAL ===== -->
+  <div class="modal" :class="{ 'is-active': showAddFriend }">
+    <div class="modal-background" @click="closeAddFriend"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Найти друзей</p>
+        <button class="delete" aria-label="close" @click="closeAddFriend"></button>
+      </header>
+      <section class="modal-card-body">
+        <input class="input" type="text" v-model.trim="friendSearchQuery" @input="onSearchFriends" placeholder="Введите имя…" />
+
+        <div v-if="friendSearchLoading" class="empty-state small">Ищем…</div>
+        <div v-else-if="friendSearchQuery && !friendSearchResults.length" class="empty-state small">
+          Никого не нашли по этому имени.
+        </div>
+
+        <ul class="friends-list search-results">
+          <li v-for="person in friendSearchResults" :key="person.id" class="friend-row">
+            <div class="friend-avatar">
+              <img v-if="person.avatar" :src="person.avatar" alt="" />
+              <span v-else>{{ friendInitials(person.name) }}</span>
+            </div>
+            <span class="friend-name">{{ person.name }}</span>
+            <button class="btn btn-small btn-primary" :disabled="person._added" @click="addFriend(person)">
+              {{ person._added ? 'Добавлено' : 'Добавить' }}
+            </button>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.4.21/vue.global.prod.min.js"></script>
+<script src="../js/profile.js"></script>
 </body>
 </html>

@@ -21,6 +21,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: dev  # <--- Включаем режим разработки
     container_name: messenger-app
     depends_on:
       db:
@@ -29,7 +30,14 @@ services:
       - "8020:8020"
     environment:
       DB_PASSWORD: ${DB_PASSWORD:-rootpass}
+    volumes:
+      # МГНОВЕННАЯ СИНХРОНИЗАЦИЯ: ваш код на ПК связывается с контейнером
+      - .:/app
+      # Изолируем кеш Go и временную папку сборки внутри контейнера
+      - go-mod-cache:/go/pkg/mod
+      - /app/tmp
     restart: unless-stopped
 
 volumes:
   mysql-data:
+  go-mod-cache: # Сохраняем скачанные библиотеки Go между перезапусками
