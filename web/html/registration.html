@@ -1,63 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Регистрация</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/auth.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="icon" href="../static/uploads/images/favicon-16x16.png" type="image/x-icon">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Регистрация — ГУАП</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="../static/css/auth.css">
 </head>
 <body>
-    <div id="div_reg">
-        <h2>Добро пожаловать на THE NOMAX</h2>
-        <h2>Регистрация</h2>
-        <form method="POST" action="/registration">
-            <p>
-                <label for="name">Имя пользователя</label>
-                <input type="text" name="name" placeholder="Введите ФИО" autocomplete="on" required id="email" /> 
-            </p>
 
-            <p>
-                <label for="email">Почта</label>
-                <input type="email" name="email" placeholder="Введите email" autocomplete="on" required id="email" /> 
-            </p>
+  <div class="auth-shell">
+    <div class="auth-container">
+      
+      <!-- Логотип портала -->
+      <div class="auth-brand">
+        <span class="logo-icon"><i class="fas fa-satellite"></i></span>
+        <span class="logo-text">ГУАП</span>
+      </div>
 
-            <p>
-                <label for="email">Пароль</label>
-                <input type="password" name="password" placeholder="Введите пароль" required id="password" />
-            </p>
+      <div class="card auth-card">
+        <h1 class="auth-title">Регистрация</h1>
+        <p class="auth-subtitle">Создайте учетную запись в системе</p>
 
-            <p>
-                <p>Пол:</p>
+        <!-- Блок для отображения ошибок валидации на бэкенде -->
+        <!-- {% if error %} -->
+        <!-- <div class="form-error-banner"><i class="fas fa-circle-exclamation"></i> {{ error }}</div> -->
+        <!-- {% endif %} -->
 
-                <label>
-                    <input type="radio" name="sex" value="Мужской" required>
-                    Мужской
-                </label>
+        <form action="/registration" method="POST" enctype="application/x-www-form-urlencoded">
+          
+          <!-- Имя / ФИО -->
+          <div class="field">
+            <label class="label" for="name">Имя пользователя / ФИО</label>
+            <div class="control has-icons-left">
+              <input class="input" type="text" id="name" name="name" placeholder="Иванов Иван Иванович" required />
+              <span class="icon is-small is-left">
+                <i class="fas fa-user"></i>
+              </span>
+            </div>
+          </div>
 
-                <label>
-                    <input type="radio" name="sex" value="Женский">
-                    Женский
-                </label>
+          <!-- Электронная почта -->
+          <div class="field">
+            <label class="label" for="email">Электронная почта</label>
+            <div class="control has-icons-left">
+              <input class="input" type="email" id="email" name="email" placeholder="name@guap.ru" required />
+              <span class="icon is-small is-left">
+                <i class="fas fa-envelope"></i>
+              </span>
+            </div>
+          </div>
 
-                <label>
-                    <input type="radio" name="sex" value="Гофер">
-                    Гофер
-                </label>
-            </p>
+          <!-- Пароль -->
+          <div class="field">
+            <label class="label" for="password">Пароль</label>
+            <div class="control has-icons-left">
+              <input class="input" type="password" id="password" name="password" placeholder="Придумайте надежный пароль" required />
+              <span class="icon is-small is-left">
+                <i class="fas fa-lock"></i>
+              </span>
+            </div>
+          </div>
 
-            <p>
-                <button type="submit" >Отправить</button>
-                <button type="reset">Отмена</button>
-            </p>
+          <!-- Пол (Radio кнопки) -->
+          <div class="field">
+            <label class="label">Пол</label>
+            <div class="control sex-radio-group">
+              <label class="radio custom-radio">
+                <input type="radio" name="sex" value="Мужской" required />
+                <span><i class="fas fa-mars"></i> Мужской</span>
+              </label>
+              <label class="radio custom-radio">
+                <input type="radio" name="sex" value="Женский" required />
+                <span><i class="fas fa-venus"></i> Женский</span>
+              </label>
+            </div>
+          </div>
 
-            <p>
-                <span><a href="/login">Вернуться обратно</a></span>
-            </p>
+          <!-- Кнопки отправки и сброса -->
+          <div class="auth-actions">
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            <button type="reset" class="btn btn-ghost">Отмена</button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Ссылка возврата -->
+      <div class="auth-footer">
+        <a href="/login" class="auth-link"><i class="fas fa-arrow-left"></i> Вернуться обратно</a>
+      </div>
 
     </div>
+  </div>
 
-     
 </body>
 </html>

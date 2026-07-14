@@ -1,132 +1,219 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+:root {
+  --color-bg: #EEF1F7;
+  --color-sidebar-start: #101F4D;
+  --color-sidebar-end: #1B3F8B;
+  --color-accent-1: #6C3FD1;
+  --color-accent-2: #C13584;
+  --color-accent-3: #E1306C;
+  --color-white: #FFFFFF;
+  --color-text: #1F2430;
+  --color-text-muted: #6B7280;
+  --color-border: #E4E8F1;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 4px 20px rgba(21, 35, 74, 0.08);
+  --font-display: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
 }
+
+* { box-sizing: border-box; }
 
 body {
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+  margin: 0;
+  background: var(--color-bg);
+  font-family: var(--font-body);
+  color: var(--color-text);
 }
 
-/* заголовки */
-h2 {
-    text-align: center;
-    font-weight: 600;
-    font-size: 26px;
-    margin-bottom: 24px;
+/* Обертка для центрирования по экрану */
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
-/* форма */
-form {
-    width: 100%;
-    max-width: 420px;
-    padding: 32px;
-    border: 1px solid #e5e5e5;
-    border-radius: 20px;
-    background: white;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+.auth-container {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* отступы */
-form p {
-    margin-bottom: 16px;
+/* Брендинг */
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
-/* лейблы */
-label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #444;
-    margin-bottom: 6px;
+.logo-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-accent-1), var(--color-accent-3));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-white);
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.25);
 }
 
-/* поля ввода */
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-    width: 100%;
-    padding: 12px;
-    border-radius: 12px;
-    border: 1px solid #e5e5e5;
-    font-size: 15px;
-    background: white;
-    transition: all 0.2s;
+.logo-text {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  color: var(--color-sidebar-start);
+  letter-spacing: 0.04em;
 }
 
-input:focus {
-    outline: none;
-    border-color: #2d88ff;
-    box-shadow: 0 0 0 3px rgba(45,136,255,0.1);
+/* Карточка формы */
+.card.auth-card {
+  width: 100%;
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px 28px;
 }
 
-input::placeholder {
-    color: #999;
+.auth-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin: 0 0 6px;
+  color: var(--color-text);
+  text-align: center;
 }
 
-/* fieldset */
-fieldset {
-    border: none;
-    padding: 0;
+.auth-subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0 0 24px;
+  text-align: center;
 }
 
-legend {
-    display: none;
+/* Поля ввода Bulma overrides */
+.label {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  margin-bottom: 6px;
 }
 
-/* кнопки */
-button {
-    padding: 12px 18px;
-    border-radius: 12px;
-    border: none;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: 0.2s;
+.input {
+  border-radius: var(--radius-sm);
+  border-color: var(--color-border);
+  box-shadow: none;
+  height: 44px;
+  font-size: 0.92rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* первая кнопка (основная) */
-button[type="submit"] {
-    background: #2d88ff;
-    color: white;
+.input:focus {
+  border-color: var(--color-sidebar-end);
+  box-shadow: 0 0 0 3px rgba(27, 63, 139, 0.1);
 }
 
-button[type="submit"]:hover {
-    background: #1a5bbf;
+.icon.is-left {
+  height: 44px;
+  color: var(--color-text-muted);
 }
 
-/* reset */
-button[type="reset"] {
-    background: #f3f3f3;
-    color: #333;
+/* Выбор пола (Radio) */
+.sex-radio-group {
+  display: flex;
+  gap: 16px;
+  padding-top: 4px;
 }
 
-button[type="reset"]:hover {
-    background: #e6e6e6;
+.custom-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.92rem;
+  cursor: pointer;
+  color: var(--color-text);
 }
 
-/* расстояние между кнопками */
-button + button {
-    margin-left: 10px;
+.custom-radio i {
+  color: var(--color-text-muted);
 }
 
-/* ссылки */
-a {
-    color: #2d88ff;
-    text-decoration: none;
+/* Кнопки */
+.auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
 }
 
-a:hover {
-    text-decoration: underline;
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.92rem;
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease, transform 0.05s ease;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
-/* текст под формой */
-span {
-    font-size: 14px;
-    color: #666;
+.btn:active { transform: translateY(1px); }
+
+.btn-primary {
+  flex: 1;
+  background: var(--color-sidebar-end);
+  color: var(--color-white);
+}
+
+.btn-primary:hover { background: #163573; color: var(--color-white); }
+
+.btn-ghost {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.btn-ghost:hover { background: #E3E8F3; color: var(--color-text); }
+
+/* Подвал под карточкой */
+.auth-footer {
+  margin-top: 20px;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.auth-link {
+  color: var(--color-sidebar-end);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.auth-link:hover {
+  color: var(--color-accent-1);
+  text-decoration: underline;
+}
+
+/* Баннер ошибки от бэкенда */
+.form-error-banner {
+  background: #FBE3E9;
+  color: var(--color-accent-3);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
