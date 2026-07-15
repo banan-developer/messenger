@@ -18,6 +18,24 @@ func NewAuthHandler(authService *service.AuthService) *AuthHandler {
 	}
 }
 
+// Login обрабатывает вход пользователя в систему.
+//
+// # API Контракт
+//
+//	Метод:       POST
+//	Маршрут:     /login
+//	Авторизация: Не требуется
+//
+// # Параметры запроса
+//
+//	Формат: application/x-www-form-urlencoded
+//	email    (string, обяз.) — email или логин пользователя
+//	password (string, обяз.) — пароль пользователя
+//
+// # Ответы
+//
+//	303 See Other    — успешный вход, установка сессионной куки и редирект на /profile
+//	401 Unauthorized — неверные учетные данные
 func (a *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		http.ServeFile(w, r, "./web/html/login.html")
@@ -40,6 +58,27 @@ func (a *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Registration обрабатывает создание новой учетной записи пользователя.
+//
+// # API Контракт
+//
+//	Метод:       POST
+//	Маршрут:     /registration
+//	Авторизация: Не требуется
+//
+// # Параметры запроса
+//
+// Формат: application/x-www-form-urlencoded
+//
+//	email    (string, обяз.) — Электронная почта
+//	password (string, обяз.) — Пароль (от 6 символов)
+//	name     (string, обяз.) — Имя или ФИО (до 100 символов)
+//	sex      (string, обяз.) — Пол ("Мужской" или "Женский")
+//
+// # Ответы
+//
+//	303 See Other             — успешная регистрация, редирект на /login
+//	500 Internal Server Error — email уже занят или ошибка БД
 func (a *AuthHandler) Registration(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		http.ServeFile(w, r, "./web/html/registration.html")
@@ -61,6 +100,17 @@ func (a *AuthHandler) Registration(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
 
+// Logout завершает текущую сессию пользователя и очищает авторизационные куки.
+//
+// # API Контракт
+//
+//	Метод:       GET
+//	Маршрут:     /exit
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Ответы
+//
+//	200 OK — сессия успешно завершена
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	auth.ClearSessions(w, r)
 	w.WriteHeader(http.StatusOK)

@@ -22,6 +22,16 @@ func NewUserHandler(service *service.UserService) *UserHandler {
 	return &UserHandler{service: service}
 }
 
+// Profile является маршрутизатором для работы с профилем пользователя.
+//
+// # API Контракт
+//
+//	Маршрут:     /api/profile
+//	Авторизация: Требуется (сессионная кука)
+//
+//	GET  /api/profile         — получить данные текущего пользователя
+//	GET  /api/profile?id={id} — получить публичные данные другого пользователя
+//	PUT  /api/profile         — обновить профиль текущего пользователя
 func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -38,6 +48,18 @@ func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetProfile возвращает полные данные профиля текущего пользователя.
+//
+// # API Контракт
+//
+//	Метод:       GET
+//	Маршрут:     /api/profile
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON с данными профиля пользователя
 func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -58,6 +80,18 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// UpdateProfile обновляет информацию профиля текущего пользователя.
+//
+// # API Контракт
+//
+//	Метод:       PUT
+//	Маршрут:     /api/profile
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Формат данных запроса
+//
+//	Content-Type: application/json
+//	Тело: JSON-объект профиля с обновляемыми полями
 func (h *UserHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPut {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -81,6 +115,23 @@ func (h *UserHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UploadAvatarUser загружает новую аватарку пользователя.
+//
+// # API Контракт
+//
+//	Метод:       POST
+//	Маршрут:     /api/profile/avatar
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Формат данных запроса
+//
+//	Формат: multipart/form-data
+//	avatar (file, обяз.) — изображение для аватарки
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON с полем avatar, содержащим ссылку на загруженный файл
 func (h *UserHandler) UploadAvatarUser(w http.ResponseWriter, r *http.Request) {
 	UserID, _ := auth.GetUserId(r)
 	r.ParseMultipartForm(10 << 20)
@@ -117,6 +168,22 @@ func (h *UserHandler) UploadAvatarUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetPersonByID возвращает публичные данные другого пользователя по его id.
+//
+// # API Контракт
+//
+//	Метод:       GET
+//	Маршрут:     /api/profile
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	id (int, обяз.) — id пользователя, данные которого запрашиваются
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON с публичной информацией о пользователе
 func (h *UserHandler) GetPersonByID(w http.ResponseWriter, r *http.Request) {
 	idSTR := r.URL.Query().Get("id")
 	PersonID, err := strconv.Atoi(idSTR)

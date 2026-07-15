@@ -24,6 +24,18 @@ func NewWallHandler(service *service.PostService) *PostHandler {
 	}
 }
 
+// Post является маршрутизатором для работы со стеной пользователя.
+//
+// # API Контракт
+//
+//	Маршрут:     /api/post
+//	Авторизация: Требуется (сессионная кука)
+//
+//	GET    /api/post              — получить посты пользователя
+//	GET    /api/post?user_id={id} — получить посты другого пользователя
+//	POST   /api/post              — создать новый пост
+//	PUT    /api/post?id={id}      — отредактировать пост
+//	DELETE /api/post?id={id}      — удалить пост
 func (p *PostHandler) Post(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -39,6 +51,22 @@ func (p *PostHandler) Post(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Getpost возвращает список постов указанного пользователя или текущего пользователя из сессии.
+//
+// # API Контракт
+//
+//	Метод:       GET
+//	Маршрут:     /api/post
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	user_id (int, необяз.) — id владельца стены. Если не передан, используются посты текущего пользователя.
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON-массив постов
 func (p *PostHandler) Getpost(w http.ResponseWriter, r *http.Request) {
 
 	var UserID int
@@ -70,6 +98,25 @@ func (p *PostHandler) Getpost(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// CreatePost создает новый пост на стене текущего пользователя с возможностью загрузки изображения.
+//
+// # API Контракт
+//
+//	Метод:       POST
+//	Маршрут:     /api/post
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Формат данных запроса
+//
+//	Формат: multipart/form-data
+//	title (string, обяз.) — заголовок поста
+//	text  (string, обяз.) — текст поста
+//	img   (file, необяз.) — изображение поста
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON-массив обновленных постов пользователя
 func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	UserID, _ := auth.GetUserId(r)
@@ -118,6 +165,17 @@ func (p *PostHandler) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DeletePost удаляет пост по его идентификатору.
+//
+// # API Контракт
+//
+//	Метод:       DELETE
+//	Маршрут:     /api/post
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	id (int, обяз.) — id поста, который нужно удалить
 func (p *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	idSTR := r.URL.Query().Get("id")
 
@@ -131,6 +189,22 @@ func (p *PostHandler) DeletePost(w http.ResponseWriter, r *http.Request) {
 	p.service.DeletePost(PostID, UserID)
 }
 
+// EditPost обновляет существующий пост текущего пользователя.
+//
+// # API Контракт
+//
+//	Метод:       PUT
+//	Маршрут:     /api/post
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	id (int, обяз.) — id поста, который нужно отредактировать
+//
+// # Формат данных запроса
+//
+//	Content-Type: application/json
+//	Тело: JSON-объект с полями title и text
 func (p *PostHandler) EditPost(w http.ResponseWriter, r *http.Request) {
 	var Post *domain.CreateWallRequest
 

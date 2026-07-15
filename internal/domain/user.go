@@ -1,6 +1,9 @@
 package domain
 
+// User описывает полный профиль пользователя в системе.
+// Превращается в JSON при запросе собственного профиля (GET /api/profile) или при его обновлении (PUT /api/profile).
 type User struct {
+	// ID уникальный идентификатор пользователя.
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
 	About    string `json:"about"`

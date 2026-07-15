@@ -28,6 +28,26 @@ func NewMessageHandler(msgService *service.MessageService, hub *websocket.Hub) *
 	}
 }
 
+// Messages возвращает список чатов текущего пользователя либо сообщения конкретного чата.
+//
+// # API Контракт
+//
+//  Маршрут:     /api/messages
+//  Авторизация: Требуется (сессионная кука)
+//
+//  GET /api/messages                  — получить список чатов текущего пользователя
+//  GET /api/messages?chat_id={id}     — получить сообщения конкретного чата
+//  GET /api/messages?id={friend_id}   — открыть/создать чат с другом и получить его сообщения
+//
+// # Параметры запроса
+//
+//  chat_id (int, необяз.) — id чата с сообщениями
+//  id      (int, необяз.) — id друга для открытия личного чата
+//
+// # Формат ответа
+//
+//  Content-Type: application/json
+//  Тело: JSON со списком чатов или сообщениями
 func (h *MessageHandler) Messages(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Query().Get("id") == "" && r.URL.Query().Get("chat_id") == "" {
 		userID, _ := auth.GetUserId(r)
@@ -82,6 +102,22 @@ func (h *MessageHandler) Messages(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(messages)
 }
 
+// GetMessageByID возвращает сообщение по его идентификатору.
+//
+// # API Контракт
+//
+//  Метод:       GET
+//  Маршрут:     /api/messages
+//  Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//  msg_id (int, обяз.) — id сообщения
+//
+// # Формат ответа
+//
+//  Content-Type: application/json
+//  Тело: JSON с данными сообщения
 func (h *MessageHandler) GetMessageByID(w http.ResponseWriter, r *http.Request) {
 	msgID, err := strconv.Atoi(r.URL.Query().Get("msg_id"))
 	if err != nil || msgID <= 0 {
@@ -99,6 +135,18 @@ func (h *MessageHandler) GetMessageByID(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(msg)
 }
 
+// UpdateMessage редактирует текст существующего сообщения.
+//
+// # API Контракт
+//
+//  Метод:       PUT
+//  Маршрут:     /api/messages
+//  Авторизация: Требуется (сессионная кука)
+//
+// # Формат данных запроса
+//
+//  Content-Type: application/json
+//  Тело: JSON-объект с полями id и text
 func (h *MessageHandler) UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	var req domain.EditMessageRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
@@ -135,6 +183,17 @@ func (h *MessageHandler) UpdateMessage(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }
 
+// DeleteMessage удаляет сообщение по его идентификатору.
+//
+// # API Контракт
+//
+//  Метод:       DELETE
+//  Маршрут:     /api/messages
+//  Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//  id (int, обяз.) — id сообщения для удаления
 func (h *MessageHandler) DeleteMessage(w http.ResponseWriter, r *http.Request) {
 	msgID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || msgID <= 0 {
@@ -163,6 +222,21 @@ func (h *MessageHandler) DeleteMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// SendMessageWithFile отправляет сообщение с прикрепленным файлом в чат или личный диалог.
+//
+// # API Контракт
+//
+//  Метод:       POST
+//  Маршрут:     /api/messages/file
+//  Авторизация: Требуется (сессионная кука)
+//
+// # Формат данных запроса
+//
+//  Формат: multipart/form-data
+//  chat_id   (int, необяз.) — id чата, если сообщение отправляется в групповой чат
+//  friend_id (int, необяз.) — id друга, если нужно открыть или создать личный чат
+//  text      (string, необяз.) — текст сообщения
+//  file      (file, обяз.) — файл вложения
 func (h *MessageHandler) SendMessageWithFile(w http.ResponseWriter, r *http.Request) {
 	UserID, _ := auth.GetUserId(r)
 	if UserID <= 0 {

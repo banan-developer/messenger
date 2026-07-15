@@ -23,7 +23,19 @@ func NewWebSocketHandler(msgService *service.MessageService, hub *websocket.Hub)
 	}
 }
 
-// HandleWS — WebSocket соединение
+// HandleWS устанавливает WebSocket-соединение для чата или личного диалога.
+//
+// # API Контракт
+//
+//  Метод:       GET
+//  Маршрут:     /ws
+//  Авторизация: В текущей реализации не используется; доступ определяется query-параметрами
+//
+// # Параметры запроса
+//
+//  chat_id  (int, обяз. если передается chat_id) — id существующего чата
+//  id       (int, обяз. если передается id)      — id друга для открытия личного чата
+//  user_id  (int, обяз.) — id текущего пользователя
 func (h *WebSocketHandler) HandleWS(w http.ResponseWriter, r *http.Request) {
 	if chatID, err := strconv.Atoi(r.URL.Query().Get("chat_id")); err == nil && chatID > 0 {
 		userID, _ := strconv.Atoi(r.URL.Query().Get("user_id"))
@@ -60,7 +72,7 @@ func (h *WebSocketHandler) HandleWS(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// ProcessMessage — обработка входящего сообщения из WebSocket
+// ProcessMessage обрабатывает входящее сообщение из WebSocket и рассылает его участникам чата.
 func (h *WebSocketHandler) ProcessMessage(userID, chatID int, data []byte) {
 	var req struct {
 		Event string `json:"event"`
@@ -167,7 +179,7 @@ func (h *WebSocketHandler) deleteMessage(userID, chatID, msgID int) {
 	}, 0)
 }
 
-// ProcessFileMessage — обработка сообщения с файлом из WebSocket
+// ProcessFileMessage обрабатывает входящее сообщение с вложением, пришедшее по WebSocket.
 func (h *WebSocketHandler) ProcessFileMessage(userID, chatID int, data []byte) {
 	var req struct {
 		Text          string `json:"text"`

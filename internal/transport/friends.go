@@ -19,6 +19,33 @@ func NewFriendHandler(service *service.FriendService) *FriendHandler {
 	}
 }
 
+// Friends является маршрутизатором для управления друзьями и заявками.
+//
+// # API Контракт
+//
+//	Маршрут:     /api/friend
+//	Авторизация: Требуется (сессионная кука)
+//
+//	GET  /api/friend?name={name}      — поиск пользователей по имени
+//	GET  /api/friend?user_id={id}    — получение списка друзей пользователя
+//	GET  /api/friend                 — получение списка друзей текущего пользователя
+//	POST /api/friend?id={id}         — отправка заявки в друзья
+//	PUT  /api/friend?friendID={id}   — принятие входящей заявки
+//	DELETE /api/friend?id={id}       — удаление пользователя из друзей
+//
+// # Параметры запроса
+//
+//	name     (string, необяз.) — строка для поиска пользователей
+//	user_id  (int, необяз.)    — id пользователя, чьи друзья запрашиваются
+//	id       (int, обяз. для POST/DELETE) — id целевого пользователя
+//	friendID (int, обяз. для PUT)         — id пользователя, заявку которого принимают
+//
+// # Ответы
+//
+//	200 OK                — успешная обработка запроса
+//	204 No Content        — успешное удаление из друзей
+//	400 Bad Request       — неверный формат параметров URL
+//	405 Method Not Allowed — неподдерживаемый HTTP-метод
 func (f *FriendHandler) Friends(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -33,12 +60,39 @@ func (f *FriendHandler) Friends(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPut:
 		f.AcceptComingRequset(w, r)
 	case http.MethodDelete:
-		userID,_:=auth.GetUserId(r); friendID,err:=strconv.Atoi(r.URL.Query().Get("id")); if err!=nil {http.Error(w,"Invalid friend id",400);return}; if err=f.service.DeleteFriend(userID,friendID);err!=nil{http.Error(w,"Failed",500);return}; w.WriteHeader(http.StatusNoContent)
+		userID, _ := auth.GetUserId(r)
+		friendID, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil {
+			http.Error(w, "Invalid friend id", 400)
+			return
+		}
+		if err = f.service.DeleteFriend(userID, friendID); err != nil {
+			http.Error(w, "Failed", 500)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	default:
 		http.Error(w, "MethodNotAllowed", http.StatusMethodNotAllowed)
 	}
 }
 
+// GetFriendByID возвращает список друзей указанного пользователя или текущего авторизованного пользователя.
+//
+// # API Контракт
+//
+//	Метод:       GET
+//	Маршрут:     /api/friend
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	user_id (int, необяз.) — id пользователя, чьи друзья нужно получить.
+//	                         Если не передан, используется текущий пользователь из сессии.
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON-массив объектов друзей
 func (f *FriendHandler) GetFriendByID(w http.ResponseWriter, r *http.Request) {
 	UseridSTR := r.URL.Query().Get("user_id")
 	var UserID int
@@ -66,6 +120,21 @@ func (f *FriendHandler) GetFriendByID(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 }
 
+// AddToFriend отправляет заявку в друзья другому пользователю.
+//
+// # API Контракт
+//
+//	Метод:       POST
+//	Маршрут:     /api/friend
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	id (int, обяз.) — id пользователя, которому отправляется заявка
+//
+// # Формат запроса
+//
+//	Тело запроса отсутствует. Параметр передается через query string.
 func (f *FriendHandler) AddToFriend(w http.ResponseWriter, r *http.Request) {
 	UserID, _ := auth.GetUserId(r)
 
@@ -82,6 +151,22 @@ func (f *FriendHandler) AddToFriend(w http.ResponseWriter, r *http.Request) {
 	f.service.AddToFriend(UserID, FriendID, status)
 }
 
+// FoundFriendByID ищет пользователей по имени или части имени.
+//
+// # API Контракт
+//
+//	Метод:       GET
+//	Маршрут:     /api/friend
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	name (string, обяз.) — подстрока для поиска пользователя по имени
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON-массив найденных пользователей
 func (f *FriendHandler) FoundFriendByID(w http.ResponseWriter, r *http.Request) {
 	FriendName := r.URL.Query().Get("name")
 	friend, err := f.service.FoundFriendByID(FriendName)
@@ -96,6 +181,18 @@ func (f *FriendHandler) FoundFriendByID(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+// GetIncomigRequest возвращает список входящих заявок в друзья для текущего пользователя.
+//
+// # API Контракт
+//
+//	Метод:       GET
+//	Маршрут:     /api/incomingrequest
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Формат ответа
+//
+//	Content-Type: application/json
+//	Тело: JSON-массив заявок в друзья
 func (f *FriendHandler) GetIncomigRequest(w http.ResponseWriter, r *http.Request) {
 	UserID, _ := auth.GetUserId(r)
 
@@ -111,6 +208,21 @@ func (f *FriendHandler) GetIncomigRequest(w http.ResponseWriter, r *http.Request
 	}
 }
 
+// AcceptComingRequset принимает входящую заявку в друзья.
+//
+// # API Контракт
+//
+//	Метод:       PUT
+//	Маршрут:     /api/friend
+//	Авторизация: Требуется (сессионная кука)
+//
+// # Параметры запроса
+//
+//	friendID (int, обяз.) — id пользователя, чью заявку принимают
+//
+// # Формат запроса
+//
+//	Тело запроса отсутствует. ID передается через query string.
 func (f *FriendHandler) AcceptComingRequset(w http.ResponseWriter, r *http.Request) {
 	UserID, _ := auth.GetUserId(r)
 
