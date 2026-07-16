@@ -10,6 +10,7 @@ const App2 = {
                     userID: null,
                     ChatID: null,
                     lightboxImg: null,
+                    SessionsID: null
 
                 }
             },
@@ -24,6 +25,7 @@ const App2 = {
                 this.getName()
                 this.getWall()
                 this.loadFriend()
+                this.Profile()
             },
             methods: {
                async getName(){
@@ -38,6 +40,16 @@ const App2 = {
                     }catch(err){
                         console.log(err)
                     }
+                },
+                async Profile(){
+                   try{
+                        const res = await fetch("/api/profile")
+                        if (!res.ok) throw new Error("ошибка загрузки айди пользователя")
+                        const data = await res.json()
+                        this.SessionsID = data.id
+                   }catch(err){
+                        console.log(err)
+                   }
                 },
                 async getWall(){
                     try{
@@ -63,9 +75,15 @@ const App2 = {
                         console.log(err)
                     }
                 },
+                
 
                 goToFriendProfile(friendId) {
-                    window.location.href = `/friend?id=${friendId}`;
+                    if (friendId != this.SessionsID){
+                        window.location.href = `/friend?id=${friendId}`
+                    }
+                    else{
+                        console.log("На свой акканут нельзя перейти")
+                    }
                 },
 
                 goBack(){
