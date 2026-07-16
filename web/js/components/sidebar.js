@@ -22,7 +22,7 @@ const AppSidebar = {
                 if (!res.ok) throw new Error("Ошибка загрузки профиля")
                 const data = await res.json()
                 this.currentUser.name = data.name
-                this.currentUser.avatar = data.avatar || '/static/avatars/default.jpg'
+                this.currentUser.avatar = data.avatar || '/static/icons/def_picture.png'
             } catch (err) {
                 console.log(err)
             }

@@ -99,10 +99,9 @@
           @click="openChat(chat)">
           
           <div class="chat-avatar-wrap">
-            <img v-if="chat.avatar" :src="chat.avatar" :alt="chat.name" class="chat-avatar-img" />
+            <img v-if="chat.avatar || !(chat.is_group || chat.isGroup)" :src="chat.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" :alt="chat.name" class="chat-avatar-img" />
             <div v-else class="chat-avatar-placeholder">
-              <i v-if="chat.is_group || chat.isGroup" class="fas fa-users"></i>
-              <span v-else>{{ (chat.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
+              <i class="fas fa-users"></i>
             </div>
           </div>
 

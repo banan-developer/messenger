@@ -49,17 +49,30 @@ const App3 = {
     methods: {
         async GetName() {
             try {
+                if (this.chatID) {
+                    const res = await fetch('/api/groups', { credentials: 'same-origin' })
+                    if (!res.ok) throw new Error("ошибка загрузки группы")
+                    const groups = await res.json()
+                    const group = groups.find(item => Number(item.id) === Number(this.chatID))
+                    if (!group) throw new Error("группа не найдена")
+
+                    this.name = group.title || 'Групповая беседа'
+                    this.groupTitle = group.title || ''
+                    this.avatar_url = group.avatar_url || group.avatar || ''
+                    return
+                }
+
                 const res = await fetch(`/api/profile?id=${this.friendID}`)
                 if (!res.ok) throw new Error("ошибка загрузки имени")
                 const data = await res.json()
                 this.name = data.name
-                this.avatar_url = data.avatar || '/static/avatars/default.jpg'
+                this.avatar_url = data.avatar || '/static/icons/def_picture.png'
             } catch (err) {
                 console.log(err)
             }
         },
         getBack() {
-            window.location.href = "/profile"
+            window.location.href = "/messages"
         },
         openLightbox(imgUrl) {
             this.lightboxImg = imgUrl;

@@ -100,10 +100,7 @@
         <div class="friends-grid">
           <article v-for="friend in filteredFriends" :key="friend.id" class="friend-card">
             <div class="friend-avatar-wrap">
-              <img v-if="friend.avatar" :src="friend.avatar" :alt="friend.name" class="friend-avatar-img" />
-              <div v-else class="friend-avatar-placeholder">
-                {{ (friend.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}
-              </div>
+              <img :src="friend.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" :alt="friend.name" class="friend-avatar-img" />
             </div>
 
             <div class="friend-info" @click="goToProfile(friend.id)">
@@ -154,8 +151,7 @@
             <ul class="friends-list search-results">
               <li v-for="person in friendSearchResults" :key="person.id" class="friend-row">
                 <div class="friend-avatar">
-                  <img v-if="person.avatar" :src="person.avatar" alt="" />
-                  <span v-else>{{ friendInitials(person.name) }}</span>
+                  <img :src="person.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
                 </div>
                 <span class="friend-name">{{ person.name }}</span>
                 <button class="btn btn-small btn-primary" :disabled="person._added || person._adding" @click="addFriend(person)">
@@ -177,10 +173,7 @@
         <div class="friends-grid">
           <article v-for="req in requests" :key="req.id" class="friend-card">
             <div class="friend-avatar-wrap">
-              <img v-if="req.avatar" :src="req.avatar" :alt="req.name" class="friend-avatar-img" />
-              <div v-else class="friend-avatar-placeholder">
-                {{ (req.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}
-              </div>
+              <img :src="req.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" :alt="req.name" class="friend-avatar-img" />
             </div>
 
             <div class="friend-info">

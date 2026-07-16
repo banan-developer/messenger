@@ -141,5 +141,26 @@ func (r *ChatRepo) RemoveMemberFromGroup(chatID, userID int) error {
 	return err
 }
 
-func (r *ChatRepo) RenameGroup(chatID int, title string) error { _, err := r.db.Exec("UPDATE chats SET title = ? WHERE id = ? AND is_group = 1", title, chatID); return err }
-func (r *ChatRepo) DeleteGroup(chatID int) error { tx,err:=r.db.Begin(); if err!=nil{return err}; defer tx.Rollback(); if _,err=tx.Exec("DELETE FROM users_has_chats WHERE chats_id = ?",chatID);err!=nil{return err}; if _,err=tx.Exec("DELETE FROM chats WHERE id = ? AND is_group = 1",chatID);err!=nil{return err}; return tx.Commit() }
+func (r *ChatRepo) RenameGroup(chatID int, title string) error {
+	_, err := r.db.Exec("UPDATE chats SET title = ? WHERE id = ? AND is_group = 1", title, chatID)
+	return err
+}
+func (r *ChatRepo) DeleteGroup(chatID int) error {
+	tx, err := r.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	if _, err = tx.Exec("DELETE FROM messeges WHERE chats_id = ?", chatID); err != nil {
+		return err
+	}
+	if _, err = tx.Exec("DELETE FROM users_has_chats WHERE chats_id = ?", chatID); err != nil {
+		return err
+	}
+	if _, err = tx.Exec("DELETE FROM chats WHERE id = ? AND is_group = 1", chatID); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}

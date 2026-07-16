@@ -75,8 +75,7 @@
         <!-- profile summary -->
         <div class="card profile-card">
           <div class="avatar-wrap" @click="triggerAvatarUpload" title="Изменить аватар">
-            <img v-if="user.avatar" :src="user.avatar" class="avatar-img" alt="Аватар" />
-            <div v-else class="avatar-placeholder">{{ initials }}</div>
+            <img :src="user.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" class="avatar-img" alt="Аватар" />
             <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
             <input type="file" ref="avatarInput" accept="image/*" class="is-hidden" @change="onAvatarSelected" placeholder=" " />
           </div>
@@ -141,8 +140,7 @@
             <template v-else>
               <div class="post-header">
                 <div class="post-avatar">
-                  <img v-if="user.avatar" :src="user.avatar" alt="" />
-                  <span v-else>{{ initials }}</span>
+                  <img :src="user.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
                 </div>
                 <div class="post-author">
                   <strong>{{ user.name }}</strong>
@@ -180,8 +178,7 @@
             <!-- Добавили @click="goToProfile(friend.id)" и класс is-clickable -->
             <li v-for="friend in friends" :key="friend.id" class="friend-row is-clickable" @click="goToProfile(friend.id)">
               <div class="friend-avatar">
-                <img v-if="friend.avatar" :src="friend.avatar" alt="" />
-                <span v-else>{{ friendInitials(friend.name) }}</span>
+                <img :src="friend.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
               </div>
               <span class="friend-name">{{ friend.name }}</span>
               

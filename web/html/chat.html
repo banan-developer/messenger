@@ -56,7 +56,16 @@
 
         <div class="chat-header-user" :class="{ 'group-title': chatID }" @click="loadFriendProfile">
           <div class="avatar-wrap-small">
-            <img id="profile-photo" :src="avatar_url" alt="Фото профиля" />
+            <div v-if="chatID && !avatar_url" class="group-avatar-placeholder">
+              <i class="fas fa-users"></i>
+            </div>
+            <img
+              v-else
+              id="profile-photo"
+              :src="avatar_url || '/static/icons/def_picture.png'"
+              @error="chatID ? avatar_url = '' : $event.target.src = '/static/icons/def_picture.png'"
+              :alt="chatID ? 'Фото группы' : 'Фото профиля'"
+            />
           </div>
           <div class="user-info-meta">
             <h2 class="user-name">{{ name || 'Загрузка...' }}</h2>
@@ -105,8 +114,8 @@
           
           <!-- Аватар собеседника (только для входящих сообщений) -->
           <div class="message-avatar-col" v-if="Number(msg.from_id) !== currentUserID">
-            <img v-if="messageAuthor(msg.from_id)" class="message-author-avatar" :src="messageAuthor(msg.from_id).avatar || '/static/avatars/default.jpg'" :alt="messageAuthor(msg.from_id).name" alt="Логотип ГУАП" >
-            <img v-else class="message-author-avatar" :src="avatar_url" alt="">
+            <img v-if="messageAuthor(msg.from_id)" class="message-author-avatar" :src="messageAuthor(msg.from_id).avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" :alt="messageAuthor(msg.from_id).name">
+            <img v-else class="message-author-avatar" :src="avatar_url || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="">
           </div>
 
           <!-- Пузырь сообщения -->
@@ -199,7 +208,7 @@
         <label class="label">Участники ({{ groupMembers.length }}/50)</label>
         <div class="members-list">
           <div v-for="member in groupMembers" :key="member.id" class="settings-member">
-            <img :src="member.avatar || '/static/avatars/default.jpg'" alt="">
+            <img :src="member.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="">
             <span class="member-name">{{ member.name }}</span>
             <button v-if="member.id !== currentUserID" class="btn btn-small danger" @click="removeGroupMember(member.id)">Удалить</button>
           </div>

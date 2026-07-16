@@ -66,10 +66,7 @@
         <!-- Карточка пользователя -->
         <div class="card profile-card">
           <div class="avatar-wrap">
-            <img v-if="avatarURL" :src="avatarURL" class="avatar-img" alt="Аватар" />
-            <div v-else class="avatar-placeholder">
-              {{ (name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}
-            </div>
+            <img :src="avatarURL || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" class="avatar-img" alt="Аватар" />
           </div>
 
           <div class="profile-info">
@@ -99,8 +96,7 @@
             <article v-for="note in wall" :key="note.id" class="card post-card">
               <div class="post-header">
                 <div class="post-avatar">
-                  <img v-if="avatarURL" :src="avatarURL" alt="" />
-                  <span v-else>{{ (name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
+                  <img :src="avatarURL || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
                 </div>
                 <div class="post-author">
                   <strong>{{ name }}</strong>
@@ -135,8 +131,7 @@
           <ul class="friends-list" v-else>
             <li v-for="friend in friends" :key="friend.id" class="friend-row is-clickable" @click="goToFriendProfile(friend.id)">
               <div class="friend-avatar">
-                <img v-if="friend.avatar" :src="friend.avatar" alt="" />
-                <span v-else>{{ (friend.name || '?').split(' ').map(s => s[0]).join('').slice(0, 2).toUpperCase() }}</span>
+                <img :src="friend.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
               </div>
               <span class="friend-name">{{ friend.name }}</span>
               <i class="fas fa-chevron-right friend-arrow"></i>
