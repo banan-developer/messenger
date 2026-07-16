@@ -9,6 +9,7 @@ const App2 = {
                     friends: [],
                     userID: null,
                     ChatID: null,
+                    lightboxImg: null,
 
                 }
             },
@@ -69,6 +70,14 @@ const App2 = {
 
                 goBack(){
                     window.location.href = "/profile"
+                },
+
+                openLightbox(imgUrl) {
+                    this.lightboxImg = imgUrl;
+                },
+
+                closeLightbox() {
+                    this.lightboxImg = null;
                 },
 
                 async exitFromAccount(){

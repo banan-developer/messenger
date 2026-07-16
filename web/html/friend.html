@@ -109,7 +109,10 @@
               </div>
               <h4 class="post-title" v-if="note.title">{{ note.title }}</h4>
               <p class="post-text">{{ note.text }}</p>
-              <img v-if="note.img && note.img !== ''" :src="note.img" class="post-image" alt="Фото поста" />
+              <div v-if="note.img && note.img !== ''" class="post-image-container" @click="openLightbox(note.img)" title="Нажмите для увеличения">
+                <img :src="note.img" class="post-image-bg" alt="" />
+                <img :src="note.img" class="post-image-main" alt="Фото поста" />
+              </div>
             </article>
           </div>
         </div>
@@ -145,6 +148,15 @@
     </main>
   </div>
 
+</div>
+
+<!-- ===== LIGHTBOX MODAL ===== -->
+<div class="modal" :class="{ 'is-active': lightboxImg }">
+  <div class="modal-background" @click="closeLightbox"></div>
+  <div class="modal-content" style="width: auto; text-align: center;">
+    <img v-if="lightboxImg" :src="lightboxImg" class="lightbox-img" alt="Полноразмерное фото" />
+  </div>
+  <button class="modal-close is-large" aria-label="close" @click="closeLightbox"></button>
 </div>
 
 <!-- Подключение Vue и скрипта -->

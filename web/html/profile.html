@@ -155,7 +155,10 @@
               </div>
               <h4 class="post-title" v-if="post.title">{{ post.title }}</h4>
               <p class="post-text">{{ post.text }}</p>
-              <img v-if="post.img" :src="post.img" class="post-image" alt="" />
+              <div v-if="post.img" class="post-image-container" @click="openLightbox(post.img)" title="Нажмите для увеличения">
+                <img :src="post.img" class="post-image-bg" alt="" />
+                <img :src="post.img" class="post-image-main" alt="" />
+              </div>
             </template>
           </article>
         </div>

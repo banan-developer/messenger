@@ -41,7 +41,10 @@ createApp({
       friendSearchTimer: null,
 
       // mobile burger menu
-      mobileMenuOpen: false
+      mobileMenuOpen: false,
+
+      // lightbox
+      lightboxImg: null
     };
   },
 
@@ -98,6 +101,14 @@ createApp({
 
     closeEditProfile() {
       this.showEditProfile = false;
+    },
+
+    openLightbox(imgUrl) {
+      this.lightboxImg = imgUrl;
+    },
+
+    closeLightbox() {
+      this.lightboxImg = null;
     },
 
     async saveProfile() {
