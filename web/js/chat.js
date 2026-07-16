@@ -213,13 +213,29 @@ const App3 = {
             }
         },
         formatDate(dateString) {
-            if (!dateString) return ''
-            const date = new Date(dateString)
-            const month = String(date.getMonth() + 1).padStart(2, '0')
-            const day = String(date.getDate()).padStart(2, '0')
-            const hours = String(date.getHours()).padStart(2, '0')
-            const minutes = String(date.getMinutes()).padStart(2, '0')
-            return `${month}-${day} ${hours}:${minutes}`
+            if (!dateString) return '';
+
+            // Если дата уже пришла обрезанной из БД в формате "MM-DD HH:MM"
+            if (/^\d{2}-\d{2}\s\d{2}:\d{2}$/.test(dateString)) {
+                return dateString;
+            }
+
+            // Для новых сообщений заменяем пробел на 'T', 
+            // чтобы формат "YYYY-MM-DD HH:MM:SS" без ошибок работал в Safari/iOS
+            const safeDateString = dateString.replace(' ', 'T');
+            const date = new Date(safeDateString);
+
+            // Если парсинг всё равно не удался, возвращаем исходную строку, чтобы не было NaN
+            if (isNaN(date.getTime())) {
+                return dateString;
+            }
+
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            
+            return `${month}-${day} ${hours}:${minutes}`;
         },
         async editMessHttpFallback() {
             try {
