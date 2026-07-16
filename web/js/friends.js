@@ -3,16 +3,26 @@ const FriendsApp = {
         return {
             userName: "asdas",
             userAvatar: "",
+            currentUserID: null,
             activeTab: "all",
             searchQuery: "",
             openMenuId: null,
             friends: [],
-            requests: []
+            requests: [],
+            showAddFriend: false,
+            friendSearchQuery: '',
+            friendSearchResults: [],
+            friendSearchLoading: false,
+            friendSearchTimer: null,
+            sentFriendRequestIDs: []
         }
     },
-     mounted(){
-            this.loadFriend()
-            this.GetFrienedRequest()
+     async mounted(){
+            await Promise.all([
+                this.loadCurrentUser(),
+                this.loadFriend(),
+                this.GetFrienedRequest()
+            ])
         },
     computed: {
         filteredFriends() {
@@ -22,11 +32,38 @@ const FriendsApp = {
         }
     },
     methods: {
+        loadSentFriendRequestIDs() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(`sentFriendRequestIDs:${this.currentUserID}`) || '[]')
+                this.sentFriendRequestIDs = Array.isArray(saved)
+                    ? saved.map(Number).filter(Number.isInteger)
+                    : []
+            } catch {
+                this.sentFriendRequestIDs = []
+            }
+        },
+        saveSentFriendRequestIDs() {
+            localStorage.setItem(
+                `sentFriendRequestIDs:${this.currentUserID}`,
+                JSON.stringify(this.sentFriendRequestIDs)
+            )
+        },
+        async loadCurrentUser() {
+            try {
+                const res = await fetch('/api/profile', { credentials: 'same-origin' })
+                if (!res.ok) throw new Error('Не удалось загрузить профиль')
+                const user = await res.json()
+                this.currentUserID = Number(user.id)
+                this.loadSentFriendRequestIDs()
+            } catch (err) {
+                console.log(err)
+            }
+        },
         toggleMenu(id) {
             this.openMenuId = this.openMenuId === id ? null : id
         },
         openChatWith(friend) {
-            window.location.href = `/chat.html?id=${friend.id}`
+            window.location.href = `/chat?id=${friend.id}`
         },
 		async deleteFriend(friendID) {
 			if (!confirm('Удалить из друзей?')) return
@@ -76,6 +113,85 @@ const FriendsApp = {
                 console.log(err)
             }
         },
+
+        friendInitials(name) {
+            if (!name) return '?'
+            return name
+                .trim()
+                .split(/\s+/)
+                .slice(0, 2)
+                .map(part => part[0])
+                .join('')
+                .toUpperCase()
+        },
+        openAddFriend() {
+            this.showAddFriend = true
+            this.friendSearchQuery = ''
+            this.friendSearchResults = []
+        },
+        closeAddFriend() {
+            this.showAddFriend = false
+        },
+        onSearchFriends() {
+            clearTimeout(this.friendSearchTimer)
+            const query = this.friendSearchQuery
+            if (!query) {
+                this.friendSearchResults = []
+                return
+            }
+            this.friendSearchTimer = setTimeout(() => this.searchFriends(query), 300)
+        },
+        async searchFriends(query) {
+            this.friendSearchLoading = true;
+            try {
+                const res = await fetch(`/api/friend?name=${encodeURIComponent(query)}`, {
+                credentials: 'same-origin'
+                });
+                if (!res.ok) throw new Error('Не удалось выполнить поиск');
+                const results = await res.json();
+                const friendIDs = new Set(this.friends.map(friend => Number(friend.id)))
+                const sentRequestIDs = new Set(this.sentFriendRequestIDs)
+                this.friendSearchResults = results
+                    .filter(person => Number(person.id) !== this.currentUserID)
+                    .filter(person => !friendIDs.has(Number(person.id)))
+                    .map(person => ({
+                        ...person,
+                        _added: sentRequestIDs.has(Number(person.id)),
+                        _adding: false
+                    }));
+            } catch (err) {
+                console.log(err);
+                this.friendSearchResults = [];
+            } finally {
+                this.friendSearchLoading = false;
+            }
+        },
+
+        async addFriend(person) {
+        if (person._added || person._adding) return
+        person._adding = true
+        try {
+            const res = await fetch(`/api/friend?id=${encodeURIComponent(person.id)}`, {
+            method: 'POST',
+            credentials: 'same-origin'
+            });
+            if (!res.ok) throw new Error('Не удалось добавить друга');
+            person._added = true;
+            const personID = Number(person.id)
+            if (!this.sentFriendRequestIDs.includes(personID)) {
+                this.sentFriendRequestIDs.push(personID)
+                this.saveSentFriendRequestIDs()
+            }
+            await this.loadFriend();
+        } catch (err) {
+            console.log(err);
+        } finally {
+            person._adding = false
+        }
+        },
+        goToProfile(friend){
+            window.location.href = `/friend?id=${friend}`
+        }
     }
 }
 

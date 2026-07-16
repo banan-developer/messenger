@@ -21,7 +21,7 @@
   <!-- ===== БОКОВАЯ ПАНЕЛЬ ===== -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <img src="../static/icons/guap.svg" width="36" height="36">
+      <img src="../static/icons/guap.svg" width="36" height="36" alt="Логотип ГУАП" >
       <span class="logo-text">ГУАП</span>
     </div>
 
@@ -87,7 +87,6 @@
             <p>{{ groupMembers.map(member => member.name).join(', ') }}</p>
           </div>
         </div>
-        <button class="btn btn-small btn-ghost" @click="isGroupSettingsOpen = true">Управление</button>
       </div>
 
       <!-- Область сообщений (ВАЖНО: класс messanges оставлен для совместимости с JS scrollToBottom) -->
@@ -106,7 +105,7 @@
           
           <!-- Аватар собеседника (только для входящих сообщений) -->
           <div class="message-avatar-col" v-if="Number(msg.from_id) !== currentUserID">
-            <img v-if="messageAuthor(msg.from_id)" class="message-author-avatar" :src="messageAuthor(msg.from_id).avatar || '/static/avatars/default.jpg'" :alt="messageAuthor(msg.from_id).name">
+            <img v-if="messageAuthor(msg.from_id)" class="message-author-avatar" :src="messageAuthor(msg.from_id).avatar || '/static/avatars/default.jpg'" :alt="messageAuthor(msg.from_id).name" alt="Логотип ГУАП" >
             <img v-else class="message-author-avatar" :src="avatar_url" alt="">
           </div>
 
@@ -142,7 +141,7 @@
         <!-- Обычный режим ввода -->
         <div v-if="isediting == 0" class="composer-row">
           <label class="icon-btn file-button" title="Прикрепить фото">
-            <input ref="fileInput" type="file" accept="image/*" class="is-hidden" @change="selectFile">
+            <input ref="fileInput" type="file" accept="image/*" class="is-hidden" @change="selectFile" >
             <i class="fas fa-paperclip"></i>
           </label>
 

@@ -72,6 +72,9 @@
           @click="activeTab = 'requests'">
           Заявки <span class="tab-badge" v-if="requests.length">{{ requests.length }}</span>
         </button>
+
+        <button class="tab-btn" >Мои заявки</button>
+        <button class="btn btn-primary" @click="openAddFriend">Добавить в друзья</button>
       </div>
 
       <!-- Вкладка: ВСЕ ДРУЗЬЯ -->
@@ -103,7 +106,7 @@
               </div>
             </div>
 
-            <div class="friend-info">
+            <div class="friend-info" @click="goToProfile(friend.id)">
               <h3 class="friend-name">{{ friend.name }}</h3>
               <p class="friend-status" :class="{ 'is-online': friend.status === 'Онлайн' }">
                 <span class="status-dot" v-if="friend.status === 'Онлайн'"></span>
@@ -132,6 +135,37 @@
           </article>
         </div>
       </section>
+
+      <div class="modal" :class="{ 'is-active': showAddFriend }">
+        <div class="modal-background" @click="closeAddFriend"></div>
+        <div class="modal-card">
+          <header class="modal-card-head">
+            <p class="modal-card-title">Найти друзей</p>
+            <button class="delete" aria-label="close" @click="closeAddFriend"></button>
+          </header>
+          <section class="modal-card-body">
+            <input class="input" type="text" v-model.trim="friendSearchQuery" @input="onSearchFriends" placeholder="Введите имя…" />
+
+            <div v-if="friendSearchLoading" class="empty-state small">Ищем…</div>
+            <div v-else-if="friendSearchQuery && !friendSearchResults.length" class="empty-state small">
+              Никого не нашли по этому имени.
+            </div>
+
+            <ul class="friends-list search-results">
+              <li v-for="person in friendSearchResults" :key="person.id" class="friend-row">
+                <div class="friend-avatar">
+                  <img v-if="person.avatar" :src="person.avatar" alt="" />
+                  <span v-else>{{ friendInitials(person.name) }}</span>
+                </div>
+                <span class="friend-name">{{ person.name }}</span>
+                <button class="btn btn-small btn-primary" :disabled="person._added || person._adding" @click="addFriend(person)">
+                  {{ person._added ? 'Заявка отправлена' : (person._adding ? 'Отправляем…' : 'Добавить') }}
+                </button>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </div>
 
       <!-- Вкладка: ЗАЯВКИ В ДРУЗЬЯ -->
       <section v-if="activeTab === 'requests'" class="tab-content">

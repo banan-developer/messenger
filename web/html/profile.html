@@ -61,9 +61,9 @@
         </button>
         <h1 class="topbar-title">Мой профиль</h1>
       </div>
-      <button class="icon-btn" title="Настройки профиля" @click="openEditProfile">
+      <!-- <button class="icon-btn" title="Настройки профиля" @click="openEditProfile">
         <i class="fas fa-gear"></i>
-      </button>
+      </button> -->
     </header>
     <div class="accent-strip"></div>
 
@@ -78,7 +78,7 @@
             <img v-if="user.avatar" :src="user.avatar" class="avatar-img" alt="Аватар" />
             <div v-else class="avatar-placeholder">{{ initials }}</div>
             <div class="avatar-overlay"><i class="fas fa-camera"></i></div>
-            <input type="file" ref="avatarInput" accept="image/*" class="is-hidden" @change="onAvatarSelected" />
+            <input type="file" ref="avatarInput" accept="image/*" class="is-hidden" @change="onAvatarSelected" placeholder=" " />
           </div>
 
           <div class="profile-info">
@@ -169,9 +169,6 @@
         <div class="card friends-card">
           <div class="friends-header">
             <h3 class="section-title">Друзья</h3>
-            <button class="btn btn-ghost btn-small" title="Найти друзей" @click="openAddFriend">
-              <i class="fas fa-user-plus"></i>
-            </button>
           </div>
 
           <div v-if="friendsLoading" class="empty-state small">Загружаем список…</div>
@@ -225,38 +222,6 @@
         </button>
         <button class="btn btn-text" @click="closeEditProfile">Отмена</button>
       </footer>
-    </div>
-  </div>
-
-  <!-- ===== ADD FRIEND MODAL ===== -->
-  <div class="modal" :class="{ 'is-active': showAddFriend }">
-    <div class="modal-background" @click="closeAddFriend"></div>
-    <div class="modal-card">
-      <header class="modal-card-head">
-        <p class="modal-card-title">Найти друзей</p>
-        <button class="delete" aria-label="close" @click="closeAddFriend"></button>
-      </header>
-      <section class="modal-card-body">
-        <input class="input" type="text" v-model.trim="friendSearchQuery" @input="onSearchFriends" placeholder="Введите имя…" />
-
-        <div v-if="friendSearchLoading" class="empty-state small">Ищем…</div>
-        <div v-else-if="friendSearchQuery && !friendSearchResults.length" class="empty-state small">
-          Никого не нашли по этому имени.
-        </div>
-
-        <ul class="friends-list search-results">
-          <li v-for="person in friendSearchResults" :key="person.id" class="friend-row">
-            <div class="friend-avatar">
-              <img v-if="person.avatar" :src="person.avatar" alt="" />
-              <span v-else>{{ friendInitials(person.name) }}</span>
-            </div>
-            <span class="friend-name">{{ person.name }}</span>
-            <button class="btn btn-small btn-primary" :disabled="person._added" @click="addFriend(person)">
-              {{ person._added ? 'Добавлено' : 'Добавить' }}
-            </button>
-          </li>
-        </ul>
-      </section>
     </div>
   </div>
 

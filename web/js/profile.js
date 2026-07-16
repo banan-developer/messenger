@@ -33,13 +33,6 @@ createApp({
       editProfileError: '',
       savingProfile: false,
 
-      // add friend modal
-      showAddFriend: false,
-      friendSearchQuery: '',
-      friendSearchResults: [],
-      friendSearchLoading: false,
-      friendSearchTimer: null,
-
       // mobile burger menu
       mobileMenuOpen: false,
 
@@ -296,57 +289,6 @@ createApp({
         });
         if (!res.ok) throw new Error('Не удалось удалить из друзей');
         this.friends = this.friends.filter(f => f.id !== id);
-      } catch (err) {
-        console.log(err);
-      }
-    },
-
-    openAddFriend() {
-      this.showAddFriend = true;
-      this.friendSearchQuery = '';
-      this.friendSearchResults = [];
-    },
-
-    closeAddFriend() {
-      this.showAddFriend = false;
-    },
-
-    onSearchFriends() {
-      clearTimeout(this.friendSearchTimer);
-      const query = this.friendSearchQuery;
-      if (!query) {
-        this.friendSearchResults = [];
-        return;
-      }
-      this.friendSearchTimer = setTimeout(() => this.searchFriends(query), 300);
-    },
-
-    async searchFriends(query) {
-      this.friendSearchLoading = true;
-      try {
-        const res = await fetch(`/api/friend?name=${encodeURIComponent(query)}`, {
-          credentials: 'same-origin'
-        });
-        if (!res.ok) throw new Error('Не удалось выполнить поиск');
-        const results = await res.json();
-        this.friendSearchResults = results.map(person => ({ ...person, _added: false }));
-      } catch (err) {
-        console.log(err);
-        this.friendSearchResults = [];
-      } finally {
-        this.friendSearchLoading = false;
-      }
-    },
-
-    async addFriend(person) {
-      try {
-        const res = await fetch(`/api/friend?id=${encodeURIComponent(person.id)}`, {
-          method: 'POST',
-          credentials: 'same-origin'
-        });
-        if (!res.ok) throw new Error('Не удалось добавить друга');
-        person._added = true;
-        await this.fetchFriends();
       } catch (err) {
         console.log(err);
       }
