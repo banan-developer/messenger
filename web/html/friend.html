@@ -146,17 +146,17 @@
       </aside>
 
     </main>
+
+    <!-- ===== LIGHTBOX MODAL ===== -->
+    <div class="modal" :class="{ 'is-active': lightboxImg }">
+      <div class="modal-background" @click="closeLightbox"></div>
+      <div class="modal-content" style="width: auto; text-align: center;">
+        <img v-if="lightboxImg" :src="lightboxImg" class="lightbox-img" alt="Полноразмерное фото" />
+      </div>
+      <button class="modal-close is-large" aria-label="close" @click="closeLightbox"></button>
+    </div>
   </div>
 
-</div>
-
-<!-- ===== LIGHTBOX MODAL ===== -->
-<div class="modal" :class="{ 'is-active': lightboxImg }">
-  <div class="modal-background" @click="closeLightbox"></div>
-  <div class="modal-content" style="width: auto; text-align: center;">
-    <img v-if="lightboxImg" :src="lightboxImg" class="lightbox-img" alt="Полноразмерное фото" />
-  </div>
-  <button class="modal-close is-large" aria-label="close" @click="closeLightbox"></button>
 </div>
 
 <!-- Подключение Vue и скрипта -->
