@@ -103,6 +103,41 @@ func (f *FriendRepo) GetIncomingRequest(UserID int) ([]domain.FriendResponse, er
 	return friends, nil
 }
 
+func (f *FriendRepo) GetOutgoingRequests(UserID int) ([]domain.FriendResponse, error) {
+	rows, err := f.db.Query(
+		`SELECT u.id, u.name, u.avatar_url
+		FROM friends f
+		JOIN users u ON u.id = f.friend_id
+		WHERE f.users_id = ?
+		AND f.status = 'invited'`,
+		UserID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	requests := make([]domain.FriendResponse, 0)
+	for rows.Next() {
+		var request domain.FriendResponse
+		if err := rows.Scan(&request.ID, &request.Name, &request.Avatar); err != nil {
+			return nil, err
+		}
+		requests = append(requests, request)
+	}
+
+	return requests, rows.Err()
+}
+
+func (f *FriendRepo) CancelOutgoingRequest(userID, friendID int) error {
+	_, err := f.db.Exec(
+		"DELETE FROM friends WHERE users_id = ? AND friend_id = ? AND status = 'invited'",
+		userID,
+		friendID,
+	)
+	return err
+}
+
 func (f *FriendRepo) AcceptComingRequset(FriendID, UserID int) error {
 	tx, _ := f.db.Begin()
 	defer tx.Rollback()

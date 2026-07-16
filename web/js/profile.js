@@ -255,6 +255,8 @@ createApp({
     },
 
     async deletePost(id) {
+      if (!confirm('Удалить этот пост?')) return;
+
       try {
         const res = await fetch(`/api/post?id=${encodeURIComponent(id)}`, {
           method: 'DELETE',

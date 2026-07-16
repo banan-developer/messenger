@@ -73,7 +73,12 @@
           Заявки <span class="tab-badge" v-if="requests.length">{{ requests.length }}</span>
         </button>
 
-        <button class="tab-btn" >Мои заявки</button>
+        <button
+          class="tab-btn"
+          :class="{ 'is-active': activeTab === 'outgoing' }"
+          @click="activeTab = 'outgoing'">
+          Мои заявки <span class="tab-badge" v-if="outgoingRequests.length">{{ outgoingRequests.length }}</span>
+        </button>
         <button class="btn btn-primary" @click="openAddFriend">Добавить в друзья</button>
       </div>
 
@@ -133,6 +138,37 @@
         </div>
       </section>
 
+      <section v-if="activeTab === 'outgoing'" class="tab-content">
+        <div v-if="!outgoingRequests.length" class="empty-state card">
+          <i class="fas fa-paper-plane"></i>
+          <p>У вас пока нет отправленных заявок в друзья.</p>
+        </div>
+
+        <div class="friends-grid">
+          <article v-for="request in outgoingRequests" :key="request.id" class="friend-card">
+            <div class="friend-avatar-wrap">
+              <img
+                :src="request.avatar || '/static/icons/def_picture.png'"
+                @error="$event.target.src='/static/icons/def_picture.png'"
+                :alt="request.name"
+                class="friend-avatar-img"
+              />
+            </div>
+
+            <div class="friend-info" @click="goToProfile(request.id)">
+              <h3 class="friend-name">{{ request.name }}</h3>
+              <p class="friend-status">Заявка отправлена</p>
+            </div>
+
+            <div class="friend-actions">
+              <button class="btn btn-small danger" @click="cancelOutgoingRequest(request)">
+                <i class="fas fa-xmark"></i> Отменить заявку
+              </button>
+            </div>
+          </article>
+        </div>
+      </section>
+
       <div class="modal" :class="{ 'is-active': showAddFriend }">
         <div class="modal-background" @click="closeAddFriend"></div>
         <div class="modal-card">
@@ -149,7 +185,7 @@
             </div>
 
             <ul class="friends-list search-results">
-              <li v-for="person in friendSearchResults" :key="person.id" class="friend-row">
+              <li v-for="person in friendSearchResults" :key="person.id" class="friend-row" @click="goToFriend(person.id)">
                 <div class="friend-avatar">
                   <img :src="person.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
                 </div>

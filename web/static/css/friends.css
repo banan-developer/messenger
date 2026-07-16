@@ -350,6 +350,8 @@ body {
 .btn-primary { background: var(--color-sidebar-end); color: var(--color-white); }
 .btn-primary:hover { background: #163573; }
 .btn-small { padding: 8px 14px; font-size: 0.82rem; }
+.btn.danger { background: #FBE3E9; color: var(--color-accent-3); }
+.btn.danger:hover { background: #F6CBD6; }
 
 /* Окно поиска друзей — стили перенесены со страницы профиля */
 .modal .modal-card {

@@ -148,7 +148,11 @@ func (f *FriendHandler) AddToFriend(w http.ResponseWriter, r *http.Request) {
 	}
 	status := "invited"
 
-	f.service.AddToFriend(UserID, FriendID, status)
+	if err := f.service.AddToFriend(UserID, FriendID, status); err != nil {
+		http.Error(w, "Failed to send friend request", http.StatusConflict)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 }
 
 // FoundFriendByID ищет пользователей по имени или части имени.
@@ -223,6 +227,36 @@ func (f *FriendHandler) GetIncomigRequest(w http.ResponseWriter, r *http.Request
 // # Формат запроса
 //
 //	Тело запроса отсутствует. ID передается через query string.
+func (f *FriendHandler) OutgoingRequests(w http.ResponseWriter, r *http.Request) {
+	userID, _ := auth.GetUserId(r)
+
+	switch r.Method {
+	case http.MethodGet:
+		requests, err := f.service.GetOutgoingRequests(userID)
+		if err != nil {
+			http.Error(w, "Failed to get outgoing requests", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(requests); err != nil {
+			http.Error(w, "Failed to encode outgoing requests", http.StatusInternalServerError)
+		}
+	case http.MethodDelete:
+		friendID, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil || friendID <= 0 {
+			http.Error(w, "Invalid friend id", http.StatusBadRequest)
+			return
+		}
+		if err := f.service.CancelOutgoingRequest(userID, friendID); err != nil {
+			http.Error(w, "Failed to cancel request", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
+	default:
+		http.Error(w, "MethodNotAllowed", http.StatusMethodNotAllowed)
+	}
+}
+
 func (f *FriendHandler) AcceptComingRequset(w http.ResponseWriter, r *http.Request) {
 	UserID, _ := auth.GetUserId(r)
 

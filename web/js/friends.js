@@ -9,6 +9,7 @@ const FriendsApp = {
             openMenuId: null,
             friends: [],
             requests: [],
+            outgoingRequests: [],
             showAddFriend: false,
             friendSearchQuery: '',
             friendSearchResults: [],
@@ -18,10 +19,11 @@ const FriendsApp = {
         }
     },
      async mounted(){
+            await this.loadCurrentUser()
             await Promise.all([
-                this.loadCurrentUser(),
                 this.loadFriend(),
-                this.GetFrienedRequest()
+                this.GetFrienedRequest(),
+                this.loadOutgoingRequests()
             ])
         },
     computed: {
@@ -108,8 +110,48 @@ const FriendsApp = {
                 })
                 if (!res.ok) throw new Error("Принятия в друзья")
                 await this.GetFrienedRequest()
+                await this.loadOutgoingRequests()
                 await this.loadFriend() 
             }catch(err){
+                console.log(err)
+            }
+        },
+        async loadOutgoingRequests() {
+            try {
+                const res = await fetch('/api/outgoingrequest', {
+                    credentials: 'same-origin'
+                })
+                if (!res.ok) throw new Error('Не удалось загрузить исходящие заявки')
+                this.outgoingRequests = await res.json()
+                this.sentFriendRequestIDs = this.outgoingRequests.map(request => Number(request.id))
+                this.saveSentFriendRequestIDs()
+            } catch (err) {
+                console.log(err)
+            }
+        },
+        async cancelOutgoingRequest(request) {
+            if (!confirm(`Отменить заявку пользователю «${request.name}»?`)) return
+
+            try {
+                const res = await fetch(`/api/outgoingrequest?id=${encodeURIComponent(request.id)}`, {
+                    method: 'DELETE',
+                    credentials: 'same-origin'
+                })
+                if (!res.ok) throw new Error('Не удалось отменить заявку')
+
+                this.outgoingRequests = this.outgoingRequests.filter(
+                    item => Number(item.id) !== Number(request.id)
+                )
+                this.sentFriendRequestIDs = this.sentFriendRequestIDs.filter(
+                    id => Number(id) !== Number(request.id)
+                )
+                this.saveSentFriendRequestIDs()
+
+                const searchResult = this.friendSearchResults.find(
+                    person => Number(person.id) === Number(request.id)
+                )
+                if (searchResult) searchResult._added = false
+            } catch (err) {
                 console.log(err)
             }
         },
@@ -182,6 +224,7 @@ const FriendsApp = {
                 this.sentFriendRequestIDs.push(personID)
                 this.saveSentFriendRequestIDs()
             }
+            await this.loadOutgoingRequests()
             await this.loadFriend();
         } catch (err) {
             console.log(err);
@@ -190,6 +233,9 @@ const FriendsApp = {
         }
         },
         goToProfile(friend){
+            window.location.href = `/friend?id=${friend}`
+        },
+        goToFriend(friend){
             window.location.href = `/friend?id=${friend}`
         }
     }

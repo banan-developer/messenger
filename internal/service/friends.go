@@ -59,6 +59,20 @@ func (f *FriendService) GetIncomingRequest(UserID int) ([]domain.FriendResponse,
 	return f.repo.GetIncomingRequest(UserID)
 }
 
+func (f *FriendService) GetOutgoingRequests(userID int) ([]domain.FriendResponse, error) {
+	if userID <= 0 {
+		return nil, errors.New("Пользователь не найден")
+	}
+	return f.repo.GetOutgoingRequests(userID)
+}
+
+func (f *FriendService) CancelOutgoingRequest(userID, friendID int) error {
+	if userID <= 0 || friendID <= 0 {
+		return errors.New("Пользователь не найден")
+	}
+	return f.repo.CancelOutgoingRequest(userID, friendID)
+}
+
 func (f *FriendService) AcceptComingRequset(FriendID, UserID int) error {
 	if UserID <= 0 {
 		return errors.New("Пользователь не найден")
@@ -69,4 +83,6 @@ func (f *FriendService) AcceptComingRequset(FriendID, UserID int) error {
 	return f.repo.AcceptComingRequset(FriendID, UserID)
 }
 
-func (f *FriendService) DeleteFriend(userID, friendID int) error { return f.repo.DeleteFriend(userID,friendID) }
+func (f *FriendService) DeleteFriend(userID, friendID int) error {
+	return f.repo.DeleteFriend(userID, friendID)
+}

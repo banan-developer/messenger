@@ -27,7 +27,7 @@ func (w *WallRepo) CreatePost(res *domain.CreateWallRequest, userID int) error {
 }
 
 func (w *WallRepo) GetPostsByUserID(UserID int) ([]domain.WallPost, error) {
-	rows, err := w.db.Query("SELECT idwall, title, text, img_scr FROM wall WHERE users_id  = ?", UserID)
+	rows, err := w.db.Query("SELECT idwall, title, text, img_scr, created_at FROM wall WHERE users_id  = ?", UserID)
 	if err != nil {
 		log.Printf("Ошибка получении поста %v", err)
 		return nil, err
@@ -38,7 +38,7 @@ func (w *WallRepo) GetPostsByUserID(UserID int) ([]domain.WallPost, error) {
 
 	for rows.Next() {
 		var post domain.WallPost
-		rows.Scan(&post.Id, &post.Title, &post.Text, &post.Img)
+		rows.Scan(&post.Id, &post.Title, &post.Text, &post.Img, &post.CreatedAt)
 		posts = append(posts, post)
 		fmt.Println(post.Img)
 	}

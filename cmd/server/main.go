@@ -84,6 +84,7 @@ func main() {
 	http.Handle("/api/post", auth.RequireAuth(http.HandlerFunc(WallHanlder.Post)))
 	http.Handle("/api/friend", auth.RequireAuth(http.HandlerFunc(FriendHandler.Friends)))
 	http.Handle("/api/incomingrequest", auth.RequireAuth(http.HandlerFunc(FriendHandler.GetIncomigRequest)))
+	http.Handle("/api/outgoingrequest", auth.RequireAuth(http.HandlerFunc(FriendHandler.OutgoingRequests)))
 	http.Handle("/api/messages", auth.RequireAuth(http.HandlerFunc(MessgesHandler.Messages)))
 	http.Handle("/api/messages/file", auth.RequireAuth(http.HandlerFunc(MessgesHandler.SendMessageWithFile)))
 	http.Handle("/api/groups", auth.RequireAuth(http.HandlerFunc(GroupHandler.Groups)))
