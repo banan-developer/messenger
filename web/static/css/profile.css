@@ -27,6 +27,13 @@ body {
   color: var(--color-text);
 }
 
+.logo-icon .logo-svg-file {
+  width: 80%;  /* Размер иконки относительно блока 34px */
+  height: 80%;
+  object-fit: contain; /* Сохраняет пропорции любого SVG */
+  display: block;
+}
+
 .app-shell {
   display: flex;
   min-height: 100vh;
@@ -78,7 +85,6 @@ body {
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--color-accent-1), var(--color-accent-3));
   display: flex;
   align-items: center;
   justify-content: center;
