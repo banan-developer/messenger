@@ -124,7 +124,26 @@ body {
 
 .message-author-name { font-size: 0.75rem; font-weight: 700; color: var(--color-accent-1); }
 .message-text { margin: 0; font-size: 0.95rem; line-height: 1.45; word-break: break-word; white-space: pre-wrap; }
-.message-image { max-width: 260px; border-radius: 10px; margin-top: 4px; display: block; }
+.message-image-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 260px;
+  margin-top: 4px;
+  cursor: zoom-in;
+}
+.message-image {
+  max-width: 260px;
+  border-radius: 10px;
+  display: block;
+}
+.lightbox-img {
+  max-height: 90vh;
+  max-width: 90vw;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
 
 .message-meta { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 2px; }
 .message-time { font-size: 0.72rem; opacity: 0.7; }

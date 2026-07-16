@@ -117,7 +117,9 @@
             </span>
             
             <p v-if="msg.text" class="message-text">{{ msg.text }}</p>
-            <img v-if="msg.attachment_url" class="message-image" :src="msg.attachment_url" alt="Вложенная фотография">
+            <div v-if="msg.attachment_url" class="message-image-container" @click="openLightbox(msg.attachment_url)" title="Нажмите для увеличения">
+              <img class="message-image" :src="msg.attachment_url" alt="Вложенная фотография">
+            </div>
             
             <div class="message-meta">
               <span class="message-time">{{ formatDate(msg.created_at) }}</span>
@@ -238,6 +240,15 @@
       </div>
     </div>
   </dialog>
+
+  <!-- ===== LIGHTBOX MODAL ===== -->
+  <div class="modal" :class="{ 'is-active': lightboxImg }">
+    <div class="modal-background" @click="closeLightbox"></div>
+    <div class="modal-content" style="width: auto; text-align: center;">
+      <img v-if="lightboxImg" :src="lightboxImg" class="lightbox-img" alt="Полноразмерное фото" />
+    </div>
+    <button class="modal-close is-large" aria-label="close" @click="closeLightbox"></button>
+  </div>
 
 </div>
 

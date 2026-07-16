@@ -18,7 +18,8 @@ const App3 = {
             inputEditingText: "",
             isediting: 0,
             isLoading: true,
-            error: null
+            error: null,
+            lightboxImg: null
         }
     },
     async mounted() {
@@ -59,6 +60,12 @@ const App3 = {
         },
         getBack() {
             window.location.href = "/profile"
+        },
+        openLightbox(imgUrl) {
+            this.lightboxImg = imgUrl;
+        },
+        closeLightbox() {
+            this.lightboxImg = null;
         },
         async loadFriendProfile() {
             if (this.chatID) return
