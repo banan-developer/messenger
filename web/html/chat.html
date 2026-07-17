@@ -125,9 +125,24 @@
             </span>
             
             <p v-if="msg.text" class="message-text">{{ msg.text }}</p>
-            <div v-if="msg.attachment_url" class="message-image-container" @click="openLightbox(msg.attachment_url)" title="Нажмите для увеличения">
+            <div v-if="msg.attachment_url && isImageAttachment(msg)" class="message-image-container" @click="openLightbox(msg.attachment_url)" title="Нажмите для увеличения">
               <img class="message-image" :src="msg.attachment_url" alt="Вложенная фотография">
             </div>
+            <a
+              v-else-if="msg.attachment_url"
+              class="message-file-card"
+              :href="msg.attachment_url"
+              :download="msg.attachment_name || true"
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="message-file-icon"><i :class="fileIcon(msg)"></i></span>
+              <span class="message-file-info">
+                <strong>{{ msg.attachment_name || fileNameFromURL(msg.attachment_url) }}</strong>
+                <small>{{ fileTypeLabel(msg) }}<template v-if="msg.attachment_size"> · {{ formatFileSize(msg.attachment_size) }}</template></small>
+              </span>
+              <i class="fas fa-download message-file-download"></i>
+            </a>
             
             <div class="message-meta">
               <span class="message-time">{{ formatDate(msg.created_at) }}</span>
@@ -149,8 +164,8 @@
 
         <!-- Обычный режим ввода -->
         <div v-if="isediting == 0" class="composer-row">
-          <label class="icon-btn file-button" title="Прикрепить фото">
-            <input ref="fileInput" type="file" accept="image/*" class="is-hidden" @change="selectFile" >
+          <label class="icon-btn file-button" title="Прикрепить файл">
+            <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/gif,image/webp,.pdf,.docx,.xml" class="is-hidden" @change="selectFile" >
             <i class="fas fa-paperclip"></i>
           </label>
 
@@ -162,7 +177,8 @@
               placeholder="Напишите сообщение..." 
               @keypress.enter="sendMessage" />
             <span v-if="selectedFileName" class="selected-file-chip">
-              <i class="fas fa-image"></i> {{ selectedFileName }}
+              <i class="fas fa-paperclip"></i> {{ selectedFileName }}
+              <button type="button" class="selected-file-remove" title="Убрать файл" @click="clearSelectedFile">×</button>
             </span>
           </div>
 

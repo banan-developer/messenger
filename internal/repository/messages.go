@@ -106,9 +106,12 @@ func (r *MessageRepo) GetChatsForUser(userID int) ([]map[string]interface{}, err
 // SaveMessage — сохранить сообщение
 func (r *MessageRepo) SaveMessage(msg *domain.Message) error {
 	result, err := r.db.Exec(`
-		INSERT INTO messeges (text, from_id, to_id, chats_id, attachment_url) 
-		VALUES (?, ?, ?, ?, ?)
-	`, msg.Text, msg.FromID, msg.ToID, msg.ChatID, msg.AttachmentURL)
+		INSERT INTO messeges (
+			text, from_id, to_id, chats_id, attachment_url,
+			attachment_name, attachment_type, attachment_size
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+	`, msg.Text, msg.FromID, msg.ToID, msg.ChatID, msg.AttachmentURL,
+		msg.AttachmentName, msg.AttachmentType, msg.AttachmentSize)
 	if err != nil {
 		return err
 	}
@@ -129,7 +132,10 @@ func (r *MessageRepo) GetMessagesByChatID(chatID int) ([]domain.Message, error) 
 
 	rows, err := r.db.Query(`
 		SELECT id, text, DATE_FORMAT(created_at, '%m-%d %H:%i') as created_at, 
-		       from_id, to_id, COALESCE(attachment_url, '') as attachment_url
+		       from_id, to_id, COALESCE(attachment_url, '') as attachment_url,
+		       COALESCE(attachment_name, '') as attachment_name,
+		       COALESCE(attachment_type, '') as attachment_type,
+		       COALESCE(attachment_size, 0) as attachment_size
 		FROM messeges WHERE chats_id = ? ORDER BY created_at ASC
 	`, chatID)
 	if err != nil {
@@ -140,7 +146,8 @@ func (r *MessageRepo) GetMessagesByChatID(chatID int) ([]domain.Message, error) 
 	messages := make([]domain.Message, 0)
 	for rows.Next() {
 		var msg domain.Message
-		err := rows.Scan(&msg.ID, &msg.Text, &msg.CreatedAt, &msg.FromID, &msg.ToID, &msg.AttachmentURL)
+		err := rows.Scan(&msg.ID, &msg.Text, &msg.CreatedAt, &msg.FromID, &msg.ToID,
+			&msg.AttachmentURL, &msg.AttachmentName, &msg.AttachmentType, &msg.AttachmentSize)
 		if err != nil {
 			return nil, err
 		}
@@ -156,8 +163,12 @@ func (r *MessageRepo) GetMessagesByChatID(chatID int) ([]domain.Message, error) 
 func (r *MessageRepo) GetMessageByID(msgID int) (*domain.Message, error) {
 	var msg domain.Message
 	err := r.db.QueryRow(`
-		SELECT id, text, from_id, to_id, chats_id, attachment_url FROM messeges WHERE id = ?
-	`, msgID).Scan(&msg.ID, &msg.Text, &msg.FromID, &msg.ToID, &msg.ChatID, &msg.AttachmentURL)
+		SELECT id, text, from_id, to_id, chats_id, attachment_url,
+		       COALESCE(attachment_name, ''), COALESCE(attachment_type, ''),
+		       COALESCE(attachment_size, 0)
+		FROM messeges WHERE id = ?
+	`, msgID).Scan(&msg.ID, &msg.Text, &msg.FromID, &msg.ToID, &msg.ChatID,
+		&msg.AttachmentURL, &msg.AttachmentName, &msg.AttachmentType, &msg.AttachmentSize)
 	if err != nil {
 		return nil, err
 	}

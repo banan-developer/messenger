@@ -141,8 +141,30 @@ const App3 = {
         },
 		selectFile(event) {
 			const [file] = event.target.files
+			if (!file) {
+				this.clearSelectedFile()
+				return
+			}
+			const extension = `.${file.name.split('.').pop().toLowerCase()}`
+			const allowed = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.pdf', '.docx', '.xml']
+			if (!allowed.includes(extension)) {
+				this.error = 'Разрешены изображения, PDF, DOCX и XML'
+				this.clearSelectedFile()
+				return
+			}
+			if (file.size > 20 * 1024 * 1024) {
+				this.error = 'Размер файла не должен превышать 20 МБ'
+				this.clearSelectedFile()
+				return
+			}
+			this.error = null
 			this.selectedFile = file || null
 			this.selectedFileName = file ? file.name : ""
+		},
+		clearSelectedFile() {
+			this.selectedFile = null
+			this.selectedFileName = ''
+			if (this.$refs.fileInput) this.$refs.fileInput.value = ''
 		},
 		async sendAttachment() {
 			if (!this.selectedFile || this.isUploading) return
@@ -160,7 +182,7 @@ const App3 = {
 					method: "POST",
 					body: formData
 				})
-				if (!res.ok) throw new Error("Не удалось отправить фотографию")
+				if (!res.ok) throw new Error((await res.text()) || "Не удалось отправить файл")
 				const message = await res.json()
 				this.upsertMessage({
 					...message,
@@ -168,12 +190,10 @@ const App3 = {
 				})
 
 				this.inputText = ""
-				this.selectedFile = null
-				this.selectedFileName = ""
-				this.$refs.fileInput.value = ""
+				this.clearSelectedFile()
 			} catch (err) {
 				console.error(err)
-				this.error = "Не удалось отправить фотографию"
+				this.error = err.message || "Не удалось отправить файл"
 			} finally {
 				this.isUploading = false
 			}
@@ -186,7 +206,10 @@ const App3 = {
 				to_id: message.to_id || 0,
 				chat_id: message.chat_id || 0,
 				created_at: message.created_at,
-				attachment_url: message.attachment_url || ''
+				attachment_url: message.attachment_url || '',
+				attachment_name: message.attachment_name || '',
+				attachment_type: message.attachment_type || '',
+				attachment_size: Number(message.attachment_size) || 0
 			}
 			const index = this.messanges.findIndex(item => item.id === normalizedMessage.id)
 			if (index === -1) {
@@ -195,6 +218,34 @@ const App3 = {
 				this.messanges[index] = normalizedMessage
 			}
 			this.scrollToBottom()
+		},
+		isImageAttachment(message) {
+			if (message.attachment_type) return message.attachment_type.startsWith('image/')
+			return /\.(jpe?g|png|gif|webp)$/i.test(message.attachment_url || '')
+		},
+		fileNameFromURL(url) {
+			const name = (url || '').split('/').pop() || 'Файл'
+			try { return decodeURIComponent(name) } catch { return name }
+		},
+		fileIcon(message) {
+			const name = (message.attachment_name || message.attachment_url || '').toLowerCase()
+			if (name.endsWith('.pdf')) return 'fas fa-file-pdf'
+			if (name.endsWith('.docx')) return 'fas fa-file-word'
+			if (name.endsWith('.xml')) return 'fas fa-file-code'
+			return 'fas fa-file'
+		},
+		fileTypeLabel(message) {
+			const name = (message.attachment_name || message.attachment_url || '').toLowerCase()
+			if (name.endsWith('.pdf')) return 'PDF'
+			if (name.endsWith('.docx')) return 'DOCX'
+			if (name.endsWith('.xml')) return 'XML'
+			return 'Файл'
+		},
+		formatFileSize(bytes) {
+			const size = Number(bytes) || 0
+			if (size < 1024) return `${size} Б`
+			if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} КБ`
+			return `${(size / 1024 / 1024).toFixed(1)} МБ`
 		},
 		async loadGroupMembers(){ const r=await fetch(`/api/groups?chat_id=${this.chatID}`); if(r.ok)this.groupMembers=await r.json(); const f=await fetch('/api/friend'); if(f.ok)this.groupFriends=await f.json() },
 		async addGroupMember(){ const r=await fetch(`/api/groups?chat_id=${this.chatID}&user_id=${this.groupMemberID}`,{method:'PUT'}); if(r.ok){this.groupMemberID='';this.loadGroupMembers()} },

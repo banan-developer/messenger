@@ -33,8 +33,8 @@ func main() {
 	}
 
 	// строка подключения к бд
-	dsn := fmt.Sprintf("root:%s@tcp(db:3306)/messanger", dbPassword)
-	// dsn := fmt.Sprintf("root:%s@tcp(127.0.0.1:3306)/messanger", dbPassword)
+	// dsn := fmt.Sprintf("root:%s@tcp(db:3306)/messanger", dbPassword)
+	dsn := fmt.Sprintf("root:%s@tcp(127.0.0.1:3306)/messanger", dbPassword)
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -47,6 +47,9 @@ func main() {
 	}
 
 	defer db.Close()
+	if err := ensureAttachmentColumns(db); err != nil {
+		errorLog.Fatal("Ошибка обновления схемы вложений: ", err)
+	}
 
 	auth.InitStore()
 	hub := websocket.NewHub()
@@ -106,6 +109,35 @@ func main() {
 
 	fmt.Println("Сервер запущен на http://127.0.0.1:8020/login")
 	http.ListenAndServe(":8020", nil)
+}
+
+func ensureAttachmentColumns(db *sql.DB) error {
+	columns := map[string]string{
+		"attachment_name": "VARCHAR(255) NULL",
+		"attachment_type": "VARCHAR(120) NULL",
+		"attachment_size": "BIGINT NOT NULL DEFAULT 0",
+	}
+
+	for name, definition := range columns {
+		var count int
+		err := db.QueryRow(`
+			SELECT COUNT(*)
+			FROM information_schema.COLUMNS
+			WHERE TABLE_SCHEMA = DATABASE()
+			  AND TABLE_NAME = 'messeges'
+			  AND COLUMN_NAME = ?
+		`, name).Scan(&count)
+		if err != nil {
+			return err
+		}
+		if count == 0 {
+			if _, err := db.Exec("ALTER TABLE messeges ADD COLUMN " + name + " " + definition); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }
 
 func profileHandler(w http.ResponseWriter, r *http.Request) {
