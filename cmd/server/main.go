@@ -33,8 +33,8 @@ func main() {
 	}
 
 	// строка подключения к бд
-	dsn := fmt.Sprintf("root:%s@tcp(db:3306)/messanger", dbPassword)
-	// dsn := fmt.Sprintf("root:%s@tcp(127.0.0.1:3306)/messanger", dbPassword)
+	// dsn := fmt.Sprintf("root:%s@tcp(db:3306)/messanger", dbPassword)
+	dsn := fmt.Sprintf("root:%s@tcp(127.0.0.1:3306)/messanger", dbPassword)
 
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {

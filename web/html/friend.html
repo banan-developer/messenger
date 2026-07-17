@@ -81,7 +81,16 @@
             <button class="btn btn-primary" @click="loadFriendMessage">
               <i class="far fa-comment-dots"></i> Написать сообщение
             </button>
-            <!-- <button class="btn btn-primary">Добавить в друзья</button>   вот тут потом доделать -->
+            <button
+              v-if="!isOwnProfile"
+              class="btn friendship-btn"
+              :class="friendshipStatus === 'none' ? 'btn-primary' : 'btn-danger'"
+              :disabled="friendshipLoading"
+              @click="changeFriendship"
+            >
+              <i :class="friendshipIcon"></i>
+              {{ friendshipLoading ? 'Подождите…' : friendshipLabel }}
+            </button>
           </div>
         </div>
 

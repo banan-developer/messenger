@@ -11,8 +11,25 @@ const App2 = {
                     userID: null,
                     ChatID: null,
                     lightboxImg: null,
-                    SessionsID: null
+                    SessionsID: null,
+                    friendshipStatus: "none",
+                    friendshipLoading: true
 
+                }
+            },
+            computed: {
+                isOwnProfile() {
+                    return this.SessionsID !== null && Number(this.SessionsID) === Number(this.userID)
+                },
+                friendshipLabel() {
+                    if (this.friendshipStatus === "friend") return "Удалить из друзей"
+                    if (this.friendshipStatus === "outgoing") return "Отменить заявку"
+                    return "Добавить в друзья"
+                },
+                friendshipIcon() {
+                    if (this.friendshipStatus === "friend") return "fas fa-user-minus"
+                    if (this.friendshipStatus === "outgoing") return "fas fa-xmark"
+                    return "fas fa-user-plus"
                 }
             },
             mounted(){
@@ -27,6 +44,7 @@ const App2 = {
                 this.getWall()
                 this.loadFriend()
                 this.Profile()
+                this.loadFriendshipStatus()
             },
             methods: {
                async getName(){
@@ -75,6 +93,61 @@ const App2 = {
                         
                     }catch(err){
                         console.log(err)
+                    }
+                },
+
+                async loadFriendshipStatus(){
+                    this.friendshipLoading = true
+                    try {
+                        const [friendsRes, outgoingRes] = await Promise.all([
+                            fetch('/api/friend'),
+                            fetch('/api/outgoingrequest')
+                        ])
+                        if (!friendsRes.ok || !outgoingRes.ok) {
+                            throw new Error('Не удалось определить статус дружбы')
+                        }
+
+                        const friends = await friendsRes.json()
+                        const outgoing = await outgoingRes.json()
+                        const profileID = Number(this.userID)
+
+                        if (friends.some(friend => Number(friend.id) === profileID)) {
+                            this.friendshipStatus = 'friend'
+                        } else if (outgoing.some(request => Number(request.id) === profileID)) {
+                            this.friendshipStatus = 'outgoing'
+                        } else {
+                            this.friendshipStatus = 'none'
+                        }
+                    } catch (err) {
+                        console.log(err)
+                    } finally {
+                        this.friendshipLoading = false
+                    }
+                },
+
+                async changeFriendship(){
+                    if (this.friendshipLoading || this.isOwnProfile) return
+
+                    this.friendshipLoading = true
+                    try {
+                        let endpoint = `/api/friend?id=${encodeURIComponent(this.userID)}`
+                        let method = 'POST'
+
+                        if (this.friendshipStatus === 'friend') {
+                            method = 'DELETE'
+                        } else if (this.friendshipStatus === 'outgoing') {
+                            endpoint = `/api/outgoingrequest?id=${encodeURIComponent(this.userID)}`
+                            method = 'DELETE'
+                        }
+
+                        const res = await fetch(endpoint, { method })
+                        if (!res.ok) throw new Error('Не удалось изменить статус дружбы')
+
+                        this.friendshipStatus = method === 'POST' ? 'outgoing' : 'none'
+                    } catch (err) {
+                        console.log(err)
+                    } finally {
+                        this.friendshipLoading = false
                     }
                 },
                 

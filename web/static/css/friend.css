@@ -232,6 +232,11 @@ body {
 .btn:active { transform: translateY(1px); }
 .btn-primary { background: var(--color-sidebar-end); color: var(--color-white); }
 .btn-primary:hover { background: #163573; }
+.btn-danger { background: #FBE3E9; color: var(--color-accent-3); }
+.btn-danger:hover { background: #F6CBD6; }
+.btn:disabled { cursor: wait; opacity: 0.65; transform: none; }
+.profile-actions { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+.profile-actions .btn { justify-content: center; width: 100%; }
 .btn-ghost { background: var(--color-bg); color: var(--color-text); }
 .btn-ghost:hover { background: #E3E8F3; }
 
@@ -246,4 +251,5 @@ body {
   .sidebar-footer { display: none; }
   .topbar, .content-grid { padding: 16px; }
   .profile-card { flex-direction: column; text-align: center; }
+  .profile-actions { width: 100%; }
 }

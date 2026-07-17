@@ -474,6 +474,60 @@ body {
   .sidebar { width: 100%; height: auto; position: static; padding: 16px; }
   .sidebar-footer { display: none; }
   .topbar, .content-container { padding: 16px; }
+  .content-container { width: 100%; }
+
+  .tabs-nav {
+    flex-wrap: wrap;
+    gap: 0;
+  }
+
+  .tabs-nav .tab-btn {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+
+  .tabs-nav > .btn-primary {
+    flex: 0 0 100%;
+    justify-content: center;
+    min-height: 44px;
+    margin: 10px 0 12px;
+  }
+
   .friend-card { padding: 12px 14px; gap: 12px; }
   .friend-name { font-size: 0.95rem; }
+}
+
+@media (max-width: 480px) {
+  .tabs-nav .tab-btn {
+    flex-basis: 50%;
+  }
+
+  .modal .modal-card {
+    width: calc(100vw - 20px);
+    max-height: calc(100dvh - 20px);
+    margin: 10px;
+  }
+
+  .modal .modal-card-head,
+  .modal .modal-card-body {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .modal .friend-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .modal .friend-name {
+    padding-top: 7px;
+  }
+
+  .modal .friend-row .btn-small {
+    flex: 0 0 100%;
+    justify-content: center;
+    min-height: 40px;
+  }
 }
