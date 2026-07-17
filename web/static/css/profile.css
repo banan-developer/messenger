@@ -588,3 +588,6 @@ body {
   .topbar-title { font-size: 1.1rem; }
   .content-grid { padding: 18px; }
 }
+.friend-identity { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.friend-identity .friend-name { flex: none; display: block; }
+.friend-identity .friend-group { color: var(--color-text-muted); font-size: 0.7rem; line-height: 1.2; }

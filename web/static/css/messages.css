@@ -427,3 +427,5 @@ body {
   .chat-card { padding: 12px 14px; gap: 12px; }
   .chat-name { font-size: 0.95rem; }
 }
+.chat-user-group { margin-left: auto; color: var(--color-text-muted); font-size: 0.78rem; white-space: nowrap; }
+.friend-select-name small { display: block; color: var(--color-text-muted); font-size: 0.75rem; }

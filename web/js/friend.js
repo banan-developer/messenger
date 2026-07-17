@@ -4,6 +4,7 @@ const App2 = {
                     avatarURL: "",
                     name: "",
                     sex: "",
+                    group: "",
                     aboutPerson: "",
                     wall: [],
                     friends: [],
@@ -37,6 +38,7 @@ const App2 = {
                         this.aboutPerson = data.about
                         this.avatarURL = data.avatar
                         this.sex = data.sex
+                        this.group = data.group
                     }catch(err){
                         console.log(err)
                     }

@@ -18,7 +18,7 @@ func NewFriendRepo(db *sql.DB) *FriendRepo {
 
 func (f *FriendRepo) GetFriendsByID(UserID int) ([]domain.FriendResponse, error) {
 	rows, err := f.db.Query(
-		`SELECT users.id, users.name, users.avatar_url
+		`SELECT users.id, users.name, users.avatar_url, COALESCE(users.group_name, '')
 		FROM friends
 		JOIN users ON users.id = friends.friend_id
 		WHERE friends.users_id = ?
@@ -34,7 +34,7 @@ func (f *FriendRepo) GetFriendsByID(UserID int) ([]domain.FriendResponse, error)
 	var friend []domain.FriendResponse
 	for rows.Next() {
 		var user domain.FriendResponse
-		rows.Scan(&user.ID, &user.Name, &user.Avatar)
+		rows.Scan(&user.ID, &user.Name, &user.Avatar, &user.Group)
 		friend = append(friend, user)
 	}
 	if friend == nil {
@@ -54,7 +54,7 @@ func (f *FriendRepo) AddToFriend(UserID int, FriendID int, Status string) error 
 }
 
 func (f *FriendRepo) FoundFriendByID(FriendName string) ([]domain.FriendResponse, error) {
-	rows, err := f.db.Query("SELECT id, name, avatar_url FROM users WHERE name LIKE ?", "%"+FriendName+"%")
+	rows, err := f.db.Query("SELECT id, name, avatar_url, COALESCE(group_name, '') FROM users WHERE name LIKE ?", "%"+FriendName+"%")
 
 	if err != nil {
 		log.Println("БД: Ошибка при получении данных друга")
@@ -65,7 +65,7 @@ func (f *FriendRepo) FoundFriendByID(FriendName string) ([]domain.FriendResponse
 	var friends []domain.FriendResponse
 	for rows.Next() {
 		var friend domain.FriendResponse
-		rows.Scan(&friend.ID, &friend.Name, &friend.Avatar)
+		rows.Scan(&friend.ID, &friend.Name, &friend.Avatar, &friend.Group)
 		friends = append(friends, friend)
 	}
 	if friends == nil {
@@ -76,7 +76,7 @@ func (f *FriendRepo) FoundFriendByID(FriendName string) ([]domain.FriendResponse
 
 func (f *FriendRepo) GetIncomingRequest(UserID int) ([]domain.FriendResponse, error) {
 	rows, err := f.db.Query(
-		`SELECT u.id, u.name, u.avatar_url
+		`SELECT u.id, u.name, u.avatar_url, COALESCE(u.group_name, '')
         FROM friends f
         JOIN users u ON u.id = f.users_id
         WHERE f.friend_id = ?
@@ -90,7 +90,7 @@ func (f *FriendRepo) GetIncomingRequest(UserID int) ([]domain.FriendResponse, er
 	var friends []domain.FriendResponse
 	for rows.Next() {
 		var friend domain.FriendResponse
-		err := rows.Scan(&friend.ID, &friend.Name, &friend.Avatar)
+		err := rows.Scan(&friend.ID, &friend.Name, &friend.Avatar, &friend.Group)
 		if err != nil {
 			return nil, err
 		}
@@ -105,7 +105,7 @@ func (f *FriendRepo) GetIncomingRequest(UserID int) ([]domain.FriendResponse, er
 
 func (f *FriendRepo) GetOutgoingRequests(UserID int) ([]domain.FriendResponse, error) {
 	rows, err := f.db.Query(
-		`SELECT u.id, u.name, u.avatar_url
+		`SELECT u.id, u.name, u.avatar_url, COALESCE(u.group_name, '')
 		FROM friends f
 		JOIN users u ON u.id = f.friend_id
 		WHERE f.users_id = ?
@@ -120,7 +120,7 @@ func (f *FriendRepo) GetOutgoingRequests(UserID int) ([]domain.FriendResponse, e
 	requests := make([]domain.FriendResponse, 0)
 	for rows.Next() {
 		var request domain.FriendResponse
-		if err := rows.Scan(&request.ID, &request.Name, &request.Avatar); err != nil {
+		if err := rows.Scan(&request.ID, &request.Name, &request.Avatar, &request.Group); err != nil {
 			return nil, err
 		}
 		requests = append(requests, request)

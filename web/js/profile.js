@@ -8,7 +8,8 @@ createApp({
         name: '',
         about: '',
         sex: '',
-        avatar: ''
+        avatar: '',
+        group: ''
       },
 
       posts: [],
@@ -29,7 +30,7 @@ createApp({
 
       // edit profile modal
       showEditProfile: false,
-      editProfileForm: { name: '', about: '' },
+      editProfileForm: { name: '', about: '', group: '' },
       editProfileError: '',
       savingProfile: false,
 
@@ -88,6 +89,7 @@ createApp({
     openEditProfile() {
       this.editProfileForm.name = this.user.name || '';
       this.editProfileForm.about = this.user.about || '';
+      this.editProfileForm.group = this.user.group || '';
       this.editProfileError = '';
       this.showEditProfile = true;
     },
@@ -118,7 +120,8 @@ createApp({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             name: this.editProfileForm.name,
-            about: this.editProfileForm.about
+            about: this.editProfileForm.about,
+            group: this.editProfileForm.group
           })
         });
         if (!res.ok) throw new Error('Не удалось сохранить профиль');

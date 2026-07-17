@@ -95,7 +95,7 @@ func (r *ChatRepo) CreateGroupChat(title, avatarURL string, userIDs []int) (int,
 // GetGroupMembers — получить участников группы
 func (r *ChatRepo) GetGroupMembers(chatID int) ([]domain.User, error) {
 	rows, err := r.db.Query(`
-		SELECT u.id, u.name, u.avatar_url
+		SELECT u.id, u.name, u.avatar_url, COALESCE(u.group_name, '')
 		FROM users_has_chats uhc
 		JOIN users u ON uhc.users_id = u.id
 		WHERE uhc.chats_id = ?
@@ -108,7 +108,7 @@ func (r *ChatRepo) GetGroupMembers(chatID int) ([]domain.User, error) {
 	var users []domain.User
 	for rows.Next() {
 		var user domain.User
-		rows.Scan(&user.ID, &user.Name, &user.Avatar)
+		rows.Scan(&user.ID, &user.Name, &user.Avatar, &user.Group)
 		users = append(users, user)
 	}
 	return users, nil

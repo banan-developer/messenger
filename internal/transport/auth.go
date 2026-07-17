@@ -89,6 +89,7 @@ func (a *AuthHandler) Registration(w http.ResponseWriter, r *http.Request) {
 		Password: r.FormValue("password"),
 		Name:     r.FormValue("name"),
 		Sex:      r.FormValue("sex"),
+		Group:    r.FormValue("group"),
 	}
 
 	err := a.authService.Registration(res)

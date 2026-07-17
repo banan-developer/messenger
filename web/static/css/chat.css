@@ -180,6 +180,7 @@ body {
 .message-file-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.86rem; }
 .message-file-info small { opacity: 0.75; font-size: 0.72rem; }
 .message-file-download { flex-shrink: 0; opacity: 0.75; }
+.member-name small { display: block; color: var(--color-text-muted); font-size: 0.72rem; font-weight: 400; }
 .lightbox-img {
   max-height: 90vh;
   max-width: 90vw;

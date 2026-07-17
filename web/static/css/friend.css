@@ -216,6 +216,9 @@ body {
 }
 .friend-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .friend-name { flex: 1; min-width: 0; font-size: 0.88rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.friend-identity { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.friend-identity .friend-name { flex: none; display: block; }
+.friend-identity .friend-group { color: var(--color-text-muted); font-size: 0.7rem; line-height: 1.2; }
 .friend-arrow { font-size: 0.75rem; color: var(--color-border); transition: color 0.15s ease; }
 .friend-row:hover .friend-arrow { color: var(--color-text-muted); }
 

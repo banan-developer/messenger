@@ -11,6 +11,7 @@ type User struct {
 	Password string `json:"password"`
 	Avatar   string `json:"avatar"`
 	Sex      string `json:"sex"`
+	Group    string `json:"group"`
 }
 
 type UserResponse struct {
@@ -18,6 +19,7 @@ type UserResponse struct {
 	About  string `json:"about"`
 	Avatar string `json:"avatar"`
 	Sex    string `json:"sex"`
+	Group  string `json:"group"`
 }
 
 type LoginRequest struct {
@@ -30,4 +32,5 @@ type RegistrationRequest struct {
 	Password string `json:"password"`
 	Name     string `json:"name"`
 	Sex      string `json:"sex"`
+	Group    string `json:"group"`
 }

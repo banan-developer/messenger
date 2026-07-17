@@ -72,6 +72,7 @@
           <div class="profile-info">
             <h2 class="profile-name">{{ name || 'Загрузка...' }}</h2>
             <p class="profile-meta" v-if="sex">{{ sex }}</p>
+            <p class="profile-meta" v-if="group"><i class="fas fa-user-group"></i> Группа {{ group }}</p>
             <p class="profile-about">{{ aboutPerson || 'Пользователь пока не рассказал о себе.' }}</p>
           </div>
 
@@ -134,7 +135,10 @@
               <div class="friend-avatar">
                 <img :src="friend.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
               </div>
-              <span class="friend-name">{{ friend.name }}</span>
+              <div class="friend-identity">
+                <span class="friend-name">{{ friend.name }}</span>
+                <small class="friend-group" v-if="friend.group">Группа {{ friend.group }}</small>
+              </div>
               <i class="fas fa-chevron-right friend-arrow"></i>
             </li>
           </ul>

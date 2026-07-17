@@ -80,12 +80,17 @@ func (r *MessageRepo) GetChatsForUser(userID int) ([]map[string]interface{}, err
 				JOIN users u ON u.id = other_member.users_id
 				WHERE other_member.chats_id = c.id AND other_member.users_id <> ? LIMIT 1
 			), '') END AS avatar,
+			CASE WHEN c.is_group = 1 THEN '' ELSE COALESCE((
+				SELECT u.group_name FROM users_has_chats other_member
+				JOIN users u ON u.id = other_member.users_id
+				WHERE other_member.chats_id = c.id AND other_member.users_id <> ? LIMIT 1
+			), '') END AS group_name,
 			COALESCE((SELECT text FROM messeges WHERE chats_id = c.id ORDER BY created_at DESC LIMIT 1), '')
 		FROM chats c
 		JOIN users_has_chats uh ON uh.chats_id = c.id
 		WHERE uh.users_id = ?
 		ORDER BY c.id DESC
-	`, userID, userID, userID, userID)
+	`, userID, userID, userID, userID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -94,11 +99,11 @@ func (r *MessageRepo) GetChatsForUser(userID int) ([]map[string]interface{}, err
 	for rows.Next() {
 		var id, otherUserID int
 		var group bool
-		var title, avatar, last string
-		if err := rows.Scan(&id, &group, &otherUserID, &title, &avatar, &last); err != nil {
+		var title, avatar, userGroup, last string
+		if err := rows.Scan(&id, &group, &otherUserID, &title, &avatar, &userGroup, &last); err != nil {
 			return nil, err
 		}
-		result = append(result, map[string]interface{}{"id": id, "user_id": otherUserID, "is_group": group, "name": title, "avatar": avatar, "last_message": last})
+		result = append(result, map[string]interface{}{"id": id, "user_id": otherUserID, "is_group": group, "name": title, "avatar": avatar, "group": userGroup, "last_message": last})
 	}
 	return result, rows.Err()
 }

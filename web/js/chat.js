@@ -3,6 +3,7 @@ const App3 = {
         return {
             name: "",
             avatar_url: "",
+            userGroup: "",
             friendID: null,
             currentUserID: null,
             messanges: [],
@@ -67,6 +68,7 @@ const App3 = {
                 const data = await res.json()
                 this.name = data.name
                 this.avatar_url = data.avatar || '/static/icons/def_picture.png'
+                this.userGroup = data.group || ''
             } catch (err) {
                 console.log(err)
             }

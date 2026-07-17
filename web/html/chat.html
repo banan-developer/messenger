@@ -69,7 +69,7 @@
           </div>
           <div class="user-info-meta">
             <h2 class="user-name">{{ name || 'Загрузка...' }}</h2>
-            <span class="user-status" v-if="!chatID">В сети</span>
+            <span class="user-status" v-if="!chatID">{{ userGroup ? 'Группа ' + userGroup : 'Группа не указана' }}</span>
             <span class="user-status" v-else>Участников: {{ groupMembers.length }}</span>
           </div>
         </div>
@@ -225,7 +225,7 @@
         <div class="members-list">
           <div v-for="member in groupMembers" :key="member.id" class="settings-member">
             <img :src="member.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="">
-            <span class="member-name">{{ member.name }}</span>
+            <span class="member-name">{{ member.name }}<small v-if="member.group">Группа {{ member.group }}</small></span>
             <button v-if="member.id !== currentUserID" class="btn btn-small danger" @click="removeGroupMember(member.id)">Удалить</button>
           </div>
         </div>

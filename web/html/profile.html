@@ -84,6 +84,7 @@
             <h2 class="profile-name">{{ user.name || 'Без имени' }}</h2>
             <p class="profile-meta" v-if="user.sex">{{ user.sex }}</p>
             <p class="profile-about">{{ user.about || 'Пользователь пока не рассказал о себе.' }}</p>
+            <p class="profile-meta" v-if="user.group"><i class="fas fa-user-group"></i> Группа {{ user.group }}</p>
           </div>
 
           <button class="icon-btn edit-btn" title="Редактировать профиль" @click="openEditProfile">
@@ -180,7 +181,10 @@
               <div class="friend-avatar">
                 <img :src="friend.avatar || '/static/icons/def_picture.png'" @error="$event.target.src='/static/icons/def_picture.png'" alt="" />
               </div>
-              <span class="friend-name">{{ friend.name }}</span>
+              <div class="friend-identity">
+                <span class="friend-name">{{ friend.name }}</span>
+                <small class="friend-group" v-if="friend.group">Группа {{ friend.group }}</small>
+              </div>
               
               <!-- ВАЖНО: добавили .stop в @click.stop="removeFriend(friend.id)" -->
               <button class="icon-btn danger" title="Удалить из друзей" @click.stop="removeFriend(friend.id)">
@@ -210,6 +214,10 @@
         <div class="field">
           <label class="label">О себе</label>
           <textarea class="textarea" v-model.trim="editProfileForm.about" rows="3" placeholder="Расскажите о себе"></textarea>
+        </div>
+        <div class="field">
+          <label class="label">Учебная группа</label>
+          <input class="input" type="text" v-model.trim="editProfileForm.group" maxlength="45" placeholder="Например, 1442" />
         </div>
         <p class="form-error" v-if="editProfileError">{{ editProfileError }}</p>
       </section>
