@@ -43,7 +43,7 @@ func (r *UserRepository) GetUserByLogin(Login string) (int, string, error) {
 }
 
 func (r *UserRepository) CreateUser(res *domain.RegistrationRequest, hashedPassword string) error {
-	_, err := r.db.Exec("INSERT INTO users (login, password, name, sex, about, avatar_url, avatar_img, group_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", res.Login, hashedPassword, res.Name, res.Sex, "Пользователь TheNomax ", "unknown", "unknown", res.Group)
+	_, err := r.db.Exec("INSERT INTO users (login, password, name, sex, about, avatar_url, avatar_img, group_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", res.Login, hashedPassword, res.Name, res.Sex, "Студент ГУАПа ", "unknown", "unknown", res.Group)
 	if err != nil {
 		return errors.New("registration error")
 	}
