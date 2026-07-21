@@ -5,11 +5,14 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-rootpass}
       MYSQL_DATABASE: messanger
+      TZ: Europe/Helsinki
     ports:
       - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
       - ./db/Dump.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
       interval: 5s
@@ -29,6 +32,10 @@ services:
       - "8020:8020"
     environment:
       DB_PASSWORD: ${DB_PASSWORD:-rootpass}
+      TZ: Europe/Helsinki
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     restart: unless-stopped
 
 volumes:

@@ -82,9 +82,9 @@
 
           <div class="profile-info">
             <h2 class="profile-name">{{ user.name || 'Без имени' }}</h2>
-            <p class="profile-meta" v-if="user.sex">{{ user.sex }}</p>
             <p class="profile-about">{{ user.about || 'Пользователь пока не рассказал о себе.' }}</p>
             <p class="profile-meta" v-if="user.group"><i class="fas fa-user-group"></i> Группа {{ user.group }}</p>
+            <p class="profile-meta" v-if="user.sex">{{ user.sex }}</p>
           </div>
 
           <button class="icon-btn edit-btn" title="Редактировать профиль" @click="openEditProfile">

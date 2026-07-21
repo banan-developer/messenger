@@ -71,9 +71,9 @@
 
           <div class="profile-info">
             <h2 class="profile-name">{{ name || 'Загрузка...' }}</h2>
-            <p class="profile-meta" v-if="sex">{{ sex }}</p>
-            <p class="profile-meta" v-if="group"><i class="fas fa-user-group"></i> Группа {{ group }}</p>
             <p class="profile-about">{{ aboutPerson || 'Пользователь пока не рассказал о себе.' }}</p>
+            <p class="profile-meta" v-if="group"><i class="fas fa-user-group"></i> Группа {{ group }}</p>
+            <p class="profile-meta" v-if="sex">{{ sex }}</p>
           </div>
 
           <!-- Кнопка действия -->
